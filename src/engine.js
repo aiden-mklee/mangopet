@@ -33,7 +33,7 @@ DEX.push('star');
 const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
 // heirloom patterns, drawn into the body by the screen
 const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
-const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,0]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,0]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
+const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 
 /* ---------- random ---------- */
@@ -44,6 +44,9 @@ const pick=(g,list)=>list[Math.floor(rand(g)*list.length)];
 /* ---------- time and growth ---------- */
 const hourOf=t=>Math.floor(t/60)%24;
 const isNight=t=>{const h=hourOf(t);return h>=21||h<8};
+// from 19:00 the player may put the pet to bed early by turning the light off
+const EARLY_BED=19;
+const earlyBed=g=>g.stage!=='baby'&&!g.lights&&hourOf(g.t)>=EARLY_BED;
 const stageFor=a=>a<60?'baby':a<DAY?'child':a<ADULT_AT?'teen':a<FULL_TERM?'adult':'grad';
 const hungerInt=g=>({baby:12,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
 const happyInt=g=>({baby:22,child:110,teen:130,adult:150}[g.stage]);
@@ -143,7 +146,7 @@ function step(g,ev,opts={}){
   if(st!==g.stage)evolve(g,st,ev);
   if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
   const night=g.stage!=='baby'&&isNight(g.t),was=g.sleeping;
-  g.sleeping=night||g.napUntil>g.t;
+  g.sleeping=night||g.napUntil>g.t||earlyBed(g);
   if(g.sleeping&&!was&&night&&g.lights)notify(g,'💡','졸려… 불 좀 꺼줘','need',ev);
   if(!g.sleeping&&was){g.lights=true;g.lightMin=0}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
@@ -173,7 +176,9 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=hourOf(g.t);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
-function toggleLight(g){g.lights=!g.lights;return g.lights}
+function toggleLight(g){g.lights=!g.lights;
+  if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g.t)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
+  return g.lights}
 function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
   if(--g.doses<=0){g.sick=false;g.sickMin=0;return 'cured'}return 'dose'}

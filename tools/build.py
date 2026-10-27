@@ -24,6 +24,7 @@ ENGINE = os.path.join(ROOT, 'src', 'engine.js')
 SLOT = '<script>/* @engine: tools/build.py inlines src/engine.js here */</script>'
 DOCS = os.path.join(ROOT, 'docs')
 FONT = os.path.join(ROOT, 'tools', 'fonts', 'Galmuri11.woff2')
+BETA = '베타 0.1'  # bump when friends get a new round to test
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
 
 
@@ -52,6 +53,7 @@ def phone(s):
     """Phone beta: real time, starts at the current local time, separate save key, device only."""
     s = rep(s, "<title>망고펫 프로토타입</title>", "<title>망고펫</title>")
     s = rep(s, "const KEY='dotpet-proto-v1';", "const KEY='mangopet-beta-v1';")
+    s = rep(s, "REALTIME=false;", "REALTIME=true;")
     s = rep(s, "function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,",
             "function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,")
     s = rep(s, "[hidden]{display:none!important}", """[hidden]{display:none!important}
@@ -132,6 +134,8 @@ def main():
     s = open(SRC, encoding='utf-8').read()
     assert s.count(SLOT) == 1, 'engine slot missing from src/prototype.html'
     s = s.replace(SLOT, '<script>\n' + open(ENGINE, encoding='utf-8').read() + '</script>')
+    # the version shown in settings: beta number plus a short hash of the game, so a phone can tell it got the latest
+    s = rep(s, "const VERSION='dev',", f"const VERSION='{BETA} · {hashlib.sha1(s.encode()).hexdigest()[:6]}',")
     os.makedirs(DOCS, exist_ok=True)
     os.makedirs(os.path.join(ROOT, '.out'), exist_ok=True)
     open(os.path.join(ROOT, '.out', 'artifact.html'), 'w', encoding='utf-8').write(s)
