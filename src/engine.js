@@ -78,7 +78,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -122,6 +122,7 @@ function needList(g){
   if(g.phase!=='alive')return [];const L=[];
   if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
   if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'light',t:'🥱 졸려요',a:'불 끄기'});
+  if(g.wakeDark)L.push({mini:'light',t:'☀️ 일어났어요',a:'불 켜기'});
   if(g.sick)L.push({mini:'sick',t:'🤒 아파요',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
   if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파요',a:'펫을 3번 쓰다듬기 (또는 약)'});
   if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파요',a:'밥'});
@@ -164,7 +165,15 @@ function step(g,ev,opts={}){
   g.sleeping=night||g.napUntil>g.t||earlyBed(g);
   // the bedtime call comes half an hour before the pet drops off on its own
   if(!g.sleeping&&g.lights&&g.stage!=='baby'&&h===21&&m===30)notify(g,'🥱','졸려… 불 꺼 주면 잘게','need',ev);
-  if(!g.sleeping&&was){g.lights=true;g.lightMin=0}
+  // Morning: the pet wakes in the dark and waits for the light, so there is always a reason to look on the way to work.
+  // Left in the dark until noon, it gets up on its own and leans a little towards the night (moon) line.
+  if(!g.sleeping&&was){g.lightMin=0;
+    if(was&&h===8&&m===0&&g.stage!=='baby'){
+      if(!g.lights)g.wakeDark=true;
+      else if(nm(g).slots.length)(g.news=g.news||[]).push('☀️ 일어났어요');
+      if(!nm(g).slots.length)notify(g,'☀️',g.lights?'일어났어요':'일어났어요! 불 켜 줄래?','need',ev)}
+    else g.lights=true}
+  if(g.wakeDark&&h===12&&m===0){g.wakeDark=false;g.lights=true;g.night++}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
   if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'🔔',L.join(' · '),'digest',ev)}
   const rx=g.mode==='relaxed'?1.5:1;
@@ -192,7 +201,7 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
-function toggleLight(g){g.lights=!g.lights;
+function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
   if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
   return g.lights}
 function med(g){if(!g.sick&&!g.tummy)return 'no';

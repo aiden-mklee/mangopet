@@ -31,6 +31,7 @@ const personas={
        const lh=D.E.localHour(g);
        if(g.sleeping){stats.sleepAtCheck++;if(g.lights&&D.E.isNight(g)){D.ui.anim=null;D.act('light');a++}continue}
        const doo=k=>{D.ui.anim=null;D.ui.game=null;D.act(k);a++};
+       if(!g.lights)doo('light');
        if(g.poops)doo('clean');
        if(g.tummy){for(let i=0;i<3;i++){D.ui.anim=null;D.petTap();}a++}
        while(g.sick&&a<12)doo('med');
