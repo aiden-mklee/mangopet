@@ -34,6 +34,7 @@ tools/
   build.py             폰트 서브셋 + docs/ 생성
   smoke.js             빌드 결과를 브라우저로 열어 오류 검사, 스크린샷은 .out/
   sim.js               가상 사용자 유형별 7일 시뮬레이션 (밸런스 확인용)
+  icons.py             앱 아이콘을 그리고 웹·아이폰·안드로이드 크기로 저장
   golden.js            엔진 정답 테스트 (tests/golden.json과 비교). 다른 언어로 옮긴 엔진도 이 정답과 같아야 함
   fonts/Galmuri11.woff2  한글 픽셀 폰트 원본 (서브셋 재생성용)
 app/                 아이폰·안드로이드 앱 (Capacitor). app/www는 빌드 결과물
