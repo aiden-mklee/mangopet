@@ -84,11 +84,12 @@ function newPet(g,mode){
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
 }
 function unlockCharm(g,id,ev){g.charms=g.charms||[];if(g.charms.includes(id))return;g.charms.push(id);g.equip=g.equip||[];if(g.equip.length<3)g.equip.push(id);ev.push({type:'charm',id})}
-function hatch(g,ev){unlockCharm(g,'egg',ev);if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev)}
+function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev)}
 function crack(g){g.cracks=(g.cracks||0)+1;return g.cracks}
 function evolve(g,st,ev){
   g.stage=st;g.weight=Math.max(g.weight,baseW(g));
   if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);if(/_cat$/.test(g.species))unlockCharm(g,'cat',ev);
+    const lc={sun:'sun',moon:'moon',chub:'donut',wild:'bolt',star:'gem'}[g.species.split('_')[0]];if(lc)unlockCharm(g,lc,ev);
     if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
   else notify(g,'✨','모습이 바뀌었어요!','need',ev);
   ev.push({type:'evolve',stage:st});
@@ -109,7 +110,7 @@ function decideAdult(g){
   return line+'_'+ANIMAL_OF[g.con];
 }
 function record(g,result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
-function graduate(g,full,ev){unlockCharm(g,'star',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
+function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
   record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full})}
 function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
@@ -202,7 +203,7 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 // one visit = one count, however many buttons it takes
 function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
-function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
+function snack(g,ev=[]){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);if((g.allSnacks=(g.allSnacks||0)+1)>=30)unlockCharm(g,'cookie',ev);return 'ok'}
 function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
   if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
   // early risers: from 6:00 the light wakes the pet up before its 8:00 alarm (off again puts it back to sleep)
@@ -211,7 +212,7 @@ function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
 function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
   if(--g.doses<=0){g.sick=false;g.sickMin=0;return 'cured'}return 'dose'}
-function clean(g){const n=g.poops;g.poops=0;return n}
+function clean(g,ev=[]){const n=g.poops;g.poops=0;if(n&&(g.allCleans=(g.allCleans||0)+1)>=50)unlockCharm(g,'poop',ev);return n}
 function pet(g){
   if(g.tummy){if(++g.rub>=3){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'plop'}return 'rub'}
   if(g.t-g.lastPet>=60){g.happy=Math.min(4,g.happy+1);g.lastPet=g.t;g.pets=(g.pets||0)+1;return 'happy'}
