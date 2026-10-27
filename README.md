@@ -43,6 +43,7 @@ CLAUDE.md            Claude 작업 지침
 DESIGN.md            디자인 시스템 (케이스, LCD, 버튼, 색, 폰트)
 GAME.md              게임 규칙과 밸런스 요약
 APP.md               앱 실행 방법 (맥·Xcode, 안드로이드 스튜디오)
+NEXT.md              앞으로 할 일 (우선순위 순)
 ```
 
 ## 개발
