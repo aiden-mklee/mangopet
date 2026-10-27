@@ -1038,15 +1038,22 @@ function patPoints(s,id){
   const carve=(st,r,c)=>st.forEach((row,i)=>[...row].forEach((ch,j)=>{if(ch==='#')pts.push([r+i,c+j])}));
   const rowsOf=[...free].map(k=>Math.floor(k/W)),top=Math.min(...rowsOf),bot=Math.max(...rowsOf);
   const span=r=>{const cs=[];for(let c=0;c<W;c++)if(has(r,c))cs.push(c);return cs};
-  const cx=Math.round(W/2)-1;
+  // face centre: halfway between the two highest enclosed gaps (the eyes), else the middle of the sprite
+  const eyeOf=side=>blobs.filter(b=>b.length<=12).map(b=>({top:Math.min(...b.map(p=>p[0])),r:Math.max(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length}))
+    .filter(e=>side<0?e.c<W/2:e.c>=W/2).sort((a,b)=>a.top-b.top)[0];
+  const eL=eyeOf(-1),eR=eyeOf(1),cx=eL&&eR?Math.round((eL.c+eR.c)/2):Math.floor((W-1)/2);
   if(STAMPS[id]){
     // a stamp on the forehead: the highest spot near the middle where it fits
     // a full-size stamp anywhere on the body beats a shrunken one on the forehead
     const full=STAMPS[id].slice(0,-1),small=STAMPS[id].at(-1);
     for(const st of full){const sw=st[0].length;
-      for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(sw/2)+dc+1;if(fits(st,r,c)){carve(st,r,c);return pts}}}
+      for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(sw/2)+dc;if(fits(st,r,c)){carve(st,r,c);return pts}}}
     for(const st of full)for(let r=bot-st.length+1;r>=top;r--)for(let c=1;c<W-st[0].length;c++)if(fits(st,r,c)){carve(st,r,c);return pts}
-    for(let r=top;r<=bot-small.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(small[0].length/2)+dc+1;if(fits(small,r,c)){carve(small,r,c);return pts}}
+    // still no room: let a full-size stamp lap over the face a little (it may touch the eyes, never cut the outline)
+    const inner=(r,c)=>on(r,c)&&[[1,0],[-1,0],[0,1],[0,-1]].every(([dr,dc])=>on(r+dr,c+dc)||hole.has((r+dr)*W+c+dc));
+    const loose=(st,r,c)=>st.every((row,i)=>[...row].every((ch,j)=>ch!=='#'||inner(r+i,c+j)));
+    for(const st of full)for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2]){const c=cx-Math.floor(st[0].length/2)+dc;if(loose(st,r,c)){carve(st,r,c);return pts}}
+    for(let r=top;r<=bot-small.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(small[0].length/2)+dc;if(fits(small,r,c)){carve(small,r,c);return pts}}
     return pts}
   if(id==='줄무늬'){
     // three bars running down from the top of the head, starting below the ears where the head is full width
@@ -1057,8 +1064,7 @@ function patPoints(s,id){
   if(id==='볼 터치'){
     // blush on both cheeks or not at all: the right one mirrors the left around the middle of the eyes
     const cheek=(r,c)=>on(r,c)&&!nearHole(r,c,1);
-    const eyes=blobs.filter(b=>b.length<=12).map(b=>({top:Math.min(...b.map(p=>p[0])),r:Math.max(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length}));
-    const L=eyes.filter(e=>e.c<W/2).sort((a,b)=>a.top-b.top)[0],R=eyes.filter(e=>e.c>=W/2).sort((a,b)=>a.top-b.top)[0];
+    const L=eL,R=eR;
     if(!L||!R)return pts;const axis=(L.c+R.c)/2,er=Math.max(L.r,R.r);
     for(const len of[3,2])for(const dr of[2,1,3,4])for(const dc of[0,-1,1,-2]){
       const l0=Math.round(L.c)+dc-(len-1),row=er+dr,Lc=[...Array(len)].map((_,i)=>l0+i);
