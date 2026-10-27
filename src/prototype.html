@@ -1022,8 +1022,11 @@ function patPoints(s,id){
   if(!free.size)return [];
   const has=(r,c)=>free.has(r*W+c),pts=[];
   // holes: light pixels enclosed by the body (eyes, mouth), grouped into blobs
-  const hole=new Set();for(let r=0;r<H;r++){const a=rows[r].indexOf('#'),z=rows[r].lastIndexOf('#');
-    for(let c=a+1;c<z;c++)if(!on(r,c)){let up=false,dn=false;for(let k=0;k<r;k++)if(on(k,c))up=true;for(let k=r+1;k<H;k++)if(on(k,c))dn=true;if(up&&dn)hole.add(r*W+c)}}
+  // (anything the outside can't reach by stepping through light pixels; open gaps like a moon mark don't count)
+  const out=new Set(),q=[];for(let r=0;r<H;r++)for(let c=0;c<W;c++)if((r===0||c===0||r===H-1||c===W-1)&&!on(r,c)){out.add(r*W+c);q.push(r*W+c)}
+  while(q.length){const x=q.pop(),r=Math.floor(x/W),c=x%W;for(const [dr,dc] of[[1,0],[-1,0],[0,1],[0,-1]]){const y=(r+dr)*W+c+dc;
+    if(r+dr>=0&&r+dr<H&&c+dc>=0&&c+dc<W&&!on(r+dr,c+dc)&&!out.has(y)){out.add(y);q.push(y)}}}
+  const hole=new Set();for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(!on(r,c)&&!out.has(r*W+c))hole.add(r*W+c);
   const blobs=[],seen=new Set();hole.forEach(k=>{if(seen.has(k))return;const q=[k],b=[];seen.add(k);
     while(q.length){const x=q.pop();b.push([Math.floor(x/W),x%W]);for(const d of[1,-1,W,-W]){const y=x+d;if(hole.has(y)&&!seen.has(y)){seen.add(y);q.push(y)}}}blobs.push(b)});
   const nearHole=(r,c,d)=>{for(let dr=-d;dr<=d;dr++)for(let dc=-d;dc<=d;dc++)if(hole.has((r+dr)*W+c+dc))return true;return false};
@@ -1034,14 +1037,32 @@ function patPoints(s,id){
   const cx=Math.round(W/2)-1;
   if(STAMPS[id]){
     // a stamp on the forehead: the highest spot near the middle where it fits
-    for(const st of STAMPS[id]){const sw=st[0].length;
+    // a full-size stamp anywhere on the body beats a shrunken one on the forehead
+    const full=STAMPS[id].slice(0,-1),small=STAMPS[id].at(-1);
+    for(const st of full){const sw=st[0].length;
       for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(sw/2)+dc+1;if(fits(st,r,c)){carve(st,r,c);return pts}}}
+    for(const st of full)for(let r=bot-st.length+1;r>=top;r--)for(let c=1;c<W-st[0].length;c++)if(fits(st,r,c)){carve(st,r,c);return pts}
+    for(let r=top;r<=bot-small.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(small[0].length/2)+dc+1;if(fits(small,r,c)){carve(small,r,c);return pts}}
     return pts}
   if(id==='줄무늬'){
     // three bars running down from the top of the head, starting below the ears where the head is full width
     const wmax=Math.max(...rowsOf.map(r=>span(r).length));let r0=top;while(r0<bot&&span(r0).length<wmax*.6)r0++;
     const cs=span(r0+1),cm=cs.length?Math.round((cs[0]+cs.at(-1))/2):cx;
     for(const dc of[-3,0,3])for(let dr=0;dr<3;dr++)if(has(r0+dr,cm+dc)&&!nearHole(r0+dr,cm+dc,1))pts.push([r0+dr,cm+dc]);
+    return pts}
+  if(id==='볼 터치'){
+    // blush on both cheeks or not at all: the right one mirrors the left around the middle of the eyes
+    const cheek=(r,c)=>on(r,c)&&!nearHole(r,c,1);
+    const eyes=blobs.filter(b=>b.length<=12).map(b=>({top:Math.min(...b.map(p=>p[0])),r:Math.max(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length}));
+    const L=eyes.filter(e=>e.c<W/2).sort((a,b)=>a.top-b.top)[0],R=eyes.filter(e=>e.c>=W/2).sort((a,b)=>a.top-b.top)[0];
+    if(!L||!R)return pts;const axis=(L.c+R.c)/2,er=Math.max(L.r,R.r);
+    for(const len of[3,2])for(const dr of[2,1,3,4])for(const dc of[0,-1,1,-2]){
+      const l0=Math.round(L.c)+dc-(len-1),row=er+dr,Lc=[...Array(len)].map((_,i)=>l0+i);
+      const ok=cs=>cs.every(c=>cheek(row,c))&&on(row,cs[0]-1)&&on(row,cs.at(-1)+1);
+      if(!ok(Lc))continue;
+      // faces are drawn a pixel off-centre now and then, so the mirror may slide by one
+      for(const sl of[0,-1,1]){const r0=Math.round(2*axis-(l0+len-1))+sl,Rc=[...Array(len)].map((_,i)=>r0+i);
+        if(r0>l0+len&&ok(Rc)){[...Lc,...Rc].forEach(c=>pts.push([row,c]));return pts}}}
     return pts}
   if(id==='왕점'){
     // one big round spot on the upper side of the body, like a puppy's patch
@@ -1056,7 +1077,7 @@ function patterned(s,base,id){const key=id+'|'+base.rows.join('/')+'|'+s.rows.jo
   if(!o){const rows=s.rows.map(r=>r.split(''));patPoints(base,id).forEach(([r,c])=>{if(rows[r]&&rows[r][c]==='#')rows[r][c]='.'});
     o={w:s.w,h:s.h,rows:rows.map(r=>r.join(''))};PAT_CACHE.set(key,o)}return o}
 const PAT_BLOB={w:10,h:9,rows:['..######..','.########.','##########','##########','##########','##########','##########','.########.','..######..']};
-const ACC=['줄무늬','이마 별','이마 하트','왕점'].map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
+const ACC=['줄무늬','이마 별','이마 하트','볼 터치','왕점'].map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
 // saves from before patterns carried items (리본, 모자 …): fold them into the three patterns
 const LEGACY_ACC=['리본','안경','모자','꽃','목도리','왕관'];
 const toPat=n=>{const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
