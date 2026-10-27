@@ -1,4 +1,4 @@
-package app.mangopet;
+package com.emango.pet;
 
 import com.getcapacitor.BridgeActivity;
 

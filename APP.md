@@ -34,7 +34,7 @@ app/android/            Android Studio 프로젝트
    ```
 4. Xcode 왼쪽에서 **App** 프로젝트 → **Signing & Capabilities**:
    - **Team**: `Add an Account…`로 애플 ID 로그인 → `(Personal Team)` 선택. 개발자 계정(유료) 없이 됩니다.
-   - **Bundle Identifier**: `app.mangopet`이 이미 쓰이고 있다고 나오면 `com.내이름.mangopet`처럼 바꿉니다.
+   - **Bundle Identifier**: `com.emango.pet` 그대로 둡니다. 무료 계정에서 "이미 쓰이고 있다"고 나오면 잠깐 `com.emango.pet.dev`처럼 바꿔서 테스트합니다.
 5. 아이폰을 케이블로 연결하고, 아이폰 **설정 → 개인정보 보호 및 보안 → 개발자 모드**를 켭니다 (재시동 필요).
 6. Xcode 위쪽에서 기기를 내 아이폰으로 고르고 ▶ 버튼.
 7. 처음 실행하면 아이폰에서 "신뢰할 수 없는 개발자"가 뜹니다. **설정 → 일반 → VPN 및 기기 관리**에서 내 애플 ID를 신뢰합니다.
@@ -62,6 +62,6 @@ npx cap sync             # app/www/를 iOS·안드로이드 프로젝트에 복�
 
 ## 출시 전에 정할 것
 
-- **앱 ID** (`capacitor.config.json`의 `appId`): 지금은 임시로 `app.mangopet`입니다. 스토어에 올리면 바꿀 수 없으니 출시 전에 정합니다.
+- **앱 ID** (`capacitor.config.json`의 `appId`): `com.emango.pet`. 망고 시리즈는 `com.emango.*`로 통일합니다 (가계부는 `com.emango.log` 예정). 스토어에 올리면 바꿀 수 없으니, 개발자 계정 가입 때 이 이름으로 등록합니다.
 - 앱 아이콘과 시작 화면 (지금은 Capacitor 기본 그림)
 - 위젯: Swift(아이폰), Kotlin(안드로이드)으로 따로 만듭니다. 규칙은 `src/engine.js`를 옮기고 `tools/golden.js`의 정답과 맞춥니다.
