@@ -7,9 +7,19 @@
     "smoke": "node tools/smoke.js",
     "sim": "node tools/sim.js",
     "golden": "node tools/golden.js",
-    "serve": "python3 -m http.server 8000 --directory docs"
+    "serve": "python3 -m http.server 8000 --directory docs",
+    "app": "python3 tools/build.py && npx cap sync",
+    "ios": "npx cap sync ios && npx cap open ios",
+    "android": "npx cap sync android && npx cap open android"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "playwright": "^1.47.0"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/local-notifications": "^8.3.1"
   }
 }

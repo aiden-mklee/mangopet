@@ -1,0 +1,16 @@
+{
+  "appId": "app.mangopet",
+  "appName": "망고펫",
+  "webDir": "app/www",
+  "ios": {
+    "path": "app/ios"
+  },
+  "android": {
+    "path": "app/android"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#F6C64E"
+    }
+  }
+}

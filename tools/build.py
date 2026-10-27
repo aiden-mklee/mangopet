@@ -14,6 +14,7 @@ Outputs
   docs/lab.html     the full prototype with the dev lab (time speed, test buttons)
   docs/manifest.webmanifest, docs/sw.js, docs/icon-*.png, docs/.nojekyll
   .out/artifact.html  the prototype fragment with the engine inlined, for publishing as a claude.ai artifact
+  app/www/index.html  the native app page (Capacitor): the phone build without the web-only install bits
 """
 import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 
@@ -71,6 +72,15 @@ addEventListener('resize',fitWindow);setTimeout(fitWindow,50);setTimeout(fitWind
 """ + s[i:]
 
 
+def native(s):
+    """Native app: same as the phone beta, minus the web beta note (the app has real notifications)."""
+    s = phone(s)
+    s = re.sub(r'    <p class="betanote">.*?</p>\n', '', s, count=1)
+    # no bundler: the Capacitor runtime and the notifications plugin come in as plain scripts (copied next to the page)
+    s = s.replace('</style>', '</style>\n<script src="capacitor.js"></script>\n<script src="local-notifications.js"></script>', 1)
+    return rep(s, "const KEY='mangopet-beta-v1';", "const KEY='mangopet-app-v1';")
+
+
 def lab(s):
     s = rep(s, "<title>망고펫 프로토타입</title>", "<title>망고펫 랩</title>")
     return rep(s, "const KEY='dotpet-proto-v1';", "const KEY='mangopet-lab-v1';")
@@ -113,6 +123,14 @@ def main():
     index = document(phone(s), pwa=True)
     open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8').write(index)
     open(os.path.join(DOCS, 'lab.html'), 'w', encoding='utf-8').write(document(lab(s), pwa=False))
+    os.makedirs(os.path.join(ROOT, 'app', 'www'), exist_ok=True)
+    open(os.path.join(ROOT, 'app', 'www', 'index.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False))
+    nm = os.path.join(ROOT, 'node_modules', '@capacitor')
+    for src, dst in (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js')):
+        if os.path.exists(os.path.join(nm, src)):
+            shutil.copy(os.path.join(nm, src), os.path.join(ROOT, 'app', 'www', dst))
+        else:
+            print('note: run npm install to copy', dst, 'into app/www')
     for n in ('icon-192.png', 'icon-512.png', 'apple-touch-icon.png'):
         shutil.copy(os.path.join(ROOT, 'assets', 'icons', n), os.path.join(DOCS, n))
     json.dump({"name": "망고펫", "short_name": "망고펫", "start_url": "./", "scope": "./", "display": "standalone",
