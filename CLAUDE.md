@@ -23,7 +23,7 @@
 
 - 화면: 48 × 46칸 LCD. 놀이 공간 48 × 32(`LW`, `LH`, 바닥 `GND`) + 위아래 아이콘 줄. 픽셀 버퍼는 `Pix` 클래스.
 - 그림: `RAW`(스프라이트 문자열), `ICONS`(6 × 6 아이콘), `buildAdult(line, animal)`이 성체 24종을 조합해서 만든다. 표정은 `moodRows`.
-- 데이터: `CON`(체질), `SP`(종), `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참), `ACC`(가보 액세서리), `NOTIF`(알림 빈도).
+- 데이터: `CON`(체질), `SP`(종), `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참), `ACC`(가보 무늬, 몸에 새기는 위치는 `patPoints`), `NOTIF`(알림 빈도).
 - 상태: 전역 `g`(저장되는 게임 상태)와 `ui`(화면 상태). 시간은 분 단위로 `stepMinute()`가 흘리고 `advance(min)`으로 건너뛴다.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
