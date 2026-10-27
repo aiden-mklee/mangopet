@@ -12,5 +12,9 @@
     "LocalNotifications": {
       "iconColor": "#F6C64E"
     }
+  },
+  "server": {
+    "url": "https://aiden-mklee.github.io/mangopet/app.html",
+    "errorPath": "offline.html"
   }
 }

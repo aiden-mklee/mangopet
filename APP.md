@@ -11,6 +11,15 @@ app/ios/                Xcode 프로젝트 (Swift Package Manager 사용, CocoaP
 app/android/            Android Studio 프로젝트
 ```
 
+## 테스트 모드: 게임을 GitHub Pages에서 불러오기
+
+지금 앱은 켤 때마다 `https://aiden-mklee.github.io/mangopet/app.html`에서 최신 게임을 불러옵니다 (`capacitor.config.json`의 `server.url`).
+- 코드를 고쳐 `main`에 올리면, 1~3분 뒤(GitHub Pages 배포) + 최대 10분(캐시) 안에 **앱을 완전히 껐다 켜면** 새 버전입니다. Xcode 다시 빌드가 필요 없습니다.
+- 인터넷이 없으면 `offline.html`("인터넷에 연결되지 않았어요")이 뜹니다.
+- 저장은 GitHub Pages 주소 기준이라, 앱에 들어 있던 예전 버전의 저장과는 따로입니다.
+- **출시 전에는 반드시 되돌립니다**: `capacitor.config.json`에서 `server` 칸을 지우고 `npx cap sync`. 애플은 게임을 밖에서 불러오는 앱을 심사에서 거절할 수 있습니다.
+- Xcode에서 ▶가 필요한 경우: 무료 계정 7일마다, 그리고 앱 껍데기(알림 플러그인, 아이콘, 앱 이름, 이 설정)를 바꿨을 때.
+
 ## 알림이 동작하는 방식
 
 1. 앱을 닫거나 다른 앱으로 넘어가면, 엔진의 `forecast`로 "아무도 안 들어오면 앞으로 7일 동안 갈 알림"을 계산해 폰에 예약합니다 (최대 60개).

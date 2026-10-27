@@ -58,6 +58,7 @@
 - `app/www/`는 빌드가 만든다. 화면을 고쳤다면 `python3 tools/build.py` 뒤에 `npx cap sync`로 아이폰·안드로이드 프로젝트에 복사한다. 자세한 건 `APP.md`.
 - 앱에서만 예약 알림을 건다 (`scheduleAhead`/`cancelAhead`, 엔진의 `forecast`). 웹에서는 아무 일도 하지 않는다.
 - 이 리눅스 환경에서는 아이폰 빌드를 못 한다. 아이폰 실행은 사용자의 맥에서 한다.
+- **테스트 모드**: 지금 앱은 `capacitor.config.json`의 `server.url`로 GitHub Pages의 `docs/app.html`을 불러온다. 게임만 고친 경우엔 `main`에 올리면 사용자가 앱을 껐다 켜는 것으로 끝난다 (Xcode 불필요). 앱 껍데기(플러그인, 아이콘, 이름, 설정)를 바꿨을 때만 맥에서 `git pull` → `npm run ios` → ▶가 필요하다고 안내한다. 출시 전에는 `server`를 지운다.
 
 ## 사용자에게 명령어를 줄 때
 
