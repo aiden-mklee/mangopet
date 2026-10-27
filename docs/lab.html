@@ -1015,31 +1015,62 @@ function drawCharms(){const box=$('charms');if(!box)return;box.innerHTML='';cons
 }
 /* heirlooms are marks drawn into the body (stripes, a forehead star, spots), not items floating overhead */
 // marks are worked out once on the base sprite and reused for its mood variants, so they stay put when the face changes
+const STAMPS={'이마 별':[['..#..','..#..','#####','.###.','.#.#.'],['..#..','#####','.###.','.#.#.'],['.#.','###','#.#']],
+  '이마 하트':[['##.##','#####','.###.','..#..'],['#.#','###','.#.']]};
 function patPoints(s,id){
   const {w:W,h:H,rows}=s,on=(r,c)=>r>=0&&r<H&&c>=0&&c<W&&rows[r][c]==='#';
-  const free=new Set();let r0=99;
-  for(let r=1;r<H-1;r++)for(let c=1;c<W-1;c++){let ok=true;
+  // free: ink whose 8 neighbours are ink too, so a carved mark is always framed by ink and never touches the eyes
+  const free=new Set();for(let r=1;r<H-1;r++)for(let c=1;c<W-1;c++){let ok=true;
     for(let dr=-1;dr<=1&&ok;dr++)for(let dc=-1;dc<=1;dc++)if(!on(r+dr,c+dc)){ok=false;break}
-    if(ok){free.add(r*W+c);r0=Math.min(r0,r)}}
+    if(ok)free.add(r*W+c)}
   if(!free.size)return [];
   const has=(r,c)=>free.has(r*W+c),pts=[];
-  const mid=r=>{const cs=[];for(let c=0;c<W;c++)if(has(r,c))cs.push(c);return cs.length?Math.round((cs[0]+cs.at(-1))/2):-1};
-  if(id==='줄무늬'){const cm=mid(r0+1);for(const dc of[-3,0,3])for(let dr=0;dr<3;dr++)if(has(r0+dr,cm+dc))pts.push([r0+dr,cm+dc])}
-  if(id==='이마 별'){let r=r0+1,cm=mid(r);while(r<H-2&&!(has(r,cm)&&has(r+1,cm)&&has(r-1,cm)))cm=mid(++r);if(has(r,cm))for(const [dr,dc] of[[0,0],[-1,0],[1,0],[0,-1],[0,1]])if(has(r+dr,cm+dc)||!dr&&!dc)pts.push([r+dr,cm+dc])}
+  // holes: light pixels enclosed by the body (eyes, mouth), grouped into blobs
+  const hole=new Set();for(let r=0;r<H;r++){const a=rows[r].indexOf('#'),z=rows[r].lastIndexOf('#');
+    for(let c=a+1;c<z;c++)if(!on(r,c)){let up=false,dn=false;for(let k=0;k<r;k++)if(on(k,c))up=true;for(let k=r+1;k<H;k++)if(on(k,c))dn=true;if(up&&dn)hole.add(r*W+c)}}
+  const blobs=[],seen=new Set();hole.forEach(k=>{if(seen.has(k))return;const q=[k],b=[];seen.add(k);
+    while(q.length){const x=q.pop();b.push([Math.floor(x/W),x%W]);for(const d of[1,-1,W,-W]){const y=x+d;if(hole.has(y)&&!seen.has(y)){seen.add(y);q.push(y)}}}blobs.push(b)});
+  const nearHole=(r,c,d)=>{for(let dr=-d;dr<=d;dr++)for(let dc=-d;dc<=d;dc++)if(hole.has((r+dr)*W+c+dc))return true;return false};
+  const fits=(st,r,c)=>st.every((row,i)=>[...row].every((ch,j)=>ch!=='#'||has(r+i,c+j)));
+  const carve=(st,r,c)=>st.forEach((row,i)=>[...row].forEach((ch,j)=>{if(ch==='#')pts.push([r+i,c+j])}));
+  const rowsOf=[...free].map(k=>Math.floor(k/W)),top=Math.min(...rowsOf),bot=Math.max(...rowsOf);
+  const span=r=>{const cs=[];for(let c=0;c<W;c++)if(has(r,c))cs.push(c);return cs};
+  const cx=Math.round(W/2)-1;
+  if(STAMPS[id]){
+    // a stamp on the forehead: the highest spot near the middle where it fits
+    for(const st of STAMPS[id]){const sw=st[0].length;
+      for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2]){const c=cx-Math.floor(sw/2)+dc+1;if(fits(st,r,c)){carve(st,r,c);return pts}}}
+    return pts}
+  if(id==='줄무늬'){
+    // tiger stripes: three short bars coming in from each side of the body
+    const mid=Math.round((top+bot)/2);let n=0;
+    for(let r=top+1;r<=bot&&n<3;r++){const cs=span(r);if(cs.length<8)continue;
+      if([0,1,2].every(i=>has(r,cs[0]+i)&&has(r,cs.at(-1)-i)&&!nearHole(r,cs[0]+i,1)&&!nearHole(r,cs.at(-1)-i,1))){
+        for(let i=0;i<3;i++){pts.push([r,cs[0]+i]);pts.push([r,cs.at(-1)-i])}n++;r+=2}}
+    return pts}
+  if(id==='볼 터치'){
+    // blush: a short bar under each eye, framed by ink above and below so it reads on the cheek
+    const cheek=(r,c)=>on(r,c)&&on(r-1,c)&&on(r+1,c)&&!nearHole(r,c,1);
+    const eyes=blobs.filter(b=>b.length<=6).map(b=>({r:Math.max(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length})).sort((a,b)=>a.r-b.r);
+    const L=eyes.filter(e=>e.c<W/2)[0],R=eyes.filter(e=>e.c>=W/2)[0];
+    for(const [e,out] of[[L,-1],[R,1]]){if(!e)continue;let done=false;
+      for(const len of[3,2])for(const dr of[2,1,3])for(const dc of[0,out,2*out]){if(done)break;const r=e.r+dr,c0=Math.round(e.c)+dc-(out<0?len-1:0);
+        const cs=[...Array(len)].map((_,i)=>c0+i);if(cs.every(c=>cheek(r,c))&&on(r,c0-1)&&on(r,c0+len)){cs.forEach(c=>pts.push([r,c]));done=true}}}
+    return pts}
   if(id==='점박이'){
-    // spots stay off the outline and off the eyes and mouth, or they read as chips and extra eyes
-    const holes=[];for(let r=0;r<H;r++){const a=rows[r].indexOf('#'),z=rows[r].lastIndexOf('#');
-      for(let c=a+1;c<z;c++)if(!on(r,c)){let up=false,dn=false;for(let k=0;k<r;k++)if(on(k,c))up=true;for(let k=r+1;k<H;k++)if(on(k,c))dn=true;if(up&&dn)holes.push([r,c])}}
-    free.forEach(k=>{const r=Math.floor(k/W),c=k%W;if(!(r%4===1&&c%4===1||r%4===3&&c%4===3))return;
-      let deep=true;for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++)if(!on(r+dr,c+dc)&&!holes.some(([hr,hc])=>hr===r+dr&&hc===c+dc))deep=false;
-      if(deep&&holes.every(([hr,hc])=>Math.max(Math.abs(hr-r),Math.abs(hc-c))>1))pts.push([r,c])})}
+    // a few 2x2 spots, spread out and clear of the face
+    const cand=[];for(let r=bot-1;r>=top;r--)for(let c=1;c<W-1;c++)
+      if(has(r,c)&&has(r,c+1)&&has(r+1,c)&&has(r+1,c+1)&&!nearHole(r,c,2)&&!nearHole(r+1,c+1,2))cand.push([r,c]);
+    const pick=[];for(const [r,c] of cand){if(pick.length>=4)break;if(pick.every(([a,b])=>Math.max(Math.abs(a-r),Math.abs(b-c))>=4))pick.push([r,c])}
+    pick.forEach(([r,c])=>pts.push([r,c],[r,c+1],[r+1,c],[r+1,c+1]));
+    return pts}
   return pts}
 const PAT_CACHE=new Map();
 function patterned(s,base,id){const key=id+'|'+base.rows.join('/')+'|'+s.rows.join('/');let o=PAT_CACHE.get(key);
   if(!o){const rows=s.rows.map(r=>r.split(''));patPoints(base,id).forEach(([r,c])=>{if(rows[r]&&rows[r][c]==='#')rows[r][c]='.'});
     o={w:s.w,h:s.h,rows:rows.map(r=>r.join(''))};PAT_CACHE.set(key,o)}return o}
 const PAT_BLOB={w:10,h:9,rows:['..######..','.########.','##########','##########','##########','##########','##########','.########.','..######..']};
-const ACC=['줄무늬','이마 별','점박이'].map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
+const ACC=['줄무늬','이마 별','이마 하트','볼 터치','점박이'].map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
 // saves from before patterns carried items (리본, 모자 …): fold them into the three patterns
 const LEGACY_ACC=['리본','안경','모자','꽃','목도리','왕관'];
 const toPat=n=>{const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
