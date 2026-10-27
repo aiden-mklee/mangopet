@@ -65,6 +65,7 @@ body{padding:0!important;margin:0!important;min-height:100dvh}
 /* the backdrop runs under the status bar and home indicator; only the content keeps clear of them */
 .phone{position:static!important;border:0!important;border-radius:0!important;min-height:100dvh;justify-content:center;max-width:none!important;
   padding-top:calc(env(safe-area-inset-top,0px) + 14px)!important;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px)!important}
+body.sheeted .phone{justify-content:flex-start!important}
 .betanote{max-width:340px;margin:0;color:color-mix(in srgb,var(--adink,#000) 45%,transparent);font-size:11px;text-align:center;line-height:1.6}""")
     s = rep(s, '    <div class="ad" id="adBot">',
             '    <p class="betanote">베타 · 실제 시간으로 흘러가요. 앱을 닫아도 시간은 흐르고, 다시 열면 그동안의 일이 반영돼요. '
@@ -72,7 +73,10 @@ body{padding:0!important;margin:0!important;min-height:100dvh}
     i = s.rindex("requestAnimationFrame(loop);")
     return s[:i] + """// fit the whole device into the screen height
 function fitWindow(){const fw=document.querySelector('.flipwrap');fw.style.zoom=1;const tot=document.querySelector('.phone').scrollHeight,own=fw.getBoundingClientRect().height+44;
-  const z=Math.max(.55,Math.min(1,(innerHeight-(tot-own)-12)/own));fw.style.zoom=z}
+  // while the decorating sheet is open, shrink the device into the space above it so it stays a live preview
+  const sheet=document.body.classList.contains('sheeted')?document.querySelector('.zoomin').getBoundingClientRect().height:0;
+  const z=sheet?Math.max(.3,Math.min(1,(innerHeight-sheet-parseFloat(getComputedStyle(document.querySelector('.phone')).paddingTop)-8)/(own-44)))
+    :Math.max(.55,Math.min(1,(innerHeight-(tot-own)-12)/own));fw.style.zoom=z}
 addEventListener('resize',fitWindow);setTimeout(fitWindow,50);setTimeout(fitWindow,600);
 """ + s[i:]
 
