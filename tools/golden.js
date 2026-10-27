@@ -19,13 +19,15 @@ const CASES=[
   {name:'neglect-relaxed',seed:42,mode:'relaxed',script:[]},
   {name:'neglect-classic',seed:3,mode:'classic',script:[]},
   {name:'snacker',seed:99,mode:'relaxed',script:[...visits(OFFICE),...visits([[15,0],[16,0]]).map(([t])=>[t,'snack']),...visits([[16,1]]).map(([t])=>[t,'play:4'])]},
+  // a night worker on the 'night' rhythm (asleep 9:00-19:00), visiting at their own morning, noon, evening, bedtime
+  {name:'night-worker',seed:11,mode:'relaxed',life:'night',script:visits([[19,0],[23,30],[5,30],[8,30]]).map(([t,a])=>[t-7*60,a])},
   {name:'early-graduation',seed:5,mode:'relaxed',script:[...visits(OFFICE,4),[3*1440+9*60,'graduate']]},
 ];
 const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
 const KEYS=['phase','stage','species','con','hunger','happy','weight','poops','sick','tummy','sleeping','lights','careMiss','morning','night','checks','acc','seed'];
 
 function care(g,ev){
-  if(g.lights&&g.sleeping&&E.isNight(g.t)){E.toggleLight(g);E.visit(g);return}
+  if(g.lights&&g.sleeping&&E.isNight(g)){E.toggleLight(g);E.visit(g);return}
   if(g.sleeping)return;
   if(!g.lights)E.toggleLight(g);
   E.visit(g);
@@ -34,6 +36,7 @@ function care(g,ev){
   while(g.hunger<4&&E.meal(g)==='ok');
   if(g.happy<3)E.pet(g);
   if(g.happy<3)E.playDone(g,3);
+  if(E.localHour(g)>=19)E.toggleLight(g);  // an evening visit puts the pet to bed early
 }
 function act(g,a,ev){
   if(g.phase!=='alive')return;
@@ -45,7 +48,7 @@ function act(g,a,ev){
   if(name==='snack')E.snack(g);else if(name==='play')E.playDone(g,+arg);
 }
 function runCase(c){
-  const g=E.fresh(c.seed);g.t=7*60;E.newPet(g,c.mode);
+  const g=E.fresh(c.seed);g.t=7*60;if(c.life)g.life=c.life;E.newPet(g,c.mode);
   const ev=[],out=[],script=c.script.map(([at,a])=>[at+7*60,a]).sort((x,y)=>x[0]-y[0]);let si=0;
   const end=8*1440;
   for(let m=1;m<=end;m++){

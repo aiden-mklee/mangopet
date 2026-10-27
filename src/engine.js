@@ -43,10 +43,23 @@ const pick=(g,list)=>list[Math.floor(rand(g)*list.length)];
 
 /* ---------- time and growth ---------- */
 const hourOf=t=>Math.floor(t/60)%24;
-const isNight=t=>{const h=hourOf(t);return h>=21||h<8};
-// from 19:00 the player may put the pet to bed early by turning the light off
+// Daily rhythm, in the pet's own clock. The player picks a rhythm (LIFE); every timed rule
+// (sleep, notification slots, quiet hours, naps, morning/evening visits) reads the shifted clock,
+// so night owls and night workers get the same game. Default: asleep 22:00-8:00.
+const LIFE={day:{ko:'기본',d:'밤 10시~아침 8시에 자요',shift:0},owl:{ko:'올빼미',d:'새벽 1시~오전 11시에 자요',shift:3},
+  night:{ko:'밤 근무',d:'오전 9시~저녁 7시에 자요',shift:11}};
+const lt=g=>g.t-((LIFE[g.life]||LIFE.day).shift)*60;
+const localHour=g=>hourOf(lt(g));
+const isNight=g=>{const h=localHour(g);return h>=22||h<8};
+// from 19:00 the player may put the pet to bed early by turning the light off, and wake it again until 22:00
 const EARLY_BED=19;
-const earlyBed=g=>g.stage!=='baby'&&!g.lights&&hourOf(g.t)>=EARLY_BED;
+const earlyBed=g=>g.stage!=='baby'&&!g.lights&&localHour(g)>=EARLY_BED;
+// awake in the evening: the screen shows a drowsy face now and then
+const drowsy=g=>g.phase==='alive'&&!g.sleeping&&g.stage!=='baby'&&localHour(g)>=EARLY_BED&&!isNight(g);
+// a new rhythm waits until it agrees with the old one about whether the pet is asleep, so it never flips mid-day
+function setLife(g,id){if(!LIFE[id])return;g.lifeNext=id;applyLife(g)}
+function applyLife(g){if(!g.lifeNext)return;const old=g.life,was=isNight(g);g.life=g.lifeNext;
+  if(g.phase==='alive'&&isNight(g)!==was){g.life=old;return}g.lifeNext=null}
 const stageFor=a=>a<60?'baby':a<DAY?'child':a<ADULT_AT?'teen':a<FULL_TERM?'adult':'grad';
 const hungerInt=g=>({baby:12,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
 const happyInt=g=>({baby:22,child:110,teen:130,adult:150}[g.stage]);
@@ -60,7 +73,7 @@ const gradStars=d=>d.best||(d.grad?2:0);
 const nm=g=>NOTIF[g.notifMode]||NOTIF.normal;
 
 /* ---------- state ---------- */
-function fresh(seed){return{notifMode:'normal',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
+function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
   notifDay:0,notifCount:0,log:[],dex:{},hist:[],seed:seed>>>0,savedAt:0}}
 
 function newPet(g,mode){
@@ -107,7 +120,8 @@ function queuePoop(g){if(g.poopT<0)g.poopT=poopDelay(g);else g.poopQ=(g.poopQ||0
 function doPoop(g,ev){if(g.con==='blocked'&&rand(g)<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify(g,'😣','배가 아파… 쓰다듬어 줘','need',ev)}else addPoop(g,ev)}
 function needList(g){
   if(g.phase!=='alive')return [];const L=[];
-  if(g.sleeping){if(isNight(g.t)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
+  if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
+  if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'light',t:'🥱 졸려요',a:'불 끄기'});
   if(g.sick)L.push({mini:'sick',t:'🤒 아파요',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
   if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파요',a:'펫을 3번 쓰다듬기 (또는 약)'});
   if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파요',a:'밥'});
@@ -116,7 +130,7 @@ function needList(g){
   return L;
 }
 function needsCall(g){
-  if(g.sleeping)return isNight(g.t)&&g.lights;
+  if(g.sleeping)return isNight(g)&&g.lights;
   return g.hunger===0||g.happy===0||g.sick||g.tummy;
 }
 
@@ -124,7 +138,7 @@ function needsCall(g){
 // everyday needs go out through the digest slots unless the player chose 'live'; life events go out at once
 function notify(g,icon,text,kind,ev){
   if(kind==='need'&&g.notifMode!=='live')return;
-  const h=hourOf(g.t);const quiet=h>=22||h<8;let held=null;
+  const h=localHour(g);const quiet=h>=22||h<8;let held=null;
   if(quiet)held='조용한 시간';else if(g.notifCount>=nm(g).cap&&kind!=='urgent')held='하루 한도';
   if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
   if(!held)g.notifCount++;
@@ -136,7 +150,8 @@ function notify(g,icon,text,kind,ev){
 // opts.autoHatch: hatch as soon as the egg is ready (for forecasts and tests, where nothing plays the animation)
 function step(g,ev,opts={}){
   g.t++;
-  const h=hourOf(g.t),m=g.t%60,day=Math.floor(g.t/DAY);
+  applyLife(g);
+  const h=localHour(g),m=g.t%60,day=Math.floor(lt(g)/DAY);
   if(g.notifDay!==day){g.notifDay=day;g.notifCount=0}
   if(g.phase==='egg'){g.cracks=Math.min(5,(g.cracks||0)+1);if(g.cracks>=5){if(opts.autoHatch)hatch(g,ev);else ev.push({type:'hatchReady'})}return}
   if(g.phase!=='alive')return;
@@ -145,9 +160,10 @@ function step(g,ev,opts={}){
   if(st==='grad'){graduate(g,true,ev);return}
   if(st!==g.stage)evolve(g,st,ev);
   if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
-  const night=g.stage!=='baby'&&isNight(g.t),was=g.sleeping;
+  const night=g.stage!=='baby'&&isNight(g),was=g.sleeping;
   g.sleeping=night||g.napUntil>g.t||earlyBed(g);
-  if(g.sleeping&&!was&&night&&g.lights)notify(g,'💡','졸려… 불 좀 꺼줘','need',ev);
+  // the bedtime call comes half an hour before the pet drops off on its own
+  if(!g.sleeping&&g.lights&&g.stage!=='baby'&&h===21&&m===30)notify(g,'🥱','졸려… 불 꺼 주면 잘게','need',ev);
   if(!g.sleeping&&was){g.lights=true;g.lightMin=0}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
   if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'🔔',L.join(' · '),'digest',ev)}
@@ -173,11 +189,11 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 /* ---------- actions ---------- */
 // each returns what happened so the screen can pick the animation; none of them read the clock
 // one visit = one count, however many buttons it takes
-function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=hourOf(g.t);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
+function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
 function toggleLight(g){g.lights=!g.lights;
-  if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g.t)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
+  if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
   return g.lights}
 function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
@@ -202,7 +218,7 @@ function forecast(g,minutes){
 }
 
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,NOTIF,DAY,ADULT_AT,FULL_TERM,
-  rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
+  LIFE,setLife,localHour,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
