@@ -20,8 +20,11 @@
 .lab,.ad,header.top{display:none!important}
 .wrap{grid-template-columns:minmax(0,1fr)!important;max-width:440px;margin:0 auto}
 html,body{background:var(--bg1,#f3eee6)!important}
-body{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)!important;min-height:100dvh}
-.phone{position:static!important;border:0!important;border-radius:0!important;min-height:100dvh;justify-content:center;max-width:none!important}
+body{padding:0!important;margin:0!important;min-height:100dvh}
+.wrap{padding:0!important}
+/* the backdrop runs under the status bar and home indicator; only the content keeps clear of them */
+.phone{position:static!important;border:0!important;border-radius:0!important;min-height:100dvh;justify-content:center;max-width:none!important;
+  padding-top:calc(env(safe-area-inset-top,0px) + 14px)!important;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px)!important}
 .betanote{max-width:340px;margin:0;color:color-mix(in srgb,var(--adink,#000) 45%,transparent);font-size:11px;text-align:center;line-height:1.6}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
@@ -324,10 +327,10 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 .skrow canvas{width:60px;background:var(--lcd);border-radius:8px;padding:6px;image-rendering:pixelated}
 
 /* overlays */
-.notif{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);transform:translate(-50%,-140%);transition:transform .35s cubic-bezier(.2,.9,.3,1.2);
+.notif{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);transform:translate(-50%,-140%);visibility:hidden;transition:transform .35s cubic-bezier(.2,.9,.3,1.2),visibility 0s .35s;
   width:min(360px,calc(100% - 32px));background:rgba(40,42,48,.92);backdrop-filter:blur(14px);border-radius:18px;padding:10px 12px;
   display:flex;gap:10px;align-items:center;z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.notif.show{transform:translate(-50%,0)}
+.notif.show{transform:translate(-50%,0);visibility:visible;transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
 .notif canvas{width:36px;height:36px;border-radius:9px;background:var(--lcd);image-rendering:pixelated;padding:3px;flex:none}
 .notif div{display:flex;flex-direction:column;min-width:0}
 .notif small{font-size:11px;color:#a8acb5;letter-spacing:.02em}
