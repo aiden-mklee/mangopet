@@ -1,0 +1,14 @@
+{
+  "name": "mangopet",
+  "private": true,
+  "description": "망고펫: 도트 펫을 키워 도감을 모으는 미니 다마고치 웹앱",
+  "scripts": {
+    "build": "python3 tools/build.py",
+    "smoke": "node tools/smoke.js",
+    "sim": "node tools/sim.js",
+    "serve": "python3 -m http.server 8000 --directory docs"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}
