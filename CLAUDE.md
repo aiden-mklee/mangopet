@@ -30,6 +30,7 @@
 - 엔진(`src/engine.js`): 데이터 `CON`(체질), `LINES`·`ANIMALS`·`SP`(종), `PATTERNS`(가보 무늬 이름), `NOTIF`(알림 빈도). 1분 진행 `E.step`, 건너뛰기 `E.advance`, 행동 `E.meal/snack/med/clean/pet/playDone/visit`, 생애 `E.newPet/hatch/graduate`, 알림 예측 `E.forecast`.
 - 화면(`src/prototype.html`): `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참 그림), `ACC`(가보 무늬 그림, 몸에 새기는 위치는 `patPoints`).
 - 상태: 전역 `g`(저장되는 게임 상태, 엔진이 읽고 쓴다)와 `ui`(화면 상태). 화면 쪽 `stepMinute()`/`advance(min)`은 엔진을 부르고 이벤트를 처리하는 얇은 감싸개다.
+- 첫 실행: `g.intro`(case → life → egg → meal → pet → clean → charm → done), `introTo`/`introDid`/`introSkip`, 시트는 `openZoom('intro-…')`.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
