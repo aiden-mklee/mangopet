@@ -52,7 +52,7 @@ const lt=g=>g.t-((LIFE[g.life]||LIFE.day).shift)*60;
 const localHour=g=>hourOf(lt(g));
 const isNight=g=>{const h=localHour(g);return h>=22||h<8};
 // from 19:00 the player may put the pet to bed early by turning the light off, and wake it again until 22:00
-const EARLY_BED=19;
+const EARLY_BED=19,EARLY_WAKE=6;
 const earlyBed=g=>g.stage!=='baby'&&!g.lights&&localHour(g)>=EARLY_BED;
 // awake in the evening: the screen shows a drowsy face now and then
 const drowsy=g=>g.phase==='alive'&&!g.sleeping&&g.stage!=='baby'&&localHour(g)>=EARLY_BED&&!isNight(g);
@@ -78,7 +78,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -161,7 +161,8 @@ function step(g,ev,opts={}){
   if(st==='grad'){graduate(g,true,ev);return}
   if(st!==g.stage)evolve(g,st,ev);
   if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
-  const night=g.stage!=='baby'&&isNight(g),was=g.sleeping;
+  if(g.upEarly&&!isNight(g))g.upEarly=false;
+  const night=g.stage!=='baby'&&isNight(g)&&!g.upEarly,was=g.sleeping;
   g.sleeping=night||g.napUntil>g.t||earlyBed(g);
   // the bedtime call comes half an hour before the pet drops off on its own
   if(!g.sleeping&&g.lights&&g.stage!=='baby'&&h===21&&m===30)notify(g,'🥱','졸려… 불 꺼 주면 잘게','need',ev);
@@ -203,6 +204,8 @@ function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Ma
 function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
 function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
   if(g.phase==='alive'&&g.stage!=='baby'&&!isNight(g)&&g.napUntil<=g.t)g.sleeping=earlyBed(g);
+  // early risers: from 6:00 the light wakes the pet up before its 8:00 alarm (off again puts it back to sleep)
+  if(g.phase==='alive'&&g.stage!=='baby'&&isNight(g)&&localHour(g)>=EARLY_WAKE){g.upEarly=g.lights;g.sleeping=!g.lights}
   return g.lights}
 function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
