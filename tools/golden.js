@@ -66,7 +66,7 @@ function forecastCase(){
   for(let m=0;m<2*1440+11*60+30;m++){E.step(g,ev,{autoHatch:true});const into=g.t%1440;if(OFFICE.some(([h,mm])=>h*60+mm===into))care(g,ev)}
   const f=E.forecast(g,2*1440);
   const real=[],c=JSON.parse(JSON.stringify(g));E.advance(c,2*1440,real,{autoHatch:true});
-  const sent=real.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind}));
+  const sent=real.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
   return {forecast:f,matchesRealRun:JSON.stringify(f)===JSON.stringify(sent)};
 }
 

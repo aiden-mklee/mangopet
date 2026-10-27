@@ -2920,37 +2920,44 @@
    {
     "t": 4170,
     "text": "🥱 슬슬 졸려 · 💩 똥 쌌어",
-    "kind": "digest"
+    "kind": "digest",
+    "who": null
    },
    {
     "t": 4800,
     "text": "✨ 햇토(으)로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 좋은 아침! · 🤒 몸이 아파 · 💩 똥 2개 치워 줘",
-    "kind": "digest"
+    "kind": "digest",
+    "who": "햇토"
    },
    {
     "t": 5070,
     "text": "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
-    "kind": "digest"
+    "kind": "digest",
+    "who": "햇토"
    },
    {
     "t": 5430,
     "text": "🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
-    "kind": "digest"
+    "kind": "digest",
+    "who": "햇토"
    },
    {
     "t": 5610,
     "text": "🥱 슬슬 졸려 · 🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
-    "kind": "digest"
+    "kind": "digest",
+    "who": "햇토"
    },
    {
     "t": 6240,
     "text": "☀️ 좋은 아침! · 🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
-    "kind": "digest"
+    "kind": "digest",
+    "who": "햇토"
    },
    {
     "t": 6479,
     "text": "✉️ 집을 나갔어요… 편지가 남아 있어요",
-    "kind": "life"
+    "kind": "life",
+    "who": null
    }
   ],
   "matchesRealRun": true

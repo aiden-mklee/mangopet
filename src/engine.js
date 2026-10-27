@@ -144,7 +144,8 @@ function notify(g,icon,text,kind,ev){
   if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
   if(!held)g.notifCount++;
   g.log.unshift({t:g.t,text:icon?`${icon} ${text}`:text,held});g.log.length=Math.min(g.log.length,60);
-  ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held});
+  // who: the pet's own name once it is grown, used as the notification title
+  ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held,who:g.phase==='alive'&&g.stage==='adult'&&SP[g.species]?SP[g.species].ko:null});
 }
 
 /* ---------- one minute ---------- */
@@ -226,12 +227,24 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
   for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
-  return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind}));
+  return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
+}
+// Long absences: after the forecast runs dry (the pet ran away, or nobody opened the app for a week),
+// a few gentle reminders go out on days 3, 7, 14 and 30 after the app was closed, at the evening slot.
+// They are local notifications too, so no server is needed. Nothing goes out if a forecast notice is near.
+const COMEBACK=[[3,'🥺 요즘 안 와서 심심해…'],[7,'✉️ 일주일째 기다리고 있어'],[14,'🥚 아직 여기 있어. 한 번만 들러 줘'],[30,'💛 오랜만이야! 다시 같이 놀자']];
+function comeBack(g,ahead){
+  const last=ahead.length?ahead[ahead.length-1].t:g.t,shift=(LIFE[g.life]||LIFE.day).shift*60,out=[];
+  for(const [d,text] of COMEBACK){
+    let t=Math.floor((g.t+d*DAY-shift)/DAY)*DAY+18*60+30+shift;   // that day's 18:30 on the pet's clock
+    if(t<=last+DAY)continue;
+    out.push({t,text,kind:'comeback',who:null})}
+  return out;
 }
 
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
-  notify,step,advance,visit,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast};
+  notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
 })(typeof globalThis!=='undefined'?globalThis:this);
