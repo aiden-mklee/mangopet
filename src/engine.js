@@ -120,14 +120,14 @@ function queuePoop(g){if(g.poopT<0)g.poopT=poopDelay(g);else g.poopQ=(g.poopQ||0
 function doPoop(g,ev){if(g.con==='blocked'&&rand(g)<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify(g,'😣','배가 아파… 쓰다듬어 줘','need',ev)}else addPoop(g,ev)}
 function needList(g){
   if(g.phase!=='alive')return [];const L=[];
-  if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
-  if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'light',t:'🥱 졸려요',a:'불 끄기'});
-  if(g.wakeDark)L.push({mini:'light',t:'☀️ 일어났어요',a:'불 켜기'});
-  if(g.sick)L.push({mini:'sick',t:'🤒 아파요',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
-  if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파요',a:'펫을 3번 쓰다듬기 (또는 약)'});
-  if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파요',a:'밥'});
-  if(g.happy===0)L.push({mini:'bored',t:'🥱 심심해요',a:'놀이 · 간식 · 쓰다듬기'});
-  if(g.poops)L.push({mini:null,t:`💩 똥 ${g.poops}개`,a:'청소'});
+  if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'light',t:'💡 졸려… 불 꺼 줘',a:'불 끄기'});return L}
+  if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'light',t:'🥱 슬슬 졸려',a:'불 끄기'});
+  if(g.wakeDark)L.push({mini:'light',t:'☀️ 일어났어! 불 켜 줘',a:'불 켜기'});
+  if(g.sick)L.push({mini:'sick',t:'🤒 몸이 아파',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
+  if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파',a:'펫을 3번 쓰다듬기 (또는 약)'});
+  if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파',a:'밥'});
+  if(g.happy===0)L.push({mini:'bored',t:'🥱 심심해',a:'놀이 · 간식 · 쓰다듬기'});
+  if(g.poops)L.push({mini:null,t:g.poops>1?`💩 똥 ${g.poops}개 치워 줘`:'💩 똥 쌌어',a:'청소'});
   return L;
 }
 function needsCall(g){
@@ -143,7 +143,7 @@ function notify(g,icon,text,kind,ev){
   if(quiet)held='조용한 시간';else if(g.notifCount>=nm(g).cap&&kind!=='urgent')held='하루 한도';
   if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
   if(!held)g.notifCount++;
-  g.log.unshift({t:g.t,text:`${icon} ${text}`,held});g.log.length=Math.min(g.log.length,60);
+  g.log.unshift({t:g.t,text:icon?`${icon} ${text}`:text,held});g.log.length=Math.min(g.log.length,60);
   ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held});
 }
 
@@ -171,12 +171,12 @@ function step(g,ev,opts={}){
   if(!g.sleeping&&was){g.lightMin=0;
     if(was&&h===8&&m===0&&g.stage!=='baby'){
       if(!g.lights)g.wakeDark=true;
-      else if(nm(g).slots.length)(g.news=g.news||[]).push('☀️ 일어났어요');
-      if(!nm(g).slots.length)notify(g,'☀️',g.lights?'일어났어요':'일어났어요! 불 켜 줄래?','need',ev)}
+      else if(nm(g).slots.length)(g.news=g.news||[]).push('☀️ 좋은 아침!');
+      if(!nm(g).slots.length)notify(g,'☀️',g.lights?'좋은 아침!':'일어났어! 불 켜 줘','need',ev)}
     else g.lights=true}
   if(g.wakeDark&&h===12&&m===0){g.wakeDark=false;g.lights=true;g.night++}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
-  if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'🔔',L.join(' · '),'digest',ev)}
+  if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'',L.join(' · '),'digest',ev)}
   const rx=g.mode==='relaxed'?1.5:1;
   if(!g.sleeping){
     if(++g.hungerT>=hungerInt(g)*rx){g.hungerT=-Math.floor(rand(g)*hungerInt(g)*.25);if(g.hunger>0&&--g.hunger===0)notify(g,'🍙','꼬르륵… 배고파','need',ev)}
@@ -226,7 +226,7 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
   for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
-  return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:`${e.icon} ${e.text}`,kind:e.kind}));
+  return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind}));
 }
 
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,NOTIF,DAY,ADULT_AT,FULL_TERM,
