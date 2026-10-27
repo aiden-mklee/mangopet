@@ -974,7 +974,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 95f199',FEEDBACK_URL='',REALTIME=true;
+const VERSION='베타 0.1 · 46a974',FEEDBACK_URL='',REALTIME=true;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
 let g=fresh();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase)g=Object.assign(fresh(),s)}catch(e){}
@@ -1070,7 +1070,7 @@ const GAMES={
       if(k==='dir'&&!(dy<0))return;
       if(!air&&t>=G.duckUntil)G.jumpAt=t},
     tick(G,t){const dt=Math.min(.1,(t-G.last)/1000);G.last=t;const v=runSpeed(G,t);G.dist+=v*dt;
-      const s=petSprite(),duck=t<G.duckUntil,h=duck?duckSprite(s).h:s.h,lift=jumpLift(G,t);
+      const s=runSprite(petSprite()),duck=t<G.duckUntil,h=duck?duckSprite(s).h:s.h,lift=jumpLift(G,t);
       if(t>=G.next){const bird=t-G.t0>5000&&Math.random()<.35;
         G.obs.push(bird?{x:LW,w:5,h:3,y:GND-duckSprite(s).h-4,bird:1}:{x:LW,w:3,h:3,y:GND-2});
         G.next=t+(1300+Math.random()*1100)*32/v}
@@ -1079,7 +1079,7 @@ const GAMES={
       if(G.obs.some(o=>o.x<3+s.w-3&&o.x+o.w>5&&o.y<=bot&&o.y+o.h-1>=top+1)){
         const m=runMeters(G);g.records=g.records||{};G.best=g.records.run||0;G.newBest=m>G.best;if(G.newBest)g.records.run=m;
         G.wins=Math.min(5,Math.floor(m/40));G.phase='end';G.until=t+2200}},
-    draw(G,P,s,y){const t=now(),duck=t<G.duckUntil,sp=duck?duckSprite(s):s;
+    draw(G,P,s,y){s=runSprite(s);const t=now(),duck=t<G.duckUntil,sp=duck?duckSprite(s):s;
       for(const o of G.obs)P.spr(o.bird?BIRD[ui.frame%2]:ROCK,Math.round(o.x),o.y);
       P.spr(sp,3,GND-sp.h+1-Math.round(jumpLift(G,t)));
       const off=Math.floor(G.dist)%4;for(let x=-off;x<LW;x+=4)P.px(x,GND+1);
@@ -1107,6 +1107,14 @@ const JUMP_AIR=900,ROCK={w:3,h:3,rows:['.#.','###','###']};
 const BIRD=[{w:5,h:3,rows:['#...#','.###.','..#..']},{w:5,h:3,rows:['.....','#####','..#..']}];
 const runSpeed=(G,t)=>Math.min(70,32+(t-G.t0)/1000*1.5);   // pixels a second, a bit faster every second
 const runMeters=G=>Math.floor(G.dist/4);
+// in the run the pet is drawn smaller (at most 13 wide), so there is room to see what is coming
+const RUN_MINI=new Map();
+function runSprite(s){if(s.w<=13)return s;if(!RUN_MINI.has(s)){const f=13/s.w,w=13,h=Math.max(4,Math.round(s.h*f));
+  const at=(x,y)=>s.rows[y]&&s.rows[y][x]==='#';
+  // keep a cell when most of the area it covers is ink, so holes like eyes survive the shrink
+  const rows=[...Array(h)].map((_,j)=>[...Array(w)].map((_,i)=>{const x0=Math.floor(i/f),x1=Math.max(x0+1,Math.floor((i+1)/f)),y0=Math.floor(j/f),y1=Math.max(y0+1,Math.floor((j+1)/f));
+    let n=0,a=0;for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){a++;n+=at(x,y)}return n*2>=a?'#':'.'}).join(''));
+  RUN_MINI.set(s,{w,h,rows})}return RUN_MINI.get(s)}
 // ducking squashes the pet to 60% of its height, row by row
 const DUCK=new Map();
 function duckSprite(s){if(!DUCK.has(s)){const h=Math.ceil(s.h*.6);DUCK.set(s,{w:s.w,h,rows:[...Array(h)].map((_,i)=>s.rows[Math.floor(i*s.h/h)])})}return DUCK.get(s)}
