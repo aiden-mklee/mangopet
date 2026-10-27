@@ -1,5 +1,5 @@
 const {chromium}=require('playwright');const RUNS=+process.env.RUNS||10,NMODE=process.env.NM||'normal';const fs=require('fs'),path=require('path');const ROOT=path.join(__dirname,'..'),OUT=path.join(ROOT,'.out');fs.mkdirSync(OUT,{recursive:true});
-let html=fs.readFileSync(path.join(ROOT,'src/prototype.html'),'utf8').replace('/* ---------- boot ---------- */','window.__dp={get g(){return g},ui,advance,act,petTap,needList,newPet};\n/* ---------- boot ---------- */');
+let html=fs.readFileSync(path.join(ROOT,'.out/artifact.html'),'utf8').replace('/* ---------- boot ---------- */','window.__dp={get g(){return g},ui,advance,act,petTap,needList,newPet,hatch};\n/* ---------- boot ---------- */');
 fs.writeFileSync(path.join(OUT,'sim.html'),'<!doctype html><html><head><meta charset="utf-8"></head><body>'+html+'</body></html>');
 const personas={
  office:[[8,0],[12,30],[18,30],[22,0]],
@@ -14,7 +14,7 @@ const personas={
 (async()=>{const b=await chromium.launch();const out=[];
  for(const mode of (process.env.MODES||'relaxed').split(','))for(const [pname,checks] of Object.entries(personas))for(let run=0;run<RUNS;run++){
   const p=await b.newPage();await p.goto('file://'+path.join(OUT,'sim.html'));await p.waitForTimeout(200);
-  const r=await p.evaluate(([mode,checks,SNACK,NM,PET])=>{const D=window.__dp;D.g.speed=0;D.g.notifMode=NM;D.g.t=7*60;D.newPet(mode);D.advance(6);
+  const r=await p.evaluate(([mode,checks,SNACK,NM,PET])=>{const D=window.__dp;D.g.speed=0;D.g.notifMode=NM;D.g.t=7*60;D.newPet(mode);D.advance(6);if(D.g.phase==='egg')D.hatch();
    const stats={checks:0,actions:0,maxActions:0,poopsSeen:[],hungrySeen:0,sickSeen:0,tummySeen:0,lightsMiss:0,sleepAtCheck:0};
    const now=()=>D.g.t;
    for(let day=0;day<8&&D.g.phase==='alive'||day===0;day++){

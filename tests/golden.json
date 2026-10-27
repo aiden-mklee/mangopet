@@ -1,0 +1,2530 @@
+{
+ "engine": "mangopet",
+ "cases": [
+  {
+   "name": "office-relaxed",
+   "seed": 1,
+   "mode": "relaxed",
+   "script": [
+    [
+     480,
+     "care"
+    ],
+    [
+     750,
+     "care"
+    ],
+    [
+     1110,
+     "care"
+    ],
+    [
+     1275,
+     "care"
+    ],
+    [
+     1920,
+     "care"
+    ],
+    [
+     2190,
+     "care"
+    ],
+    [
+     2550,
+     "care"
+    ],
+    [
+     2715,
+     "care"
+    ],
+    [
+     3360,
+     "care"
+    ],
+    [
+     3630,
+     "care"
+    ],
+    [
+     3990,
+     "care"
+    ],
+    [
+     4155,
+     "care"
+    ],
+    [
+     4800,
+     "care"
+    ],
+    [
+     5070,
+     "care"
+    ],
+    [
+     5430,
+     "care"
+    ],
+    [
+     5595,
+     "care"
+    ],
+    [
+     6240,
+     "care"
+    ],
+    [
+     6510,
+     "care"
+    ],
+    [
+     6870,
+     "care"
+    ],
+    [
+     7035,
+     "care"
+    ],
+    [
+     7680,
+     "care"
+    ],
+    [
+     7950,
+     "care"
+    ],
+    [
+     8310,
+     "care"
+    ],
+    [
+     8475,
+     "care"
+    ],
+    [
+     9120,
+     "care"
+    ],
+    [
+     9390,
+     "care"
+    ],
+    [
+     9750,
+     "care"
+    ],
+    [
+     9915,
+     "care"
+    ],
+    [
+     10560,
+     "care"
+    ],
+    [
+     10830,
+     "care"
+    ],
+    [
+     11190,
+     "care"
+    ],
+    [
+     11355,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 567894474
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1703683420
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 12,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 2,
+       "checks": 3,
+       "acc": null,
+       "seed": 3279484445
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "tough",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 23,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 3,
+       "morning": 0,
+       "night": 4,
+       "checks": 6,
+       "acc": null,
+       "seed": 4159508603
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_bear",
+       "con": "tough",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 4,
+       "morning": 0,
+       "night": 6,
+       "checks": 9,
+       "acc": null,
+       "seed": 744565465
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_bear",
+       "con": "tough",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 34,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 6,
+       "morning": 0,
+       "night": 10,
+       "checks": 15,
+       "acc": null,
+       "seed": 3768285121
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "moon_bear",
+       "con": "tough",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 38,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 8,
+       "morning": 0,
+       "night": 14,
+       "checks": 21,
+       "acc": null,
+       "seed": 2497037481
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      2190,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2550,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2700,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      3630,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      3990,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      4140,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      4800,
+      "🔔 ✨ 달곰(으)로 자랐어요! 이제 졸업할 수 있어요",
+      "sent"
+     ],
+     [
+      5070,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5430,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5580,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      6510,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      6870,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      7020,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      7950,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      8310,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      8460,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      9390,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      9750,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      9900,
+      "🔔 💡 졸려요",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "moon_bear": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "moon_bear",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "office-classic",
+   "seed": 7,
+   "mode": "classic",
+   "script": [
+    [
+     480,
+     "care"
+    ],
+    [
+     750,
+     "care"
+    ],
+    [
+     1110,
+     "care"
+    ],
+    [
+     1275,
+     "care"
+    ],
+    [
+     1920,
+     "care"
+    ],
+    [
+     2190,
+     "care"
+    ],
+    [
+     2550,
+     "care"
+    ],
+    [
+     2715,
+     "care"
+    ],
+    [
+     3360,
+     "care"
+    ],
+    [
+     3630,
+     "care"
+    ],
+    [
+     3990,
+     "care"
+    ],
+    [
+     4155,
+     "care"
+    ],
+    [
+     4800,
+     "care"
+    ],
+    [
+     5070,
+     "care"
+    ],
+    [
+     5430,
+     "care"
+    ],
+    [
+     5595,
+     "care"
+    ],
+    [
+     6240,
+     "care"
+    ],
+    [
+     6510,
+     "care"
+    ],
+    [
+     6870,
+     "care"
+    ],
+    [
+     7035,
+     "care"
+    ],
+    [
+     7680,
+     "care"
+    ],
+    [
+     7950,
+     "care"
+    ],
+    [
+     8310,
+     "care"
+    ],
+    [
+     8475,
+     "care"
+    ],
+    [
+     9120,
+     "care"
+    ],
+    [
+     9390,
+     "care"
+    ],
+    [
+     9750,
+     "care"
+    ],
+    [
+     9915,
+     "care"
+    ],
+    [
+     10560,
+     "care"
+    ],
+    [
+     10830,
+     "care"
+    ],
+    [
+     11190,
+     "care"
+    ],
+    [
+     11355,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": "줄무늬",
+       "seed": 3599190436
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": "줄무늬",
+       "seed": 2271577899
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 12,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 2,
+       "checks": 3,
+       "acc": "줄무늬",
+       "seed": 1383977441
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 23,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 4,
+       "morning": 0,
+       "night": 4,
+       "checks": 6,
+       "acc": "줄무늬",
+       "seed": 1000330259
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_cat",
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 6,
+       "morning": 0,
+       "night": 6,
+       "checks": 9,
+       "acc": "줄무늬",
+       "seed": 2448248890
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_cat",
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 34,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 10,
+       "morning": 0,
+       "night": 10,
+       "checks": 15,
+       "acc": "줄무늬",
+       "seed": 4208297206
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "moon_cat",
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 38,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 14,
+       "morning": 0,
+       "night": 14,
+       "checks": 21,
+       "acc": "줄무늬",
+       "seed": 1041542556
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요 · 🥱 심심해요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      2190,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2550,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2700,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      3630,
+      "🔔 🍙 배고파요 · 🥱 심심해요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      3990,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      4140,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      4800,
+      "🔔 ✨ 달냥(으)로 자랐어요! 이제 졸업할 수 있어요",
+      "sent"
+     ],
+     [
+      5070,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5430,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5580,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      6510,
+      "🔔 🍙 배고파요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      6870,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      7020,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      7950,
+      "🔔 🍙 배고파요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      8310,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      8460,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      9390,
+      "🔔 🍙 배고파요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      9750,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      9900,
+      "🔔 💡 졸려요",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "moon_cat": {
+      "seen": true,
+      "grad": 1,
+      "best": 2,
+      "classic": true
+     }
+    },
+    "hist": [
+     {
+      "sp": "moon_cat",
+      "mode": "classic",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "twice-a-day",
+   "seed": 21,
+   "mode": "relaxed",
+   "script": [
+    [
+     480,
+     "care"
+    ],
+    [
+     1275,
+     "care"
+    ],
+    [
+     1920,
+     "care"
+    ],
+    [
+     2715,
+     "care"
+    ],
+    [
+     3360,
+     "care"
+    ],
+    [
+     4155,
+     "care"
+    ],
+    [
+     4800,
+     "care"
+    ],
+    [
+     5595,
+     "care"
+    ],
+    [
+     6240,
+     "care"
+    ],
+    [
+     7035,
+     "care"
+    ],
+    [
+     7680,
+     "care"
+    ],
+    [
+     8475,
+     "care"
+    ],
+    [
+     9120,
+     "care"
+    ],
+    [
+     9915,
+     "care"
+    ],
+    [
+     10560,
+     "care"
+    ],
+    [
+     11355,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2399460307
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1703683440
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 11,
+       "poops": 1,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 1,
+       "checks": 2,
+       "acc": null,
+       "seed": 3279484465
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "blocked",
+       "hunger": 1,
+       "happy": 1,
+       "weight": 21,
+       "poops": 1,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 4,
+       "morning": 0,
+       "night": 2,
+       "checks": 4,
+       "acc": null,
+       "seed": 2959778480
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "wild_frog",
+       "con": "blocked",
+       "hunger": 1,
+       "happy": 1,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": true,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 7,
+       "morning": 0,
+       "night": 3,
+       "checks": 6,
+       "acc": null,
+       "seed": 1376401155
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "wild_frog",
+       "con": "blocked",
+       "hunger": 2,
+       "happy": 2,
+       "weight": 32,
+       "poops": 0,
+       "sick": false,
+       "tummy": true,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 10,
+       "morning": 0,
+       "night": 5,
+       "checks": 10,
+       "acc": null,
+       "seed": 2632496195
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "wild_frog",
+       "con": "blocked",
+       "hunger": 2,
+       "happy": 2,
+       "weight": 34,
+       "poops": 0,
+       "sick": false,
+       "tummy": true,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 14,
+       "morning": 0,
+       "night": 7,
+       "checks": 14,
+       "acc": null,
+       "seed": 1993084225
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      1920,
+      "🔔 🍙 배고파요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      2190,
+      "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      2700,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      3360,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      3630,
+      "🔔 😣 배가 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      4140,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      4800,
+      "🔔 ✨ 들개굴(으)로 자랐어요! 이제 졸업할 수 있어요 · 😣 배가 아파요",
+      "sent"
+     ],
+     [
+      5070,
+      "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      5580,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      6240,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      6510,
+      "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      7020,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      7680,
+      "🔔 😣 배가 아파요",
+      "sent"
+     ],
+     [
+      7950,
+      "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      8460,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      9120,
+      "🔔 💩 똥 1개",
+      "sent"
+     ],
+     [
+      9390,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      9900,
+      "🔔 💡 졸려요",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "wild_frog": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "wild_frog",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "neglect-relaxed",
+   "seed": 42,
+   "mode": "relaxed",
+   "script": [],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 567894515
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1703683461
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 248188530
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "away",
+       "stage": "teen",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 20,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2015813146
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "away",
+       "stage": "teen",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 20,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2015813146
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "away",
+       "stage": "teen",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 20,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2015813146
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "away",
+       "stage": "teen",
+       "species": null,
+       "con": "blocked",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 20,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2015813146
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 🍙 배고파요 · 🥱 심심해요",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      1920,
+      "🔔 🍙 배고파요 · 🥱 심심해요",
+      "sent"
+     ],
+     [
+      2182,
+      "✉️ 집을 나갔어요… 편지가 남아 있어요",
+      "sent"
+     ]
+    ],
+    "dex": {},
+    "hist": []
+   }
+  },
+  {
+   "name": "neglect-classic",
+   "seed": 3,
+   "mode": "classic",
+   "script": [],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1767624619
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 440012082
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "dead",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2143695501
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "dead",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2143695501
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "dead",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2143695501
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "dead",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2143695501
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "dead",
+       "stage": "child",
+       "species": null,
+       "con": "tough",
+       "hunger": 0,
+       "happy": 0,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2143695501
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요 · 🥱 심심해요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 🍙 배고파요 · 🥱 심심해요",
+      "sent"
+     ],
+     [
+      1156,
+      "🪦 …",
+      "sent"
+     ]
+    ],
+    "dex": {},
+    "hist": [
+     {
+      "sp": "child",
+      "mode": "classic",
+      "result": "무지개다리",
+      "days": 0
+     }
+    ]
+   }
+  },
+  {
+   "name": "snacker",
+   "seed": 99,
+   "mode": "relaxed",
+   "script": [
+    [
+     480,
+     "care"
+    ],
+    [
+     750,
+     "care"
+    ],
+    [
+     1110,
+     "care"
+    ],
+    [
+     1275,
+     "care"
+    ],
+    [
+     1920,
+     "care"
+    ],
+    [
+     2190,
+     "care"
+    ],
+    [
+     2550,
+     "care"
+    ],
+    [
+     2715,
+     "care"
+    ],
+    [
+     3360,
+     "care"
+    ],
+    [
+     3630,
+     "care"
+    ],
+    [
+     3990,
+     "care"
+    ],
+    [
+     4155,
+     "care"
+    ],
+    [
+     4800,
+     "care"
+    ],
+    [
+     5070,
+     "care"
+    ],
+    [
+     5430,
+     "care"
+    ],
+    [
+     5595,
+     "care"
+    ],
+    [
+     6240,
+     "care"
+    ],
+    [
+     6510,
+     "care"
+    ],
+    [
+     6870,
+     "care"
+    ],
+    [
+     7035,
+     "care"
+    ],
+    [
+     7680,
+     "care"
+    ],
+    [
+     7950,
+     "care"
+    ],
+    [
+     8310,
+     "care"
+    ],
+    [
+     8475,
+     "care"
+    ],
+    [
+     9120,
+     "care"
+    ],
+    [
+     9390,
+     "care"
+    ],
+    [
+     9750,
+     "care"
+    ],
+    [
+     9915,
+     "care"
+    ],
+    [
+     10560,
+     "care"
+    ],
+    [
+     10830,
+     "care"
+    ],
+    [
+     11190,
+     "care"
+    ],
+    [
+     11355,
+     "care"
+    ],
+    [
+     900,
+     "snack"
+    ],
+    [
+     960,
+     "snack"
+    ],
+    [
+     2340,
+     "snack"
+    ],
+    [
+     2400,
+     "snack"
+    ],
+    [
+     3780,
+     "snack"
+    ],
+    [
+     3840,
+     "snack"
+    ],
+    [
+     5220,
+     "snack"
+    ],
+    [
+     5280,
+     "snack"
+    ],
+    [
+     6660,
+     "snack"
+    ],
+    [
+     6720,
+     "snack"
+    ],
+    [
+     8100,
+     "snack"
+    ],
+    [
+     8160,
+     "snack"
+    ],
+    [
+     9540,
+     "snack"
+    ],
+    [
+     9600,
+     "snack"
+    ],
+    [
+     10980,
+     "snack"
+    ],
+    [
+     11040,
+     "snack"
+    ],
+    [
+     961,
+     "play:4"
+    ],
+    [
+     2401,
+     "play:4"
+    ],
+    [
+     3841,
+     "play:4"
+    ],
+    [
+     5281,
+     "play:4"
+    ],
+    [
+     6721,
+     "play:4"
+    ],
+    [
+     8161,
+     "play:4"
+    ],
+    [
+     9601,
+     "play:4"
+    ],
+    [
+     11041,
+     "play:4"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "greedy",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 4231026198
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "greedy",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1071847848
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 12,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 2,
+       "checks": 3,
+       "acc": null,
+       "seed": 2015813203
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 24,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 4,
+       "morning": 0,
+       "night": 4,
+       "checks": 6,
+       "acc": null,
+       "seed": 4095567504
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 5,
+       "morning": 0,
+       "night": 6,
+       "checks": 9,
+       "acc": null,
+       "seed": 3711920322
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "moon_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 35,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 8,
+       "morning": 0,
+       "night": 10,
+       "checks": 15,
+       "acc": null,
+       "seed": 1177001342
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "moon_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 40,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 11,
+       "morning": 0,
+       "night": 14,
+       "checks": 21,
+       "acc": null,
+       "seed": 3568885328
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      2190,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2550,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2700,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      3630,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      3990,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      4140,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      4800,
+      "🔔 ✨ 달펭(으)로 자랐어요! 이제 졸업할 수 있어요",
+      "sent"
+     ],
+     [
+      5070,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5430,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5580,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      6510,
+      "🔔 🍙 배고파요 · 💩 똥 1개",
+      "sent"
+     ],
+     [
+      6870,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      7020,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      7950,
+      "🔔 🤒 아파요 · 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      8310,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      8460,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      9390,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      9750,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      9900,
+      "🔔 💡 졸려요",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "moon_penguin": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "moon_penguin",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "early-graduation",
+   "seed": 5,
+   "mode": "relaxed",
+   "script": [
+    [
+     480,
+     "care"
+    ],
+    [
+     750,
+     "care"
+    ],
+    [
+     1110,
+     "care"
+    ],
+    [
+     1275,
+     "care"
+    ],
+    [
+     1920,
+     "care"
+    ],
+    [
+     2190,
+     "care"
+    ],
+    [
+     2550,
+     "care"
+    ],
+    [
+     2715,
+     "care"
+    ],
+    [
+     3360,
+     "care"
+    ],
+    [
+     3630,
+     "care"
+    ],
+    [
+     3990,
+     "care"
+    ],
+    [
+     4155,
+     "care"
+    ],
+    [
+     4800,
+     "care"
+    ],
+    [
+     5070,
+     "care"
+    ],
+    [
+     5430,
+     "care"
+    ],
+    [
+     5595,
+     "care"
+    ],
+    [
+     4860,
+     "graduate"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "greedy",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 4231026104
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "greedy",
+       "hunger": 0,
+       "happy": 1,
+       "weight": 10,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 1071847754
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 12,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 2,
+       "morning": 0,
+       "night": 2,
+       "checks": 3,
+       "acc": null,
+       "seed": 2015813109
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 24,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 4,
+       "morning": 0,
+       "night": 4,
+       "checks": 6,
+       "acc": null,
+       "seed": 432435784
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "wild_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 6,
+       "morning": 0,
+       "night": 6,
+       "checks": 9,
+       "acc": null,
+       "seed": 1880354415
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "wild_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 31,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 6,
+       "morning": 0,
+       "night": 6,
+       "checks": 10,
+       "acc": null,
+       "seed": 488800681
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "wild_penguin",
+       "con": "greedy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 31,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 6,
+       "morning": 0,
+       "night": 6,
+       "checks": 10,
+       "acc": null,
+       "seed": 488800681
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🔔 🐣 알이 깨어났어요! · 🍙 배고파요",
+      "sent"
+     ],
+     [
+      750,
+      "🔔 🍙 배고파요",
+      "sent"
+     ],
+     [
+      1110,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      1260,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      2190,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2550,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      2700,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      3630,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      3990,
+      "🔔 💩 똥 2개",
+      "sent"
+     ],
+     [
+      4140,
+      "🔔 💡 졸려요",
+      "sent"
+     ],
+     [
+      4800,
+      "🔔 ✨ 들펭(으)로 자랐어요! 이제 졸업할 수 있어요",
+      "sent"
+     ],
+     [
+      5070,
+      "🔔 🍙 배고파요 · 💩 똥 2개",
+      "sent"
+     ],
+     [
+      5280,
+      "🎓 들펭이(가) 졸업했어요! 도감에 ★",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "wild_penguin": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "wild_penguin",
+      "mode": "relaxed",
+      "result": "졸업 ★",
+      "days": 3
+     }
+    ]
+   }
+  }
+ ],
+ "forecast": {
+  "forecast": [
+   {
+    "t": 4140,
+    "text": "🔔 💡 졸려요",
+    "kind": "digest"
+   },
+   {
+    "t": 4800,
+    "text": "🔔 ✨ 달토(으)로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 1개",
+    "kind": "digest"
+   },
+   {
+    "t": 5070,
+    "text": "🔔 💩 똥 2개",
+    "kind": "digest"
+   },
+   {
+    "t": 5430,
+    "text": "🔔 🍙 배고파요 · 🥱 심심해요 · 💩 똥 2개",
+    "kind": "digest"
+   },
+   {
+    "t": 5580,
+    "text": "🔔 💡 졸려요",
+    "kind": "digest"
+   },
+   {
+    "t": 6240,
+    "text": "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 2개",
+    "kind": "digest"
+   },
+   {
+    "t": 6510,
+    "text": "🔔 🤒 아파요 · 🍙 배고파요 · 🥱 심심해요 · 💩 똥 2개",
+    "kind": "digest"
+   },
+   {
+    "t": 6858,
+    "text": "✉️ 집을 나갔어요… 편지가 남아 있어요",
+    "kind": "life"
+   }
+  ],
+  "matchesRealRun": true
+ }
+}

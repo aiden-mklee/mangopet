@@ -6,6 +6,7 @@
     "build": "python3 tools/build.py",
     "smoke": "node tools/smoke.js",
     "sim": "node tools/sim.js",
+    "golden": "node tools/golden.js",
     "serve": "python3 -m http.server 8000 --directory docs"
   },
   "devDependencies": {

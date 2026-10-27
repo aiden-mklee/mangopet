@@ -10,21 +10,25 @@
 
 ## 작업 방식
 
-- **원본은 `src/prototype.html` 하나뿐이다.** 게임 로직, 그림, 스타일이 모두 이 파일에 있다. `docs/`는 빌드 결과물이라 직접 고치지 않는다.
-- `src/prototype.html`은 `<html>`/`<head>`가 없는 조각(fragment)이다. claude.ai 아티팩트로 그대로 올릴 수 있게 하려는 것이다. 완전한 문서로 감싸는 건 `tools/build.py`가 한다.
+- **원본은 두 파일이다.** `docs/`는 빌드 결과물이라 직접 고치지 않는다.
+  - `src/engine.js`: 게임 규칙만. DOM, 시계(`Date`, `performance`), `Math.random`을 쓰지 않는다. 랜덤은 저장 상태의 `g.seed`로 돌리는 `E.rand(g)`만 쓴다. 그래야 같은 저장은 항상 같은 결과가 나오고, 앱을 닫을 때 앞으로 올 알림을 미리 계산(`E.forecast`)할 수 있다. 나중에 Swift·Kotlin으로 옮길 대상도 이 파일이다.
+  - `src/prototype.html`: 화면, 그림, 입력. 규칙은 `E.xxx(g)`로 부르고, 엔진이 돌려주는 이벤트(`notice`, `hatchReady`, `evolve`, `charm` …)를 `onEvent`에서 화면 연출로 바꾼다. `<html>`/`<head>`가 없는 조각이고, 엔진 자리(`@engine` 주석)에 빌드가 `engine.js`를 끼워 넣는다. claude.ai 아티팩트로 올릴 때는 `.out/artifact.html`을 쓴다.
+- 규칙(수치, 성장, 알림 정책)을 바꾸는 건 `engine.js`에서, 보이는 것만 바꾸는 건 `prototype.html`에서 한다.
 - 수정한 뒤에는 항상 순서대로 실행한다.
   1. `python3 tools/build.py`: 한글 폰트 서브셋을 다시 만들고 `docs/`를 생성한다. 글자를 하나라도 바꿨다면 필수다.
   2. `node tools/smoke.js`: 베타와 랩을 브라우저로 열어 오류가 없는지 보고, `.out/`에 스크린샷을 남긴다.
+  3. `node tools/golden.js`: 엔진이 정해진 시나리오에서 예전과 똑같이 움직이는지 본다. 규칙을 일부러 바꿨다면 `--update`로 정답(`tests/golden.json`)을 새로 쓰고, 커밋 메시지에 무엇이 달라졌는지 적는다.
 - 화면이 바뀌는 작업이면 스크린샷을 직접 보고 확인한 뒤에 끝났다고 말한다.
 - `tools/build.py`는 원본의 특정 문자열(제목, 저장 키, `fresh()` 첫머리, `[hidden]` 규칙, 광고 자리, `requestAnimationFrame(loop);`)을 찾아 바꾼다. 이 부분을 고치면 빌드 스크립트도 같이 고친다. 못 찾으면 빌드가 멈춘다.
 - 밸런스를 바꾸면 `RUNS=10 node tools/sim.js`로 사용자 유형별 결과를 다시 보고, `GAME.md`의 수치도 맞춰 고친다.
 
-## 코드 지도 (src/prototype.html)
+## 코드 지도
 
 - 화면: 48 × 46칸 LCD. 놀이 공간 48 × 32(`LW`, `LH`, 바닥 `GND`) + 위아래 아이콘 줄. 픽셀 버퍼는 `Pix` 클래스.
 - 그림: `RAW`(스프라이트 문자열), `ICONS`(6 × 6 아이콘), `buildAdult(line, animal)`이 성체 24종을 조합해서 만든다. 표정은 `moodRows`.
-- 데이터: `CON`(체질), `SP`(종), `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참), `ACC`(가보 무늬, 몸에 새기는 위치는 `patPoints`), `NOTIF`(알림 빈도).
-- 상태: 전역 `g`(저장되는 게임 상태)와 `ui`(화면 상태). 시간은 분 단위로 `stepMinute()`가 흘리고 `advance(min)`으로 건너뛴다.
+- 엔진(`src/engine.js`): 데이터 `CON`(체질), `LINES`·`ANIMALS`·`SP`(종), `PATTERNS`(가보 무늬 이름), `NOTIF`(알림 빈도). 1분 진행 `E.step`, 건너뛰기 `E.advance`, 행동 `E.meal/snack/med/clean/pet/playDone/visit`, 생애 `E.newPet/hatch/graduate`, 알림 예측 `E.forecast`.
+- 화면(`src/prototype.html`): `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참 그림), `ACC`(가보 무늬 그림, 몸에 새기는 위치는 `patPoints`).
+- 상태: 전역 `g`(저장되는 게임 상태, 엔진이 읽고 쓴다)와 `ui`(화면 상태). 화면 쪽 `stepMinute()`/`advance(min)`은 엔진을 부르고 이벤트를 처리하는 얇은 감싸개다.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.

@@ -1,0 +1,204 @@
+/* MangoPet rules engine.
+ *
+ * Pure game rules: no DOM, no wall clock, no Math.random. Everything that happens to a pet is a
+ * function of the saved state `g` and the minutes that pass, so the same save always plays out the
+ * same way. That is what lets the app schedule notifications ahead of time (`forecast`) and what a
+ * Swift or Kotlin port has to match (tools/golden.js checks it).
+ *
+ * Functions take the state first and an `ev` array to push events into:
+ *   {type:'notice', t, icon, text, kind, sent, held}  a notification decision (sent ones go to the screen)
+ *   {type:'hatchReady'}                               the egg is ready; the screen plays the hatch, then calls hatch()
+ *   {type:'evolve', stage}                            the pet changed stage
+ *   {type:'charm', id}                                a keyring charm was unlocked
+ *   {type:'graduate', full} {type:'die'} {type:'away'}
+ */
+(function(root){
+'use strict';
+
+/* ---------- data ---------- */
+const CON={tough:{ko:'튼튼',en:'TOUGH',d:'병에 거의 안 걸려요'},poopy:{ko:'쾌변',en:'POOPY',d:'똥을 자주 싸요'},blocked:{ko:'변비',en:'BLOCKED',d:'가끔 배가 아파요. 펫을 3번 쓰다듬어 주세요'},
+  frail:{ko:'허약',en:'FRAIL',d:'자주 아프고 약도 2번 먹어야 나아요'},greedy:{ko:'먹보',en:'GREEDY',d:'배가 빨리 고파요'},sleepy:{ko:'잠꾸러기',en:'SLEEPY',d:'오후 2시에 1시간 낮잠을 자요'}};
+// rx/ry/cy shape the adult body when it is drawn; the rules only use the names
+const LINES={
+ sun:{ko:'해',pre:'햇',rx:7.5,ry:7,cy:13},
+ moon:{ko:'달',pre:'달',rx:7,ry:7.5,cy:12.5},
+ chub:{ko:'통통',pre:'통',rx:9.5,ry:6,cy:14},
+ wild:{ko:'야생',pre:'들',rx:7.5,ry:7,cy:13},
+};
+const ANIMALS={chick:{ko:'병아리',nm:'삐약'},cat:{ko:'고양이',nm:'냥'},rabbit:{ko:'토끼',nm:'토'},frog:{ko:'개구리',nm:'개굴'},penguin:{ko:'펭귄',nm:'펭'},bear:{ko:'곰',nm:'곰'}};
+const ANIMAL_OF={tough:'bear',poopy:'chick',blocked:'frog',frail:'rabbit',greedy:'penguin',sleepy:'cat'};
+const SP={star:{ko:'반짝이',line:'희귀'}};const DEX=[];
+for(const l in LINES)for(const a in ANIMALS){SP[l+'_'+a]={ko:LINES[l].pre+ANIMALS[a].nm,line:`${LINES[l].ko} 계열 · ${ANIMALS[a].ko}`};DEX.push(l+'_'+a)}
+DEX.push('star');
+const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
+// heirloom patterns, drawn into the body by the screen
+const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
+const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,0]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,0]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
+const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
+
+/* ---------- random ---------- */
+// mulberry32 on g.seed: the sequence lives in the save, so a copy of the save replays identically
+function rand(g){let t=(g.seed=(g.seed+0x6D2B79F5)>>>0);t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}
+const pick=(g,list)=>list[Math.floor(rand(g)*list.length)];
+
+/* ---------- time and growth ---------- */
+const hourOf=t=>Math.floor(t/60)%24;
+const isNight=t=>{const h=hourOf(t);return h>=21||h<8};
+const stageFor=a=>a<60?'baby':a<DAY?'child':a<ADULT_AT?'teen':a<FULL_TERM?'adult':'grad';
+const hungerInt=g=>({baby:12,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
+const happyInt=g=>({baby:22,child:110,teen:130,adult:150}[g.stage]);
+const baseW=g=>({baby:5,child:10,teen:20,adult:30}[g.stage]);
+const overweight=g=>g.weight>baseW(g)+15;
+function poopDelay(g){const b=g.stage==='baby'?15:120;const m={poopy:.5,blocked:2.5}[g.con]||1;return Math.max(5,Math.round(b*m*(.8+rand(g)*.4)))}
+// graduating on day 7 counts as the full term, whether the player or the clock does it
+const fullTerm=g=>g.ageMin>=FULL_TERM-DAY;
+// saves from before early graduation only ever graduated at day 7
+const gradStars=d=>d.best||(d.grad?2:0);
+const nm=g=>NOTIF[g.notifMode]||NOTIF.normal;
+
+/* ---------- state ---------- */
+function fresh(seed){return{notifMode:'normal',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
+  notifDay:0,notifCount:0,log:[],dex:{},hist:[],seed:seed>>>0,savedAt:0}}
+
+function newPet(g,mode){
+  Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
+  const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
+  g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
+}
+function unlockCharm(g,id,ev){g.charms=g.charms||[];if(g.charms.includes(id))return;g.charms.push(id);g.equip=g.equip||[];if(g.equip.length<3)g.equip.push(id);ev.push({type:'charm',id})}
+function hatch(g,ev){unlockCharm(g,'egg',ev);if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev)}
+function crack(g){g.cracks=(g.cracks||0)+1;return g.cracks}
+function evolve(g,st,ev){
+  g.stage=st;g.weight=Math.max(g.weight,baseW(g));
+  if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);if(/_cat$/.test(g.species))unlockCharm(g,'cat',ev);
+    if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
+  else notify(g,'✨','모습이 바뀌었어요!','need',ev);
+  ev.push({type:'evolve',stage:st});
+}
+// how you cared only tilts the odds; every line can still show up
+function lineOdds(g){
+  // shares, not totals: the line follows what the player does most, whatever they do overall
+  const c=(g.checks||0)+1,food=(g.meals||0)+g.snacks+1,w={
+    sun:1+1.5*g.morning/c,
+    moon:1+1.5*g.night/c,
+    chub:.7+3*g.snacks/food+(g.weight>baseW(g)+8?.8:0),
+    wild:.3+.5*g.careMiss};
+  const sum=Object.values(w).reduce((a,b)=>a+b,0);for(const k in w)w[k]/=sum;return w;
+}
+function decideAdult(g){
+  if(g.mode==='classic'&&g.careMiss===0&&rand(g)<.3)return 'star';
+  const w=lineOdds(g);let r=rand(g),line='sun';for(const k in w){if((r-=w[k])<0){line=k;break}}
+  return line+'_'+ANIMAL_OF[g.con];
+}
+function record(g,result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
+function graduate(g,full,ev){unlockCharm(g,'star',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
+  const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
+  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full})}
+function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
+function runAway(g,ev){g.phase='away';g.awayUntil=g.t+180;notify(g,'✉️','집을 나갔어요… 편지가 남아 있어요','life',ev);ev.push({type:'away'})}
+function makeSick(g,ev){g.sick=true;g.doses=g.con==='frail'?2:1;notify(g,'🤒','몸이 뜨거워…',g.mode==='classic'?'urgent':'need',ev)}
+function addPoop(g,ev){if(!g.poops)g.poopSince=g.t;if(g.poops<4)g.poops++;if(g.poops>=2)notify(g,'💩',`똥이 ${g.poops}개 쌓였어요`,'need',ev)}
+function queuePoop(g){if(g.poopT<0)g.poopT=poopDelay(g);else g.poopQ=(g.poopQ||0)+1}
+function doPoop(g,ev){if(g.con==='blocked'&&rand(g)<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify(g,'😣','배가 아파… 쓰다듬어 줘','need',ev)}else addPoop(g,ev)}
+function needList(g){
+  if(g.phase!=='alive')return [];const L=[];
+  if(g.sleeping){if(isNight(g.t)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
+  if(g.sick)L.push({mini:'sick',t:'🤒 아파요',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
+  if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파요',a:'펫을 3번 쓰다듬기 (또는 약)'});
+  if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파요',a:'밥'});
+  if(g.happy===0)L.push({mini:'bored',t:'🥱 심심해요',a:'놀이 · 간식 · 쓰다듬기'});
+  if(g.poops)L.push({mini:null,t:`💩 똥 ${g.poops}개`,a:'청소'});
+  return L;
+}
+function needsCall(g){
+  if(g.sleeping)return isNight(g.t)&&g.lights;
+  return g.hunger===0||g.happy===0||g.sick||g.tummy;
+}
+
+/* ---------- notifications ---------- */
+// everyday needs go out through the digest slots unless the player chose 'live'; life events go out at once
+function notify(g,icon,text,kind,ev){
+  if(kind==='need'&&g.notifMode!=='live')return;
+  const h=hourOf(g.t);const quiet=h>=22||h<8;let held=null;
+  if(quiet)held='조용한 시간';else if(g.notifCount>=nm(g).cap&&kind!=='urgent')held='하루 한도';
+  if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
+  if(!held)g.notifCount++;
+  g.log.unshift({t:g.t,text:`${icon} ${text}`,held});g.log.length=Math.min(g.log.length,60);
+  ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held});
+}
+
+/* ---------- one minute ---------- */
+// opts.autoHatch: hatch as soon as the egg is ready (for forecasts and tests, where nothing plays the animation)
+function step(g,ev,opts={}){
+  g.t++;
+  const h=hourOf(g.t),m=g.t%60,day=Math.floor(g.t/DAY);
+  if(g.notifDay!==day){g.notifDay=day;g.notifCount=0}
+  if(g.phase==='egg'){g.cracks=Math.min(5,(g.cracks||0)+1);if(g.cracks>=5){if(opts.autoHatch)hatch(g,ev);else ev.push({type:'hatchReady'})}return}
+  if(g.phase!=='alive')return;
+  g.ageMin++;
+  const st=stageFor(g.ageMin);
+  if(st==='grad'){graduate(g,true,ev);return}
+  if(st!==g.stage)evolve(g,st,ev);
+  if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
+  const night=g.stage!=='baby'&&isNight(g.t),was=g.sleeping;
+  g.sleeping=night||g.napUntil>g.t;
+  if(g.sleeping&&!was&&night&&g.lights)notify(g,'💡','졸려… 불 좀 꺼줘','need',ev);
+  if(!g.sleeping&&was){g.lights=true;g.lightMin=0}
+  if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
+  if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'🔔',L.join(' · '),'digest',ev)}
+  const rx=g.mode==='relaxed'?1.5:1;
+  if(!g.sleeping){
+    if(++g.hungerT>=hungerInt(g)*rx){g.hungerT=-Math.floor(rand(g)*hungerInt(g)*.25);if(g.hunger>0&&--g.hunger===0)notify(g,'🍙','꼬르륵… 배고파','need',ev)}
+    if(++g.happyT>=happyInt(g)*rx*(g.sick?.5:1)){g.happyT=-Math.floor(rand(g)*happyInt(g)*.25);if(g.happy>0&&--g.happy===0)notify(g,'🥱','심심해… 놀아줘','need',ev)}
+    if(g.poopT>0&&--g.poopT===0){g.poopT=-1;doPoop(g,ev);if(g.poopQ>0){g.poopQ--;g.poopT=Math.max(10,Math.round(poopDelay(g)/2))}}
+    if(g.tummy&&++g.tummyMin>=180&&!g.sick){g.tummy=false;makeSick(g,ev)}
+  }
+  if(m===0&&!g.sick&&g.stage!=='baby'){
+    const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
+    let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
+    if(rand(g)<ch)makeSick(g,ev);
+  }
+  if(!g.sleeping&&needsCall(g)){if(g.callStart==null){g.callStart=g.t;g.missed=false}else if(!g.missed&&g.t-g.callStart>=(g.mode==='classic'?120:180)){g.careMiss++;g.missed=true}}else if(!g.sleeping)g.callStart=null;
+  if(!g.sleeping){g.starveMin=g.hunger===0?g.starveMin+1:0;g.sickMin=g.sick?g.sickMin+1:0}
+  const lim=g.mode==='classic'?{s:12*60,k:10*60}:{s:18*60,k:18*60};
+  if(g.starveMin>=lim.s||g.sickMin>=lim.k){g.mode==='classic'?die(g,ev):runAway(g,ev)}
+}
+function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
+
+/* ---------- actions ---------- */
+// each returns what happened so the screen can pick the animation; none of them read the clock
+// one visit = one count, however many buttons it takes
+function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=hourOf(g.t);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
+function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
+function snack(g){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);return 'ok'}
+function toggleLight(g){g.lights=!g.lights;return g.lights}
+function med(g){if(!g.sick&&!g.tummy)return 'no';
+  if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
+  if(--g.doses<=0){g.sick=false;g.sickMin=0;return 'cured'}return 'dose'}
+function clean(g){const n=g.poops;g.poops=0;return n}
+function pet(g){
+  if(g.tummy){if(++g.rub>=3){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'plop'}return 'rub'}
+  if(g.t-g.lastPet>=60){g.happy=Math.min(4,g.happy+1);g.lastPet=g.t;g.pets=(g.pets||0)+1;return 'happy'}
+  return 'ok'}
+function playDone(g,wins){g.plays=(g.plays||0)+1;g.happy=Math.min(4,g.happy+(wins>=3?2:1));g.weight=Math.max(baseW(g)-3,g.weight-1)}
+function revive(g){g.phase='alive';g.revived=true;g.hunger=2;g.happy=2;g.sick=false;g.tummy=false;g.starveMin=g.sickMin=0;g.hist.shift()}
+function callBack(g){g.phase='alive';g.hunger=Math.max(1,g.hunger);g.happy=1;g.starveMin=g.sickMin=0;g.sick=false}
+function restart(g){record(g,'다시 키움');g.phase='select'}
+function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.lastAcc,gen:(g.gen||1)+1}:null;g.phase='select'}
+
+/* ---------- forecast ---------- */
+// what happens if nobody opens the app: the notifications that would go out, in order (for scheduling ahead)
+function forecast(g,minutes){
+  const c=JSON.parse(JSON.stringify(g)),ev=[];
+  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
+  return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:`${e.icon} ${e.text}`,kind:e.kind}));
+}
+
+const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,NOTIF,DAY,ADULT_AT,FULL_TERM,
+  rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
+  fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
+  notify,step,advance,visit,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast};
+if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
+})(typeof globalThis!=='undefined'?globalThis:this);

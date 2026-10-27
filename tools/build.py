@@ -3,18 +3,24 @@
   python3 tools/build.py            # subset the font, then build docs/
   python3 tools/build.py --no-font  # skip the font subset (no fonttools needed)
 
-src/prototype.html is the single source of truth. It is an HTML fragment (no <html>/<head>)
-so it can also be published as a claude.ai artifact as-is.
+Sources
+  src/engine.js       game rules (pure, no DOM); also loaded by tools/golden.js in Node
+  src/prototype.html  screen, drawing and input; an HTML fragment (no <html>/<head>) with a slot for the engine
+
+Every page gets the engine inlined, so each output is a single self-contained file.
 
 Outputs
   docs/index.html   phone beta: real time, no dev lab, no ads, installable (PWA)
   docs/lab.html     the full prototype with the dev lab (time speed, test buttons)
   docs/manifest.webmanifest, docs/sw.js, docs/icon-*.png, docs/.nojekyll
+  .out/artifact.html  the prototype fragment with the engine inlined, for publishing as a claude.ai artifact
 """
 import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src', 'prototype.html')
+ENGINE = os.path.join(ROOT, 'src', 'engine.js')
+SLOT = '<script>/* @engine: tools/build.py inlines src/engine.js here */</script>'
 DOCS = os.path.join(ROOT, 'docs')
 FONT = os.path.join(ROOT, 'tools', 'fonts', 'Galmuri11.woff2')
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
@@ -25,7 +31,8 @@ def subset_font():
     s = open(SRC, encoding='utf-8').read()
     m = FONT_RE.search(s)
     rest = s[:m.start()] + s[m.end():]
-    chars = ''.join(sorted(set(rest) | {chr(c) for c in range(32, 127)}))
+    engine = open(ENGINE, encoding='utf-8').read()
+    chars = ''.join(sorted(set(rest) | set(engine) | {chr(c) for c in range(32, 127)}))
     with tempfile.TemporaryDirectory() as d:
         txt, out = os.path.join(d, 'chars.txt'), os.path.join(d, 'sub.woff2')
         open(txt, 'w', encoding='utf-8').write(chars)
@@ -44,8 +51,8 @@ def phone(s):
     """Phone beta: real time, starts at the current local time, separate save key, device only."""
     s = rep(s, "<title>망고펫 프로토타입</title>", "<title>망고펫</title>")
     s = rep(s, "const KEY='dotpet-proto-v1';", "const KEY='mangopet-beta-v1';")
-    s = rep(s, "function fresh(){return{notifMode:'normal',t:8*60,speed:60,",
-            "function fresh(){const n=new Date();return{notifMode:'normal',t:n.getHours()*60+n.getMinutes(),speed:1,")
+    s = rep(s, "function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,",
+            "function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,")
     s = rep(s, "[hidden]{display:none!important}", """[hidden]{display:none!important}
 .lab,.ad,header.top{display:none!important}
 .wrap{grid-template-columns:minmax(0,1fr)!important;max-width:440px;margin:0 auto}
@@ -98,7 +105,11 @@ def main():
     if '--no-font' not in sys.argv:
         subset_font()
     s = open(SRC, encoding='utf-8').read()
+    assert s.count(SLOT) == 1, 'engine slot missing from src/prototype.html'
+    s = s.replace(SLOT, '<script>\n' + open(ENGINE, encoding='utf-8').read() + '</script>')
     os.makedirs(DOCS, exist_ok=True)
+    os.makedirs(os.path.join(ROOT, '.out'), exist_ok=True)
+    open(os.path.join(ROOT, '.out', 'artifact.html'), 'w', encoding='utf-8').write(s)
     index = document(phone(s), pwa=True)
     open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8').write(index)
     open(os.path.join(DOCS, 'lab.html'), 'w', encoding='utf-8').write(document(lab(s), pwa=False))

@@ -464,8 +464,11 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 <div class="notif" id="notif" role="status" aria-live="polite"><canvas id="nIcon"></canvas><div><small>MANGOPET · 지금</small><b id="nText"></b></div></div>
 <div class="adov" id="adov" hidden><div class="box">리워드 광고 재생 중<br>(실제 앱에서는 15~30초 영상 광고)</div><div class="cd" id="adcd">3</div></div>
 
+<script>/* @engine: tools/build.py inlines src/engine.js here */</script>
 <script>
 (()=>{
+const E=MangoEngine;
+const {CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,NOTIF,hourOf,isNight,baseW,gradStars,lineOdds}=E;
 /* ---------- pixel art ---------- */
 const RAW={
 egg:["......##......","....##..##....","...#......#...","..#........#..","..#........#..",".#..........#.",".#...##.....#.","#....##......#","#............#","#.........##.#","#.........##.#","#............#","#...##.......#",".#..##......#.",".#..........#.","..##......##..","....######...."],
@@ -520,14 +523,6 @@ function parse(rows){
 }
 const S={};for(const k in RAW)S[k]=parse(RAW[k]);
 /* adults = line body (how you cared) x animal parts (hidden constitution) */
-const LINES={
- sun:{ko:'해',pre:'햇',rx:7.5,ry:7,cy:13},
- moon:{ko:'달',pre:'달',rx:7,ry:7.5,cy:12.5},
- chub:{ko:'통통',pre:'통',rx:9.5,ry:6,cy:14},
- wild:{ko:'야생',pre:'들',rx:7.5,ry:7,cy:13},
-};
-const ANIMALS={chick:{ko:'병아리',nm:'삐약'},cat:{ko:'고양이',nm:'냥'},rabbit:{ko:'토끼',nm:'토'},frog:{ko:'개구리',nm:'개굴'},penguin:{ko:'펭귄',nm:'펭'},bear:{ko:'곰',nm:'곰'}};
-const ANIMAL_OF={tough:'bear',poopy:'chick',blocked:'frog',frail:'rabbit',greedy:'penguin',sleepy:'cat'};
 // face moods are derived from the sprite itself: holes enclosed by the body are eyes (first band) and mouth (second band)
 function moodRows(rows,mood){
   const R=rows.map(r=>r.split('')),H=R.length,W=Math.max(...rows.map(r=>r.length));
@@ -635,12 +630,6 @@ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim
 const COL={lcd:css('--lcd'),ink:css('--ink'),ghost:css('--ghost')};
 
 /* ---------- data ---------- */
-const CON={tough:{ko:'튼튼',en:'TOUGH',d:'병에 거의 안 걸려요'},poopy:{ko:'쾌변',en:'POOPY',d:'똥을 자주 싸요'},blocked:{ko:'변비',en:'BLOCKED',d:'가끔 배가 아파요. 펫을 3번 쓰다듬어 주세요'},
-  frail:{ko:'허약',en:'FRAIL',d:'자주 아프고 약도 2번 먹어야 나아요'},greedy:{ko:'먹보',en:'GREEDY',d:'배가 빨리 고파요'},sleepy:{ko:'잠꾸러기',en:'SLEEPY',d:'오후 2시에 1시간 낮잠을 자요'}};
-const SP={star:{ko:'반짝이',line:'희귀'}};const DEX=[];
-for(const l in LINES)for(const a in ANIMALS){SP[l+'_'+a]={ko:LINES[l].pre+ANIMALS[a].nm,line:`${LINES[l].ko} 계열 · ${ANIMALS[a].ko}`};DEX.push(l+'_'+a)}
-DEX.push('star');
-const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
 const ACTS=['meal','snack','play','light','med','clean','stats','dex'];
 const ACT_KO={meal:'밥',snack:'간식',play:'놀이',light:'불',med:'약',clean:'청소',stats:'상태',dex:'도감'};
 const SKINS=[{id:'classic',ko:'기본',skin:'#ebe5d6',lo:'#ddd5c2',ink:'rgba(0,0,0,.42)',btn:'#2c2e33'},
@@ -664,130 +653,34 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 
 /* ---------- state ---------- */
 const KEY='dotpet-proto-v1';
-function fresh(){return{notifMode:'normal',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
-  notifDay:0,notifCount:0,log:[],dex:{},hist:[],savedAt:Date.now()}}
+function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now()})}
 let g=fresh();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase)g=Object.assign(fresh(),s)}catch(e){}
+// saves from before the engine had no random seed
+if(typeof g.seed!=='number')g.seed=Math.floor(Math.random()*2**32);
 {const old={sun:'sun',moon:'moon',tofu:'chub',wild:'wild'};if(old[g.species])g.species=old[g.species]+'_'+(ANIMAL_OF[g.con]||'bear');
  for(const k in g.dex)if(!SP[k])delete g.dex[k];}
 const ui={tab:'pet',dexIdx:0,zoomTab:'dex',flipped:false,dexSel:null,armed:false,restartAsk:false,sel:0,view:'main',page:0,game:null,anim:null,petX:16,frame:0,heartUntil:0,msg:null,lastWander:0};
 
-function newPet(mode){
-  Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,
-    careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
-  const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
-  g.acc=H&&Math.random()<.6?H.acc:Math.random()<.1?ACC[Math.floor(Math.random()*ACC.length)][0]:null;g.accOff=false;
-  ui.view='main';ui.game=null;ui.anim=null;
+/* rules live in src/engine.js; these wrappers run them on the saved state and play out what they report */
+function run(f,...a){const ev=[];const r=f(g,...a,ev);ev.forEach(onEvent);return r}
+function onEvent(e){
+  if(e.type==='notice'&&e.sent)banner(`${e.icon} ${e.text}`);
+  else if(e.type==='hatchReady'){if(!(ui.anim&&ui.anim.type==='hatch'))ui.anim={type:'hatch',start:now(),dur:1500}}
+  else if(e.type==='evolve')ui.anim={type:'evolve',start:performance.now(),dur:1600};
+  else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);banner(`🔑 새 키링 참: ${c.ko}`);drawCharms()}
 }
-const hourOf=t=>Math.floor(t/60)%24;
-const stageFor=a=>a<60?'baby':a<1440?'child':a<4320?'teen':a<10080?'adult':'grad';
-const hungerInt=()=>({baby:12,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
-const happyInt=()=>({baby:22,child:110,teen:130,adult:150}[g.stage]);
-const baseW=()=>({baby:5,child:10,teen:20,adult:30}[g.stage]);
-const overweight=()=>g.weight>baseW()+15;
-function poopDelay(){const b=g.stage==='baby'?15:120;const m={poopy:.5,blocked:2.5}[g.con]||1;return Math.max(5,Math.round(b*m*(.8+Math.random()*.4)))}
-const isNight=t=>{const h=hourOf(t);return h>=21||h<8};
+function newPet(mode){E.newPet(g,mode);ui.view='main';ui.game=null;ui.anim=null}
+const hatch=()=>run(E.hatch);
+const graduate=full=>run(E.graduate,full);
+const needList=()=>E.needList(g),needsCall=()=>E.needsCall(g),nm=()=>E.nm(g),check=()=>E.visit(g);
+const unlockCharm=id=>run(E.unlockCharm,id);
+const stepMinute=()=>run(E.step);
+function advance(min){const ev=[];E.advance(g,min,ev);ev.forEach(onEvent)}
 
-function hatch(){unlockCharm('egg');if((g.gen||1)>=2)unlockCharm('tag');g.phase='alive';g.stage='baby';const ks=Object.keys(CON);g.con=ks[Math.floor(Math.random()*ks.length)];notify('🐣','알이 깨어났어요!','life')}
-function evolve(st){
-  g.stage=st;g.weight=Math.max(g.weight,baseW());
-  if(st==='adult'){g.species=decideAdult();g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);if(/_cat$/.test(g.species))unlockCharm('cat');if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm('heart');notify('✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life')}
-  else notify('✨','모습이 바뀌었어요!');
-  ui.anim={type:'evolve',start:performance.now(),dur:1600};
-}
-// how you cared only tilts the odds; every line can still show up
-function lineOdds(){
-  // shares, not totals: the line follows what the player does most, whatever they do overall
-  const c=(g.checks||0)+1,food=(g.meals||0)+g.snacks+1,w={
-    sun:1+1.5*g.morning/c,
-    moon:1+1.5*g.night/c,
-    chub:.7+3*g.snacks/food+(g.weight>baseW()+8?.8:0),
-    wild:.3+.5*g.careMiss};
-  const sum=Object.values(w).reduce((a,b)=>a+b,0);for(const k in w)w[k]/=sum;return w;
-}
-function decideAdult(){
-  if(g.mode==='classic'&&g.careMiss===0&&Math.random()<.3)return 'star';
-  const w=lineOdds();let r=Math.random(),line='sun';for(const k in w){if((r-=w[k])<0){line=k;break}}
-  return line+'_'+ANIMAL_OF[g.con];
-}
-function record(result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/1440)})}
-function graduate(full){unlockCharm('star');g.phase='graduated';g.lastAcc=g.acc||ACC[Math.floor(Math.random()*ACC.length)][0];g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;record(full?'졸업 ★★':'졸업 ★');notify('🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life')}
-// saves from before early graduation only ever graduated at day 7
-const gradStars=d=>d.best||(d.grad?2:0);
-function die(){g.phase='dead';record('무지개다리');notify('🪦','…','life')}
-function runAway(){g.phase='away';g.awayUntil=g.t+180;notify('✉️','집을 나갔어요… 편지가 남아 있어요','life')}
-function makeSick(){g.sick=true;g.doses=g.con==='frail'?2:1;notify('🤒','몸이 뜨거워…',g.mode==='classic'?'urgent':'need')}
-function addPoop(){if(!g.poops)g.poopSince=g.t;if(g.poops<4)g.poops++;if(g.poops>=2)notify('💩',`똥이 ${g.poops}개 쌓였어요`)}
-function queuePoop(){if(g.poopT<0)g.poopT=poopDelay();else g.poopQ=(g.poopQ||0)+1}
-function doPoop(){if(g.con==='blocked'&&Math.random()<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify('😣','배가 아파… 쓰다듬어 줘')}else addPoop()}
-function needList(){
-  if(g.phase!=='alive')return [];const L=[];
-  if(g.sleeping){if(isNight(g.t)&&g.lights)L.push({mini:'light',t:'💡 졸려요',a:'불 끄기'});return L}
-  if(g.sick)L.push({mini:'sick',t:'🤒 아파요',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
-  if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파요',a:'펫을 3번 쓰다듬기 (또는 약)'});
-  if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파요',a:'밥'});
-  if(g.happy===0)L.push({mini:'bored',t:'🥱 심심해요',a:'놀이 · 간식 · 쓰다듬기'});
-  if(g.poops)L.push({mini:null,t:`💩 똥 ${g.poops}개`,a:'청소'});
-  return L;
-}
-function showNeeds(){
-  if(g.phase!=='alive')return;const L=needList();
-  banner(L.length?L.map(n=>n.t).join(' · '):(g.sleeping?'💤 쿨쿨 자는 중':'😊 지금은 괜찮아요'));
-}
-function needsCall(){
-  if(g.sleeping)return isNight(g.t)&&g.lights;
-  return g.hunger===0||g.happy===0||g.sick||g.tummy;
-}
-
-function stepMinute(){
-  g.t++;
-  const h=hourOf(g.t),m=g.t%60,day=Math.floor(g.t/1440);
-  if(g.notifDay!==day){g.notifDay=day;g.notifCount=0}
-  if(g.phase==='egg'){if(!(ui.anim&&ui.anim.type==='hatch')){g.cracks=Math.min(5,(g.cracks||0)+1);if(g.cracks>=5)ui.anim={type:'hatch',start:now(),dur:1500}}return}
-  if(g.phase!=='alive')return;
-  g.ageMin++;
-  const st=stageFor(g.ageMin);
-  if(st==='grad'){graduate(true);return}
-  if(st!==g.stage)evolve(st);
-  if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
-  const night=g.stage!=='baby'&&isNight(g.t),was=g.sleeping;
-  g.sleeping=night||g.napUntil>g.t;
-  if(g.sleeping&&!was&&night&&g.lights)notify('💡','졸려… 불 좀 꺼줘');
-  if(!g.sleeping&&was){g.lights=true;g.lightMin=0}
-  if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
-  if(nm().slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList().map(n=>n.t)];g.news=[];if(L.length)notify('🔔',L.join(' · '),'digest')}
-  const rx=g.mode==='relaxed'?1.5:1;
-  if(!g.sleeping){
-    if(++g.hungerT>=hungerInt()*rx){g.hungerT=-Math.floor(Math.random()*hungerInt()*.25);if(g.hunger>0&&--g.hunger===0)notify('🍙','꼬르륵… 배고파')}
-    if(++g.happyT>=happyInt()*rx*(g.sick?.5:1)){g.happyT=-Math.floor(Math.random()*happyInt()*.25);if(g.happy>0&&--g.happy===0)notify('🥱','심심해… 놀아줘')}
-    if(g.poopT>0&&--g.poopT===0){g.poopT=-1;doPoop();if(g.poopQ>0){g.poopQ--;g.poopT=Math.max(10,Math.round(poopDelay()/2))}}
-    if(g.tummy&&++g.tummyMin>=180&&!g.sick){g.tummy=false;makeSick()}
-  }
-  if(m===0&&!g.sick&&g.stage!=='baby'){
-    const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
-    let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight())ch+=.05*mult;
-    if(Math.random()<ch)makeSick();
-  }
-  if(!g.sleeping&&needsCall()){if(g.callStart==null){g.callStart=g.t;g.missed=false}else if(!g.missed&&g.t-g.callStart>=(g.mode==='classic'?120:180)){g.careMiss++;g.missed=true}}else if(!g.sleeping)g.callStart=null;
-  if(!g.sleeping){g.starveMin=g.hunger===0?g.starveMin+1:0;g.sickMin=g.sick?g.sickMin+1:0}
-  const lim=g.mode==='classic'?{s:12*60,k:10*60}:{s:18*60,k:18*60};
-  if(g.starveMin>=lim.s||g.sickMin>=lim.k){g.mode==='classic'?die():runAway()}
-}
-function advance(min){for(let i=0;i<min;i++)stepMinute()}
 
 /* ---------- notifications ---------- */
 let nTimer=0;
-const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,0]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,0]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
-const nm=()=>NOTIF[g.notifMode]||NOTIF.normal;
-function notify(icon,text,kind='need'){
-  if(kind==='need'&&g.notifMode!=='live')return; // otherwise everyday needs only go out through the digest
-  const h=hourOf(g.t);const quiet=h>=22||h<8;let held=null;
-  if(quiet)held='조용한 시간';else if(g.notifCount>=nm().cap&&kind!=='urgent')held='하루 한도';
-  if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
-  if(!held){g.notifCount++;banner(`${icon} ${text}`)}
-  g.log.unshift({t:g.t,text:`${icon} ${text}`,held});g.log.length=Math.min(g.log.length,60);
-}
 function banner(text){
   $('nText').textContent=text;const n=$('notif');n.classList.add('show');clearTimeout(nTimer);nTimer=setTimeout(()=>n.classList.remove('show'),3000);
 }
@@ -795,8 +688,6 @@ function banner(text){
 /* ---------- actions ---------- */
 const now=()=>performance.now();
 function say(t,ms=1100){ui.msg={t,until:now()+ms}}
-// one visit = one count, however many buttons it takes
-function check(){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=hourOf(g.t);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
 function act(a){
   ui.armed=false;
   if(a==='dex'&&!ui.game){if(ui.view==='dex')ui.dexIdx=(ui.dexIdx+1)%DEX.length;else{ui.view='dex';ui.dexIdx=ui.dexIdx||0}return}
@@ -804,28 +695,23 @@ function act(a){
   ui.sel=ACTS.indexOf(a);
   if(a==='stats'){if(ui.view==='stats'){ui.page=(ui.page+1)%statPages()}else{ui.view='stats';ui.page=0}return}
   ui.view='main';
-  if(a==='light'){g.lights=!g.lights;check();return}
+  if(a==='light'){E.toggleLight(g);check();return}
   if(!g.lights){say('DARK');return}
   if(g.sleeping){say('ZZZ');return}
   check();
   const t=now();
-  if(a==='meal'){if(g.hunger>=4){ui.anim={type:'no',start:t,dur:1000};return}
-    g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop();ui.anim={type:'meal',start:t,dur:2000}}
-  if(a==='snack'){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop();ui.anim={type:'snack',start:t,dur:2000}}
+  if(a==='meal'){if(E.meal(g)==='full'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'meal',start:t,dur:2000}}
+  if(a==='snack'){E.snack(g);ui.anim={type:'snack',start:t,dur:2000}}
   if(a==='play'){ui.game={round:1,wins:0,phase:'pick',dir:0,choice:0,until:0}}
-  if(a==='med'){if(!g.sick&&!g.tummy){ui.anim={type:'no',start:t,dur:1000};return}
-    if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1)}
-    else if(--g.doses<=0){g.sick=false;g.sickMin=0}
-    ui.anim={type:'med',start:t,dur:1200}}
+  if(a==='med'){if(E.med(g)==='no'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'med',start:t,dur:1200}}
   if(a==='clean'){if(!g.poops){ui.anim={type:'no',start:t,dur:800};return}
-    ui.anim={type:'clean',start:t,dur:1300,prev:g.poops};ui.sparkFrom=t+1300;ui.sparkUntil=t+4100;g.poops=0}
+    ui.anim={type:'clean',start:t,dur:1300,prev:E.clean(g)};ui.sparkFrom=t+1300;ui.sparkUntil=t+4100}
   save();
 }
 function petTap(){
   if(g.phase!=='alive'||g.sleeping||!g.lights||ui.anim||ui.game||ui.view!=='main')return;
   ui.heartUntil=now()+900;
-  if(g.tummy){if(++g.rub>=3){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);say('PLOP!')}return}
-  if(g.t-g.lastPet>=60){g.happy=Math.min(4,g.happy+1);g.lastPet=g.t;g.pets=(g.pets||0)+1}
+  if(E.pet(g)==='plop')say('PLOP!');
 }
 function choose(d){
   const G=ui.game;if(!G||G.phase!=='pick')return;
@@ -834,7 +720,7 @@ function choose(d){
 function gameTick(){
   const G=ui.game;if(!G||now()<G.until)return;
   if(G.phase==='reveal'){if(G.round>=5){G.phase='end';G.until=now()+1600}else{G.round++;G.phase='pick'}}
-  else if(G.phase==='end'){g.plays=(g.plays||0)+1;g.happy=Math.min(4,g.happy+(G.wins>=3?2:1));g.weight=Math.max(baseW()-3,g.weight-1);check();ui.game=null;save()}
+  else if(G.phase==='end'){E.playDone(g,G.wins);check();ui.game=null;save()}
 }
 
 /* ---------- drawing ---------- */
@@ -938,7 +824,7 @@ function drawDexLCD(P){
 function hearts(P,n,y){for(let i=0;i<4;i++)P.spr(i<n?S.hF:S.hE,12+i*6,y)}
 const statPages=()=>g.stage==='adult'?3:2;
 function drawStats(P){
-  if(ui.page===2){P.ctext('GRAD?',6);const n=g.ageMin>=10080-1440?2:1;for(let i=0;i<n;i++)P.spr(BIG_STAR,Math.floor(LW/2)-(n*7-2)/2+i*7,15);P.ctext('OK',26);return}
+  if(ui.page===2){P.ctext('GRAD?',6);const n=E.fullTerm(g)?2:1;for(let i=0;i<n;i++)P.spr(BIG_STAR,Math.floor(LW/2)-(n*7-2)/2+i*7,15);P.ctext('OK',26);return}
   if(ui.page===0){P.ctext('HUNGRY',3);hearts(P,g.hunger,10);P.ctext('HAPPY',18);hearts(P,g.happy,25)}
   else{const known=g.showCon||g.stage==='teen'||g.stage==='adult';
     P.text('AGE '+Math.floor(g.ageMin/1440)+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
@@ -1010,8 +896,6 @@ const CHARMS=[
   {id:'heart',ko:'하트',cond:'도감 5종을 모으면',col:'#E87A8F',rows:['.##..##.','########','########','########','.######.','..####..','...##...','........']},
   {id:'cat',ko:'픽셀 고양이',cond:'고양이 성체를 만나면',col:'#34363C',rows:['#......#','##....##','########','#.####.#','########','########','.######.','........']},
   {id:'tag',ko:'이름표',cond:'2대째를 키우면',col:'#B8C4A0',rows:['..####..','########','#......#','#.####.#','#......#','#.##...#','#......#','########']}];
-function unlockCharm(id){g.charms=g.charms||[];if(g.charms.includes(id))return;g.charms.push(id);g.equip=g.equip||[];if(g.equip.length<3)g.equip.push(id);
-  const c=CHARMS.find(x=>x.id===id);banner(`🔑 새 키링 참: ${c.ko}`);drawCharms()}
 function drawCharms(){const box=$('charms');if(!box)return;box.innerHTML='';const n=(g.equip||[]).length;$('keyring').hidden=false;
   if(n){const ln=document.createElement('i');ln.className='chainline';ln.style.height=(14+(n-1)*42)+'px';box.appendChild(ln)}
   (g.equip||[]).forEach((id,i)=>{const c=CHARMS.find(x=>x.id===id);if(!c)return;const w=document.createElement('div');w.className='charm';
@@ -1096,7 +980,7 @@ function patterned(s,base,id){const key=id+'|'+base.rows.join('/')+'|'+s.rows.jo
   if(!o){const rows=s.rows.map(r=>r.split(''));patPoints(base,id).forEach(([r,c])=>{if(rows[r]&&rows[r][c]==='#')rows[r][c]='.'});
     o={w:s.w,h:s.h,rows:rows.map(r=>r.join(''))};PAT_CACHE.set(key,o)}return o}
 const PAT_BLOB={w:10,h:9,rows:['..######..','.########.','##########','##########','##########','##########','##########','.########.','..######..']};
-const ACC=['줄무늬','이마 별','이마 하트','볼 터치','왕점'].map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
+const ACC=E.PATTERNS.map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
 // saves from before patterns carried items (리본, 모자 …): fold them into the three patterns
 const LEGACY_ACC=['리본','안경','모자','꽃','목도리','왕관'];
 const toPat=n=>{const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
@@ -1177,7 +1061,7 @@ function renderCtx(){
   else if(g.phase==='graduated'){const nm_=SP[g.species].ko,gen=(g.gen||1)+1;html=`<div class="pxpick"><p>다음 알은 어떻게 할까요?</p>
     <button class="pxopt" data-next="heir"><b>${nm_}의 알 받기</b><small>무늬 ${g.lastAcc} 60% · ${gen}대째</small></button>
     <button class="pxopt" data-next="fresh"><b>새로운 알 받기</b><small>처음부터 랜덤 · 1대째</small></button></div>`}
-  else if(g.phase==='alive'&&ui.gradAsk){key+='grad';const full=g.ageMin>=10080-1440;html=`<p class="q">지금 졸업할까요?</p>
+  else if(g.phase==='alive'&&ui.gradAsk){key+='grad';const full=E.fullTerm(g);html=`<p class="q">지금 졸업할까요?</p>
     <button class="big pri" data-grad-go><strong>졸업하기 ${full?'★★':'★'}</strong><small>${full?'오늘 졸업해도 ★★예요':'7일째까지 키우면 ★★'}</small></button><button class="big" data-grad-cancel><strong>더 키울래요</strong></button>`}
   else if(g.phase==='alive'){key+=ui.restartAsk;html=ui.restartAsk?`<p class="q">${restartMsg()}</p>
     <button class="big pri" data-ad="restart"><strong>${g.adFree?'다시 키우기':'광고 보고 다시 키우기'}</strong></button><button class="big" data-restart-cancel><strong>그대로 키울래요</strong></button>`
@@ -1198,7 +1082,7 @@ function renderPanel(){
   const rows=[['시간',fmtT(g.t)],['모드',g.phase==='select'?'-':g.mode==='classic'?'클래식':'느긋'],['단계',stageName()],['나이',a?`${Math.floor(g.ageMin/1440)}일 ${Math.floor(g.ageMin%1440/60)}시간`:'-'],
     ['배고픔',a?'♥'.repeat(g.hunger)+'♡'.repeat(4-g.hunger):'-'],['기분',a?'♥'.repeat(g.happy)+'♡'.repeat(4-g.happy):'-'],['몸무게',a?g.weight+'g':'-'],['똥',a?g.poops+'개':'-'],
     ['상태',a?[g.sick&&`아픔(약 ${g.doses}번 더)`,g.tummy&&`배아픔(쓰다듬기 ${g.rub}/3)`,g.sleeping&&'자는 중',!g.lights&&'불 꺼짐'].filter(Boolean).join(', ')||'괜찮음':'-'],
-    ['케어 실수',a?g.careMiss+'번':'-'],['아침/밤 돌봄',a?`${g.morning} / ${g.night}`:'-'],['체질',con],['세대',g.gen?`${g.gen}대째${g.acc?` · 무늬 ${g.acc}`:''}`:'-'],['성체 계열 확률',a&&g.stage!=='adult'?Object.entries(lineOdds()).map(([k,v])=>`${LINES[k].ko} ${Math.round(v*100)}%`).join(' · '):'-']];
+    ['케어 실수',a?g.careMiss+'번':'-'],['아침/밤 돌봄',a?`${g.morning} / ${g.night}`:'-'],['체질',con],['세대',g.gen?`${g.gen}대째${g.acc?` · 무늬 ${g.acc}`:''}`:'-'],['성체 계열 확률',a&&g.stage!=='adult'?Object.entries(lineOdds(g)).map(([k,v])=>`${LINES[k].ko} ${Math.round(v*100)}%`).join(' · '):'-']];
   $('readout').innerHTML=rows.map(([k,v])=>`<div class="kv"><span>${k}</span><span>${v}</span></div>`).join('');
   $('ncount').textContent=`오늘 ${g.notifCount}/${nm().cap}개 보냄 · 알림 '${nm().ko}'.`;
   $('log').innerHTML=g.log.length?g.log.map(l=>`<li class="${l.held?'held':''}"><time>${fmtT(l.t)}</time><span>${l.text}${l.held?`<em>${l.held}·보류</em>`:''}</span></li>`).join(''):'<li class="empty">아직 알림이 없어요.</li>';
@@ -1301,22 +1185,22 @@ $('reset').onclick=e=>{if(!armed){armed=true;e.target.textContent='한 번 더 �
   const keep={speed:g.speed,skin:g.skin,bg:g.bg,btnStyle:g.btnStyle};g=Object.assign(fresh(),keep);armed=false;e.target.textContent='처음부터 다시';lastCtx='';save()};
 function menuClick(e){
   const b=e.target.closest('button');if(!b||b.disabled)return;ui.menuOpen=false;
-  if(b.dataset.next){g.pendingHeir=b.dataset.next==='heir'?{from:SP[g.species].ko,acc:g.lastAcc,gen:(g.gen||1)+1}:null;g.phase='select';lastCtx='';ui.menuOpen=true;save();return}
+  if(b.dataset.next){E.heirChoice(g,b.dataset.next==='heir');lastCtx='';ui.menuOpen=true;save();return}
   if(b.dataset.notif){g.notifMode=b.dataset.notif;lastCtx='';save();return}
   if(b.dataset.new){if(b.dataset.new==='pick'){g.phase='select';lastCtx='';ui.menuOpen=true;return}newPet(b.dataset.new);lastCtx='';save();return}
-  if(b.dataset.ret!==undefined){g.phase='alive';g.hunger=Math.max(1,g.hunger);g.happy=1;g.starveMin=g.sickMin=0;g.sick=false;banner('🏠 돌아왔어요!');save();return}
+  if(b.dataset.ret!==undefined){E.callBack(g);banner('🏠 돌아왔어요!');save();return}
   if(b.dataset.restart!==undefined){ui.restartAsk=true;return}
   if(b.dataset.restartCancel!==undefined){closeMenu();return}
   if(b.dataset.gradCancel!==undefined){closeMenu();return}
-  if(b.dataset.gradGo!==undefined){ui.gradAsk=false;ui.view='main';graduate(g.ageMin>=10080-1440);lastCtx='';save();return}
+  if(b.dataset.gradGo!==undefined){ui.gradAsk=false;ui.view='main';graduate(E.fullTerm(g));lastCtx='';save();return}
   if(b.dataset.ad){const kind=b.dataset.ad;showAd(()=>{
-    if(kind==='revive'){g.phase='alive';g.revived=true;g.hunger=2;g.happy=2;g.sick=false;g.tummy=false;g.starveMin=g.sickMin=0;g.hist.shift();banner('💫 다시 눈을 떴어요!')}
-    else if(kind==='restart'){record('다시 키움');g.phase='select';ui.restartAsk=false}
-    else{g.phase='alive';g.hunger=Math.max(1,g.hunger);g.happy=1;g.starveMin=g.sickMin=0;g.sick=false;banner('🏠 돌아왔어요!')}
+    if(kind==='revive'){E.revive(g);banner('💫 다시 눈을 떴어요!')}
+    else if(kind==='restart'){E.restart(g);ui.restartAsk=false}
+    else{E.callBack(g);banner('🏠 돌아왔어요!')}
     lastCtx='';save()})}
 }
 $('menuPanel').addEventListener('click',menuClick);
-$('wFeed').onclick=()=>{if(g.phase==='alive'&&!g.sleeping&&g.lights&&g.hunger<4){g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop();banner('🍙 위젯에서 밥을 줬어요');check();save()}else banner('지금은 밥을 줄 수 없어요')};
+$('wFeed').onclick=()=>{if(g.phase==='alive'&&!g.sleeping&&g.lights&&E.meal(g)==='ok'){banner('🍙 위젯에서 밥을 줬어요');check();save()}else banner('지금은 밥을 줄 수 없어요')};
 $('wClean').onclick=()=>{if(g.phase==='alive'&&g.poops){g.poops=0;banner('🚽 위젯에서 청소했어요');save()}else banner('치울 똥이 없어요')};
 function showAd(cb){
   if(g.adFree){cb();return}

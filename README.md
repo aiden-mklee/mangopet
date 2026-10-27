@@ -24,7 +24,8 @@
 ## 폴더 구조
 
 ```
-src/prototype.html   ← 유일한 원본. 게임 전체가 이 파일 하나에 들어 있음
+src/engine.js        ← 게임 규칙 (DOM·시계·Math.random 없음, 시드 랜덤). 나중에 Swift·Kotlin으로 옮길 대상
+src/prototype.html   ← 화면·그림·입력. 빌드가 engine.js를 끼워 넣음
 docs/                ← GitHub Pages로 배포되는 결과물 (tools/build.py가 생성, 직접 고치지 않음)
   index.html           베타 (실시간, 개발 패널·광고 없음, PWA)
   lab.html             랩 (개발 패널 포함)
@@ -33,6 +34,7 @@ tools/
   build.py             폰트 서브셋 + docs/ 생성
   smoke.js             빌드 결과를 브라우저로 열어 오류 검사, 스크린샷은 .out/
   sim.js               가상 사용자 유형별 7일 시뮬레이션 (밸런스 확인용)
+  golden.js            엔진 정답 테스트 (tests/golden.json과 비교). 다른 언어로 옮긴 엔진도 이 정답과 같아야 함
   fonts/Galmuri11.woff2  한글 픽셀 폰트 원본 (서브셋 재생성용)
 assets/icons/        앱 아이콘 원본
 licenses/            폰트 라이선스
@@ -49,6 +51,7 @@ GAME.md              게임 규칙과 밸런스 요약
 python3 tools/build.py     # src/prototype.html 수정 후 항상 실행 (폰트 서브셋 + docs/ 생성)
 node tools/smoke.js        # 오류 검사, 스크린샷은 .out/
 npm run serve              # http://localhost:8000 에서 docs/ 미리보기
+node tools/golden.js       # 엔진 정답 테스트 (규칙을 일부러 바꿨으면 --update)
 RUNS=10 node tools/sim.js  # 밸런스 시뮬레이션
 ```
 
