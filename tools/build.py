@@ -57,6 +57,7 @@ def phone(s):
     s = rep(s, "function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,",
             "function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,")
     s = rep(s, "[hidden]{display:none!important}", """[hidden]{display:none!important}
+html,body{touch-action:manipulation}
 .lab,.ad,header.top{display:none!important}
 .wrap{grid-template-columns:minmax(0,1fr)!important;max-width:440px;margin:0 auto}
 html,body{background:var(--bg1,#f3eee6)!important}
@@ -110,12 +111,14 @@ PWA = '''<meta name="apple-mobile-web-app-capable" content="yes">
 '''
 
 
-def document(frag, pwa):
+def document(frag, pwa, fixed=None):
     """Wrap the artifact fragment into a full HTML document."""
     frag = frag.replace('<meta name="claude:viewport-fit-sides" content="cover">\n', '')
     t = frag.index('<title>')
     te = frag.index('</style>') + len('</style>')
-    head = HEAD.format(extra=',user-scalable=no' if pwa else '', pwa=PWA if pwa else '')
+    # phone pages never zoom: a double tap on the buttons must not enlarge the screen
+    fixed = pwa if fixed is None else fixed
+    head = HEAD.format(extra=',maximum-scale=1,user-scalable=no' if fixed else '', pwa=PWA if pwa else '')
     tail = "\n<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>" if pwa else ''
     return head + frag[t:te] + '\n</head><body>\n' + frag[te:] + tail + '\n</body></html>\n'
 
@@ -147,10 +150,10 @@ def main():
     open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8').write(index)
     open(os.path.join(DOCS, 'lab.html'), 'w', encoding='utf-8').write(document(lab(s), pwa=False))
     os.makedirs(os.path.join(ROOT, 'app', 'www'), exist_ok=True)
-    open(os.path.join(ROOT, 'app', 'www', 'index.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False))
+    open(os.path.join(ROOT, 'app', 'www', 'index.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False, fixed=True))
     # the same app page is also served from GitHub Pages: while testing, the app loads it from there
     # (capacitor.config.json server.url), so a push updates the phone without rebuilding in Xcode
-    open(os.path.join(DOCS, 'app.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False))
+    open(os.path.join(DOCS, 'app.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False, fixed=True))
     open(os.path.join(ROOT, 'app', 'www', 'offline.html'), 'w', encoding='utf-8').write(OFFLINE)
     nm = os.path.join(ROOT, 'node_modules', '@capacitor')
     for src, dst in (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js')):
