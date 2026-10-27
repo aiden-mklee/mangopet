@@ -718,14 +718,14 @@ poop:["....#..","...##..","..###..",".#####.","#######"],
 skull:[".###.","#.#.#","#####",".#.#."],
 z:["####","..#.",".#..","####"],
 rice:["..##..",".####.","######","#....#","#....#",".####."],
-candy:["#..###..#","##.###.##","#########","##.###.##","#..###..#"],
+cookie:[".####.","#.####","####.#","######","##.###",".####."],
 cross:[".#.","###",".#."],
 hF:[".#.#.","#####","#####",".###.","..#.."],
 hE:[".#.#.","#.#.#","#...#",".#.#.","..#.."],
 };
 const ICONS={
 meal:["#.#..#","#.#.##","###.##",".#..##",".#...#",".#...#"],
-snack:["......","#.##.#","######","######","#.##.#","......"],
+snack:[".####.","#.####","####.#","######","##.###",".####."],
 play:[".######.","##.###.#","#...#.##","##.#####","########","##....##"],
 light:["..###.",".##...","##....","##....",".##...","..###."],
 med:["..##..","..##..","######","######","..##..","..##.."],
@@ -1012,7 +1012,7 @@ function drawScene(P,widget){
   if(!g.sleeping&&f%2)y-=1;
   let poopsShown=g.poops,sweep=-1;
   if(A){const p=(t-A.start)/A.dur;
-    if(A.type==='meal'||A.type==='snack'){x=Math.max(2,Math.min(maxX,Math.floor(LW/2)-Math.floor(s.w/2)+4));const food=A.type==='meal'?S.rice:S.candy;
+    if(A.type==='meal'||A.type==='snack'){x=Math.max(2,Math.min(maxX,Math.floor(LW/2)-Math.floor(s.w/2)+4));const food=A.type==='meal'?S.rice:S.cookie;
       const bites=Math.min(3,Math.floor(p*4));const fy=GND-food.h+1;
       for(let r=bites*2;r<food.h;r++)for(let c=0;c<food.w;c++)if(food.rows[r][c]==='#')P.px(x-food.w-3+c,fy+r)}
     if(A.type==='no'){x+=Math.floor(t/120)%2?1:-1}
