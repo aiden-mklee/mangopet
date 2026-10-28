@@ -20,7 +20,7 @@
   2. `node tools/smoke.js`: 베타와 랩을 브라우저로 열어 오류가 없는지 보고, `.out/`에 스크린샷을 남긴다.
   3. `node tools/golden.js`: 엔진이 정해진 시나리오에서 예전과 똑같이 움직이는지 본다. 규칙을 일부러 바꿨다면 `--update`로 정답(`tests/golden.json`)을 새로 쓰고, 커밋 메시지에 무엇이 달라졌는지 적는다.
 - 화면이 바뀌는 작업이면 스크린샷을 직접 보고 확인한 뒤에 끝났다고 말한다.
-- `tools/build.py`는 원본의 특정 문자열(제목, 저장 키, `fresh()` 첫머리, `[hidden]` 규칙, 광고 자리, `requestAnimationFrame(loop);`)을 찾아 바꾼다. 이 부분을 고치면 빌드 스크립트도 같이 고친다. 못 찾으면 빌드가 멈춘다.
+- `tools/build.py`는 원본의 특정 문자열(제목, 저장 키, `REALTIME`·`ADS` 스위치, `fresh()` 첫머리, `[hidden]` 규칙, 광고 자리, `requestAnimationFrame(loop);`)을 찾아 바꾼다. 이 부분을 고치면 빌드 스크립트도 같이 고친다. 못 찾으면 빌드가 멈춘다.
 - 밸런스를 바꾸면 `RUNS=10 node tools/sim.js`로 사용자 유형별 결과를 다시 보고, `GAME.md`의 수치도 맞춰 고친다.
 
 ## 코드 지도

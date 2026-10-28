@@ -53,7 +53,7 @@ def phone(s):
     """Phone beta: real time, starts at the current local time, separate save key, device only."""
     s = rep(s, "<title>망고펫 프로토타입</title>", "<title>망고펫</title>")
     s = rep(s, "const KEY='dotpet-proto-v1';", "const KEY='mangopet-beta-v1';")
-    s = rep(s, "REALTIME=false;", "REALTIME=true;")
+    s = rep(s, "REALTIME=false,ADS=true;", "REALTIME=true,ADS=false;")
     s = rep(s, "function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,",
             "function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,")
     s = rep(s, "[hidden]{display:none!important}", """[hidden]{display:none!important}

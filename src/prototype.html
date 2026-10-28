@@ -735,7 +735,9 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='dotpet-proto-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='dev',FEEDBACK_URL='',REALTIME=false;
+const VERSION='dev',FEEDBACK_URL='',REALTIME=false,ADS=true;
+// the beta has no ads: the reward buttons (revive, call back, start over) just work
+const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
 let g=fresh();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase)g=Object.assign(fresh(),s)}catch(e){}
@@ -1283,7 +1285,7 @@ function renderScreenIn(tab,el){
       <h3>알림 빈도</h3>${opt('notifMode',g.notifMode||'normal',Object.entries(NOTIF).map(([k,v])=>[k,v.ko]))}<p class="dim">${nm().d}</p>
       <h3>케이스</h3><div class="pxrow">${CASES.map(c=>{const sk=SKINS.find(k=>k.id===c.skin);return `<button class="pxbtn" data-case="${c.id}" aria-pressed="${(g.shape||'egg')===c.shape&&g.skin===c.skin}"><span class="pxsw" style="background:${sk.skin}"></span>${c.ko}${c.paid?' (유료)':''}</button>`}).join('')}</div>
       <div class="pxrow"><button class="pxbtn" data-deco>꾸미기 · 케이스 배경 버튼 키링</button></div>
-      <h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>
+      ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
       <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>
       ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
       <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>
@@ -1302,18 +1304,18 @@ function renderCtx(){
   if(g.phase==='select'){html=`<p class="q">어떻게 키울까요?</p>
     <button class="big pri" data-new="relaxed"><strong>느긋 모드</strong><small>방치하면 가출해요</small></button>
     <button class="big" data-new="classic"><strong>클래식 모드</strong><small>방치하면 죽을 수 있어요</small></button>`}
-  else if(g.phase==='dead'){key+=g.revived;html=(g.revived?'':`<button class="big pri" data-ad="revive"><strong>${g.adFree?'살리기':'광고 보고 살리기'} (1회)</strong><small>딱 한 번만 돼요.</small></button>`)+
+  else if(g.phase==='dead'){key+=g.revived;html=(g.revived?'':`<button class="big pri" data-ad="revive"><strong>${noAds()?'살리기':'광고 보고 살리기'} (1회)</strong><small>딱 한 번만 돼요.</small></button>`)+
     `<button class="big" data-new="pick"><strong>새 알 받기</strong></button>`}
   else if(g.phase==='away'){const left=Math.max(0,g.awayUntil-g.t);key+=left>0;
     html=`<button class="big pri" data-ret ${left>0?'disabled':''}><strong>다시 부르기</strong><small>${left>0?`${Math.ceil(left/60)}시간 뒤에 부를 수 있어요`:'지금 부를 수 있어요'}</small></button>`+
-    (left>0?`<button class="big" data-ad="return"><strong>${g.adFree?'바로 부르기':'광고 보고 바로 부르기'}</strong></button>`:'')}
+    (left>0?`<button class="big" data-ad="return"><strong>${noAds()?'바로 부르기':'광고 보고 바로 부르기'}</strong></button>`:'')}
   else if(g.phase==='graduated'){const nm_=SP[g.species].ko,gen=(g.gen||1)+1;html=`<div class="pxpick"><p>다음 알은 어떻게 할까요?</p>
     <button class="pxopt" data-next="heir"><b>${nm_}의 알 받기</b><small>무늬 ${g.lastAcc} 60% · ${gen}대째</small></button>
     <button class="pxopt" data-next="fresh"><b>새로운 알 받기</b><small>처음부터 랜덤 · 1대째</small></button></div>`}
   else if(g.phase==='alive'&&ui.gradAsk){key+='grad';const full=E.fullTerm(g);html=`<p class="q">지금 졸업할까요?</p>
     <button class="big pri" data-grad-go><strong>졸업하기 ${full?'★★':'★'}</strong><small>${full?'오늘 졸업해도 ★★예요':'7일째까지 키우면 ★★'}</small></button><button class="big" data-grad-cancel><strong>더 키울래요</strong></button>`}
   else if(g.phase==='alive'){key+=ui.restartAsk;html=ui.restartAsk?`<p class="q">${restartMsg()}</p>
-    <button class="big pri" data-ad="restart"><strong>${g.adFree?'다시 키우기':'광고 보고 다시 키우기'}</strong></button><button class="big" data-restart-cancel><strong>그대로 키울래요</strong></button>`
+    <button class="big pri" data-ad="restart"><strong>${noAds()?'다시 키우기':'광고 보고 다시 키우기'}</strong></button><button class="big" data-restart-cancel><strong>그대로 키울래요</strong></button>`
     :''}
   if(g.phase==='alive'&&(ui.restartAsk||ui.gradAsk))ui.menuOpen=true;
   if(g.phase==='alive'&&!ui.restartAsk&&!ui.gradAsk)ui.menuOpen=false;
@@ -1490,7 +1492,7 @@ $('menuPanel').addEventListener('click',menuClick);
 $('wFeed').onclick=()=>{if(g.phase==='alive'&&!g.sleeping&&g.lights&&E.meal(g)==='ok'){banner('🍙 위젯에서 밥을 줬어요');check();save()}else banner('지금은 밥을 줄 수 없어요')};
 $('wClean').onclick=()=>{if(g.phase==='alive'&&g.poops){g.poops=0;banner('🚽 위젯에서 청소했어요');save()}else banner('치울 똥이 없어요')};
 function showAd(cb){
-  if(g.adFree){cb();return}
+  if(noAds()){cb();return}
   const o=$('adov');o.hidden=false;let n=3;$('adcd').textContent=n;
   const iv=setInterval(()=>{n--;$('adcd').textContent=n;if(n<=0){clearInterval(iv);o.hidden=true;cb()}},1000);
 }
