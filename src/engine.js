@@ -53,6 +53,7 @@ const localHour=g=>hourOf(lt(g));
 const isNight=g=>{const h=localHour(g);return h>=22||h<8};
 // from 19:00 the player may put the pet to bed early by turning the light off, and wake it again until 22:00
 const EARLY_BED=19,EARLY_WAKE=6;
+const LUNCH=['🍙 점심 먹었어?','👀 뭐 해? 나 여기 있어','🌤 오늘도 힘내!'];
 const earlyBed=g=>g.stage!=='baby'&&!g.lights&&localHour(g)>=EARLY_BED;
 // awake in the evening: the screen shows a drowsy face now and then
 const drowsy=g=>g.phase==='alive'&&!g.sleeping&&g.stage!=='baby'&&localHour(g)>=EARLY_BED&&!isNight(g);
@@ -178,7 +179,10 @@ function step(g,ev,opts={}){
     else g.lights=true}
   if(g.wakeDark&&h===12&&m===0){g.wakeDark=false;g.lights=true;g.night++}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
-  if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];if(L.length)notify(g,'',L.join(' · '),'digest',ev)}
+  if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];
+    // the lunch slot always says something, so a quiet morning doesn't feel like the app stopped
+    if(!L.length&&h===12&&m===30&&!g.sleeping&&g.stage!=='baby')L.push(LUNCH[day%LUNCH.length]);
+    if(L.length)notify(g,'',L.join(' · '),'digest',ev)}
   const rx=g.mode==='relaxed'?1.5:1;
   if(!g.sleeping){
     if(++g.hungerT>=hungerInt(g)*rx){g.hungerT=-Math.floor(rand(g)*hungerInt(g)*.25);if(g.hunger>0&&--g.hunger===0)notify(g,'🍙','꼬르륵… 배고파','need',ev)}

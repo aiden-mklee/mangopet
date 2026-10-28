@@ -3445,6 +3445,393 @@
    }
   },
   {
+   "name": "attentive",
+   "seed": 9,
+   "mode": "relaxed",
+   "script": [
+    [
+     65,
+     "care"
+    ],
+    [
+     320,
+     "care"
+    ],
+    [
+     685,
+     "care"
+    ],
+    [
+     840,
+     "care"
+    ],
+    [
+     1505,
+     "care"
+    ],
+    [
+     1760,
+     "care"
+    ],
+    [
+     2125,
+     "care"
+    ],
+    [
+     2280,
+     "care"
+    ],
+    [
+     2945,
+     "care"
+    ],
+    [
+     3200,
+     "care"
+    ],
+    [
+     3565,
+     "care"
+    ],
+    [
+     3720,
+     "care"
+    ],
+    [
+     4385,
+     "care"
+    ],
+    [
+     4640,
+     "care"
+    ],
+    [
+     5005,
+     "care"
+    ],
+    [
+     5160,
+     "care"
+    ],
+    [
+     5825,
+     "care"
+    ],
+    [
+     6080,
+     "care"
+    ],
+    [
+     6445,
+     "care"
+    ],
+    [
+     6600,
+     "care"
+    ],
+    [
+     7265,
+     "care"
+    ],
+    [
+     7520,
+     "care"
+    ],
+    [
+     7885,
+     "care"
+    ],
+    [
+     8040,
+     "care"
+    ],
+    [
+     8705,
+     "care"
+    ],
+    [
+     8960,
+     "care"
+    ],
+    [
+     9325,
+     "care"
+    ],
+    [
+     9480,
+     "care"
+    ],
+    [
+     10145,
+     "care"
+    ],
+    [
+     10400,
+     "care"
+    ],
+    [
+     10765,
+     "care"
+    ],
+    [
+     10920,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 567894482
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 13,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 1,
+       "night": 0,
+       "checks": 2,
+       "acc": null,
+       "seed": 2903413571
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 15,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 0,
+       "morning": 1,
+       "night": 1,
+       "checks": 4,
+       "acc": null,
+       "seed": 816082970
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "sleepy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 24,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 0,
+       "morning": 2,
+       "night": 2,
+       "checks": 8,
+       "acc": null,
+       "seed": 4159508611
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "wild_cat",
+       "con": "sleepy",
+       "hunger": 4,
+       "happy": 4,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": false,
+       "careMiss": 0,
+       "morning": 3,
+       "night": 3,
+       "checks": 12,
+       "acc": null,
+       "seed": 2576131286
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "wild_cat",
+       "con": "sleepy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 36,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 0,
+       "morning": 5,
+       "night": 5,
+       "checks": 20,
+       "acc": null,
+       "seed": 105153503
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "wild_cat",
+       "con": "sleepy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 42,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 0,
+       "morning": 7,
+       "night": 7,
+       "checks": 28,
+       "acc": null,
+       "seed": 1297307346
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🐣 알이 깨어났어요! · 🍙 배고파",
+      "sent"
+     ],
+     [
+      750,
+      "🍙 점심 먹었어?",
+      "sent"
+     ],
+     [
+      1920,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      2190,
+      "👀 뭐 해? 나 여기 있어",
+      "sent"
+     ],
+     [
+      3360,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      3630,
+      "🌤 오늘도 힘내!",
+      "sent"
+     ],
+     [
+      4800,
+      "✨ 들냥(으)로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      5070,
+      "🍙 점심 먹었어?",
+      "sent"
+     ],
+     [
+      6240,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      6510,
+      "👀 뭐 해? 나 여기 있어",
+      "sent"
+     ],
+     [
+      7680,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      7950,
+      "🌤 오늘도 힘내!",
+      "sent"
+     ],
+     [
+      9120,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      9390,
+      "🍙 점심 먹었어?",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "wild_cat": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "wild_cat",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
    "name": "early-graduation",
    "seed": 5,
    "mode": "relaxed",

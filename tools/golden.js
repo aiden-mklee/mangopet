@@ -25,6 +25,8 @@ const CASES=[
   {name:'early-riser',seed:17,mode:'relaxed',script:[...visits([[6,30]]).map(([t])=>[t-7*60,'light']),...visits([[6,31],[12,30],[19,0]]).map(([t])=>[t-7*60,'care'])]},
   // a late sleeper: never turns the light on in the morning, so the pet gets up alone at noon (leans moon)
   {name:'late-sleeper',seed:23,mode:'relaxed',script:visits([[13,0],[18,30],[21,40]]).map(([t])=>[t-7*60,'care'])},
+  // a careful player who checks just before each digest: the 12:30 slot still sends a lunch hello
+  {name:'attentive',seed:9,mode:'relaxed',script:visits([[8,5],[12,20],[18,25],[21,0]]).map(([t])=>[t-7*60,'care'])},
   {name:'early-graduation',seed:5,mode:'relaxed',script:[...visits(OFFICE,4),[3*1440+9*60,'graduate']]},
 ];
 const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
