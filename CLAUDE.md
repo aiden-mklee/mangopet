@@ -26,7 +26,7 @@
 ## 코드 지도
 
 - 화면: 48 × 46칸 LCD. 놀이 공간 48 × 32(`LW`, `LH`, 바닥 `GND`) + 위아래 아이콘 줄. 픽셀 버퍼는 `Pix` 클래스.
-- 그림: `RAW`(스프라이트 문자열), `ICONS`(6 × 6 아이콘), `buildAdult(line, animal)`이 성체 24종을 조합해서 만든다. 표정은 `moodRows`.
+- 그림: `RAW`(스프라이트 문자열), `ICONS`(6 × 6 아이콘), `buildAdult(line, animal)`이 성체 24종을 조합해서 만든다(달리기용 작은 그림은 `buildRunner`). 표정은 `moodRows`.
 - 엔진(`src/engine.js`): 데이터 `CON`(체질), `LINES`·`ANIMALS`·`SP`(종), `PATTERNS`(가보 무늬 이름), `NOTIF`(알림 빈도). 1분 진행 `E.step`, 건너뛰기 `E.advance`, 행동 `E.meal/snack/med/clean/pet/playDone/visit`, 생애 `E.newPet/hatch/graduate`, 알림 예측 `E.forecast`.
 - 화면(`src/prototype.html`): `SKINS`(케이스 색), `CASES`(케이스 상품), `BGS`(배경), `CHARMS`(키링 참 그림), `ACC`(가보 무늬 그림, 몸에 새기는 위치는 `patPoints`).
 - 상태: 전역 `g`(저장되는 게임 상태, 엔진이 읽고 쓴다)와 `ui`(화면 상태). 화면 쪽 `stepMinute()`/`advance(min)`은 엔진을 부르고 이벤트를 처리하는 얇은 감싸개다.
