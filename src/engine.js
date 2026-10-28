@@ -100,7 +100,7 @@ function lineOdds(g){
   const c=(g.checks||0)+1,food=(g.meals||0)+g.snacks+1,w={
     sun:1+1.5*g.morning/c,
     moon:1+1.5*g.night/c,
-    chub:.7+3*g.snacks/food+(g.weight>baseW(g)+8?.8:0),
+    chub:.5+4.5*g.snacks/food+(g.weight>baseW(g)+8?.8:0),
     wild:.3+.5*g.careMiss};
   const sum=Object.values(w).reduce((a,b)=>a+b,0);for(const k in w)w[k]/=sum;return w;
 }
@@ -201,7 +201,7 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 /* ---------- actions ---------- */
 // each returns what happened so the screen can pick the animation; none of them read the clock
 // one visit = one count, however many buttons it takes
-function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=18||h<5)g.night++}
+function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g,ev=[]){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);if((g.allSnacks=(g.allSnacks||0)+1)>=30)unlockCharm(g,'cookie',ev);return 'ok'}
 function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;

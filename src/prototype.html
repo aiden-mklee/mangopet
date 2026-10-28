@@ -717,7 +717,7 @@ const SKINS=[{id:'classic',ko:'기본',skin:'#ebe5d6',lo:'#ddd5c2',ink:'rgba(0,0
   {id:'berry',ko:'딸기우유',skin:'#f2b3bf',lo:'#e79aa9',ink:'#7a3443',btn:'#6e2f3c'},
   {id:'mint',ko:'민트초코',skin:'#a6dccb',lo:'#8fcbb8',ink:'#2f5a4d',btn:'#4a3328'},
   {id:'banana',ko:'망고',skin:'#f6c64e',lo:'#ecb437',ink:'#6b4a12',btn:'#5a3d12',paid:1},
-  {id:'smoke',ko:'스모크',skin:'#3a3d44',lo:'#30333a',ink:'rgba(255,255,255,.5)',btn:'#1b1d21',paid:1}];
+  {id:'smoke',ko:'스모크',skin:'#3a3d44',lo:'#30333a',ink:'rgba(255,255,255,.5)',btn:'#c9c3b5',paid:1}];
 const BGS=[{id:'beige',ko:'베이지',c:['#f3eee6','#ddd6cb','#cdc5b9']},{id:'sky',ko:'하늘',c:['#eef4f8','#d3e1ea','#bfd0dc']},
   {id:'mint',ko:'민트',c:['#eef6f0','#d2e5d8','#bdd5c4']},{id:'peach',ko:'복숭아',c:['#fbefe9','#f0d6cc','#e4c1b4']},
   {id:'lilac',ko:'라일락',c:['#f2eff8','#dcd5ea','#c9c0dc']},{id:'night',ko:'밤',c:['#4a4d57','#2f3139','#1f2026'],dark:1}];
@@ -929,9 +929,14 @@ function crackEgg(){
   if(g.cracks>=5)ui.anim={type:'hatch',start:now(),dur:1500};save();
 }
 const AURA_CACHE=new Map();
-function auraRing(s){let o=AURA_CACHE.get(s);if(o)return o;o=[];const on=(r,c)=>r>=0&&r<s.h&&c>=0&&c<s.w&&s.rows[r][c]==='#';
-  for(let r=-2;r<s.h+2;r++)for(let c=-2;c<s.w+2;c++){if(on(r,c))continue;let d=9;
-    for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++)if(on(r+dr,c+dc))d=Math.min(d,Math.max(Math.abs(dr),Math.abs(dc)));if(d===2)o.push([r,c])}
+// The aura is a ring two cells out from the body, measured from a pruned outline: loose thin bits (whiskers,
+// wing tips, the line badge) are trimmed first so the ring stays smooth, and it never touches the sprite itself.
+function auraRing(s){let o=AURA_CACHE.get(s);if(o)return o;o=[];
+  const P=4,W=s.w+P*2,H=s.h+P*2,grid=Array.from({length:H},(_,r)=>Array.from({length:W},(_,c)=>{const y=r-P,x=c-P;return y>=0&&y<s.h&&x>=0&&x<s.w&&s.rows[y][x]==='#'}));
+  let m=grid.map(r=>r.slice());
+  for(let k=0;k<3;k++)m=m.map((row,r)=>row.map((v,c)=>v&&[[1,0],[-1,0],[0,1],[0,-1]].filter(([a,b])=>m[r+a]&&m[r+a][c+b]).length>=2));
+  const dist=(g,r,c)=>{let d=9;for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++)if(g[r+dr]&&g[r+dr][c+dc])d=Math.min(d,Math.max(Math.abs(dr),Math.abs(dc)));return d};
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(dist(m,r,c)===2&&dist(grid,r,c)>1)o.push([r-P,c-P]);
   AURA_CACHE.set(s,o);return o}
 const BIG_STAR={w:5,h:5,rows:['..#..','.###.','#####','.###.','.#.#.']};
 const MINI_HEART={w:3,h:3,rows:['#.#','###','.#.']},SPARK={w:3,h:3,rows:['.#.','###','.#.']};
@@ -1133,11 +1138,13 @@ function patPoints(s,id){
     for(const st of full){const sw=st[0].length;
       for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(sw/2)+dc;if(fits(st,r,c)){carve(st,r,c);return pts}}}
     for(const st of full)for(let r=bot-st.length+1;r>=top;r--)for(let c=1;c<W-st[0].length;c++)if(fits(st,r,c)){carve(st,r,c);return pts}
+    // no room for a full one: a small stamp that sits cleanly (forehead first, then anywhere) reads better than a big one over the face
+    for(let r=top;r<=bot-small.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(small[0].length/2)+dc;if(fits(small,r,c)){carve(small,r,c);return pts}}
+    for(let r=bot-small.length+1;r>=top;r--)for(let c=1;c<W-small[0].length;c++)if(fits(small,r,c)){carve(small,r,c);return pts}
     // still no room: let a full-size stamp lap over the face a little (it may touch the eyes, never cut the outline)
     const inner=(r,c)=>on(r,c)&&[[1,0],[-1,0],[0,1],[0,-1]].every(([dr,dc])=>on(r+dr,c+dc)||hole.has((r+dr)*W+c+dc));
     const loose=(st,r,c)=>st.every((row,i)=>[...row].every((ch,j)=>ch!=='#'||inner(r+i,c+j)));
     for(const st of full)for(let r=top;r<=bot-st.length+1;r++)for(const dc of[0,-1,1,-2,2]){const c=cx-Math.floor(st[0].length/2)+dc;if(loose(st,r,c)){carve(st,r,c);return pts}}
-    for(let r=top;r<=bot-small.length+1;r++)for(const dc of[0,-1,1,-2,2,-3,3]){const c=cx-Math.floor(small[0].length/2)+dc;if(fits(small,r,c)){carve(small,r,c);return pts}}
     return pts}
   if(id==='줄무늬'){
     // three bars running down from the top of the head, starting below the ears where the head is full width

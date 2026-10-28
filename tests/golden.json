@@ -200,7 +200,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 1,
+       "night": 0,
        "checks": 2,
        "acc": null,
        "seed": 1447918632
@@ -223,7 +223,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 3,
+       "night": 1,
        "checks": 4,
        "acc": null,
        "seed": 2959778460
@@ -246,7 +246,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 5,
+       "night": 2,
        "checks": 6,
        "acc": null,
        "seed": 3839802618
@@ -269,7 +269,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 9,
+       "night": 4,
        "checks": 10,
        "acc": null,
        "seed": 1368824835
@@ -292,7 +292,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 13,
+       "night": 6,
        "checks": 14,
        "acc": null,
        "seed": 3192814348
@@ -622,7 +622,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 1,
+       "night": 0,
        "checks": 2,
        "acc": "줄무늬",
        "seed": 3847378924
@@ -645,7 +645,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 3,
+       "night": 1,
        "checks": 4,
        "acc": "줄무늬",
        "seed": 2264001599
@@ -668,7 +668,7 @@
        "lights": false,
        "careMiss": 2,
        "morning": 0,
-       "night": 5,
+       "night": 2,
        "checks": 6,
        "acc": "줄무늬",
        "seed": 1880354417
@@ -691,7 +691,7 @@
        "lights": false,
        "careMiss": 2,
        "morning": 0,
-       "night": 9,
+       "night": 4,
        "checks": 10,
        "acc": "줄무늬",
        "seed": 2440672590
@@ -714,7 +714,7 @@
        "lights": false,
        "careMiss": 2,
        "morning": 0,
-       "night": 13,
+       "night": 6,
        "checks": 14,
        "acc": "줄무늬",
        "seed": 4200720906
@@ -1911,7 +1911,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 1,
+       "night": 0,
        "checks": 2,
        "acc": null,
        "seed": 184247390
@@ -1934,7 +1934,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 3,
+       "night": 1,
        "checks": 4,
        "acc": null,
        "seed": 2895837361
@@ -1957,7 +1957,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 5,
+       "night": 2,
        "checks": 6,
        "acc": null,
        "seed": 680624366
@@ -1980,7 +1980,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 9,
+       "night": 4,
        "checks": 10,
        "acc": null,
        "seed": 1240942539
@@ -2003,7 +2003,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 13,
+       "night": 6,
        "checks": 14,
        "acc": null,
        "seed": 1169425042
@@ -2334,7 +2334,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 1,
-       "night": 2,
+       "night": 1,
        "checks": 4,
        "acc": null,
        "seed": 3279484455
@@ -2357,7 +2357,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 2,
-       "night": 4,
+       "night": 2,
        "checks": 8,
        "acc": null,
        "seed": 1696107130
@@ -2380,7 +2380,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 3,
-       "night": 6,
+       "night": 3,
        "checks": 12,
        "acc": null,
        "seed": 1312459948
@@ -2403,7 +2403,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 5,
-       "night": 10,
+       "night": 5,
        "checks": 20,
        "acc": null,
        "seed": 2504613791
@@ -2426,7 +2426,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 7,
-       "night": 14,
+       "night": 7,
        "checks": 28,
        "acc": null,
        "seed": 3064931964
@@ -2736,7 +2736,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 1,
+       "night": 0,
        "checks": 2,
        "acc": null,
        "seed": 184247296
@@ -2759,7 +2759,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 3,
+       "night": 1,
        "checks": 4,
        "acc": null,
        "seed": 1064271454
@@ -2770,7 +2770,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
@@ -2782,7 +2782,7 @@
        "lights": false,
        "careMiss": 1,
        "morning": 0,
-       "night": 5,
+       "night": 2,
        "checks": 6,
        "acc": null,
        "seed": 3144025755
@@ -2793,7 +2793,7 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "moon_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
        "hunger": 3,
        "happy": 4,
@@ -2805,7 +2805,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 0,
-       "night": 6,
+       "night": 3,
        "checks": 7,
        "acc": null,
        "seed": 1752472021
@@ -2816,7 +2816,7 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "moon_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
        "hunger": 3,
        "happy": 4,
@@ -2828,7 +2828,7 @@
        "lights": true,
        "careMiss": 1,
        "morning": 0,
-       "night": 6,
+       "night": 3,
        "checks": 7,
        "acc": null,
        "seed": 1752472021
@@ -2883,7 +2883,7 @@
      ],
      [
       4800,
-      "✨ 달펭(으)로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 햇펭(으)로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -2893,12 +2893,12 @@
      ],
      [
       5280,
-      "🎓 달펭이(가) 졸업했어요! 도감에 ★",
+      "🎓 햇펭이(가) 졸업했어요! 도감에 ★",
       "sent"
      ]
     ],
     "dex": {
-     "moon_penguin": {
+     "sun_penguin": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -2906,7 +2906,7 @@
     },
     "hist": [
      {
-      "sp": "moon_penguin",
+      "sp": "sun_penguin",
       "mode": "relaxed",
       "result": "졸업 ★",
       "days": 3
