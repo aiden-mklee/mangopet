@@ -1006,7 +1006,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · bcf7ab',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 058bc1',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1068,7 +1068,7 @@ function act(a){
   ui.sel=ACTS.indexOf(a);
   if(a==='stats'){if(ui.view==='stats'){ui.page=(ui.page+1)%statPages()}else{ui.view='stats';ui.page=0}return}
   ui.view='main';
-  if(a==='light'){E.toggleLight(g);check();return}
+  if(a==='light'){E.toggleLight(g);check();scheduleSoon();return}
   if(!g.lights){say('DARK');return}
   if(g.sleeping){say('ZZZ');return}
   check();
@@ -1079,12 +1079,12 @@ function act(a){
   if(a==='med'){if(E.med(g)==='no'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'med',start:t,dur:1200}}
   if(a==='clean'){if(!g.poops){ui.anim={type:'no',start:t,dur:800};return}
     ui.anim={type:'clean',start:t,dur:1300,prev:run(E.clean)};ui.sparkFrom=t+1300;ui.sparkUntil=t+4100;introDid('clean')}
-  save();
+  save();scheduleSoon();
 }
 function petTap(){
   if(g.phase!=='alive'||g.sleeping||!g.lights||ui.anim||ui.game||ui.view!=='main')return;
   ui.heartUntil=now()+900;
-  if(E.pet(g)==='plop')say('PLOP!');introDid('pet');
+  if(E.pet(g)==='plop')say('PLOP!');introDid('pet');scheduleSoon();
 }
 /* ---------- mini games ----------
    Play picks one at random (never the same twice in a row). Each is about ten seconds and scores 0-5;
@@ -1163,7 +1163,7 @@ function gameInput(k,d=0,dy=0){const G=ui.game;if(G&&G.phase!=='end')GAMES[G.id]
 function choose(d){gameInput('dir',d)}
 function gameTick(){
   const G=ui.game;if(!G)return;const t=now();
-  if(G.phase==='end'){if(t>=G.until){E.playDone(g,G.wins);check();ui.game=null;save()}return}
+  if(G.phase==='end'){if(t>=G.until){E.playDone(g,G.wins);check();ui.game=null;save();scheduleSoon()}return}
   GAMES[G.id].tick(G,t);
 }
 
@@ -1701,17 +1701,26 @@ const Native=window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacit
 const AHEAD_MIN=7*1440,AHEAD_MAX=60;
 function upcoming(){if(!['alive','egg'].includes(g.phase))return [];
   const ahead=E.forecast(g,AHEAD_MIN).slice(0,AHEAD_MAX);
-  return [...ahead,...E.comeBack(g,ahead)].map(n=>({...n,at:Date.now()+(n.t-g.t)*60000/Math.max(1,g.speed)}))}
-async function cancelAhead(){const LN=Native&&Native.LocalNotifications;if(!LN)return;
-  try{const p=await LN.getPending();const ids=p.notifications.map(n=>({id:n.id}));if(ids.length)await LN.cancel({notifications:ids})}catch(e){}}
-async function scheduleAhead(){const LN=Native&&Native.LocalNotifications;if(!LN)return;await cancelAhead();
-  const list=upcoming();if(!list.length)return;
-  try{await LN.schedule({notifications:list.map((n,i)=>({id:i+1,title:n.who||'망고펫',body:n.text,schedule:{at:new Date(n.at),allowWhileIdle:true}}))})}catch(e){}}
+  return [...ahead,...E.comeBack(g,ahead)].map(n=>({...n,at:(g.clockAt||Date.now())+(n.t-g.t)*60000/Math.max(1,g.speed)}))}
+// Keep the phone's pending notifications in step with the game all the time, not only when the app goes away:
+// iOS may suspend the page before an async 'schedule on hide' finishes, which left a day with no notifications.
+// New ones are written first (same ids replace the old), then leftovers are cancelled, so a cut-off run still
+// leaves a full set. While the app is open, the next minute and a half is skipped (the screen shows it anyway).
+let schedBusy=false,schedAgain=false,schedTimer=0;
+async function scheduleAhead(){const LN=Native&&Native.LocalNotifications;if(!LN)return;
+  if(schedBusy){schedAgain=true;return}schedBusy=true;
+  try{const soon=Date.now()+(document.hidden?5000:90000),list=upcoming().filter(n=>n.at>soon);
+    if(list.length)await LN.schedule({notifications:list.map((n,i)=>({id:i+1,title:n.who||'망고펫',body:n.text,schedule:{at:new Date(n.at),allowWhileIdle:true}}))});
+    const p=await LN.getPending();const extra=p.notifications.filter(n=>+n.id>list.length).map(n=>({id:n.id}));if(extra.length)await LN.cancel({notifications:extra})}catch(e){}
+  schedBusy=false;if(schedAgain){schedAgain=false;scheduleAhead()}}
+const scheduleSoon=()=>{clearTimeout(schedTimer);schedTimer=setTimeout(scheduleAhead,1500)};
+setInterval(()=>{if(!document.hidden)scheduleAhead()},60000);
+addEventListener('pagehide',()=>{save();scheduleAhead()});
 // ask once on the first launch of the app; the settings screen can ask again
 async function askNotifPermission(loud){const LN=Native&&Native.LocalNotifications;if(!LN){if(loud)banner(Native?'⚠️ 알림 기능을 찾지 못했어요':'웹에서는 알림이 없어요');return}
   try{const r=await LN.requestPermissions();g.notifAsked=true;save();if(loud)banner(r.display==='granted'?'🔔 알림이 켜져 있어요':'🔕 아이폰 설정 → 망고펫 → 알림에서 켜 주세요')}
   catch(e){if(loud)banner('⚠️ 알림 오류: '+(e&&e.message||e))}}
-document.addEventListener('visibilitychange',()=>{if(document.hidden){save();scheduleAhead()}else{tick();save();cancelAhead()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){save();scheduleAhead()}else{tick();save();scheduleSoon()}});
 
 /* ---------- events ---------- */
 function nav(dx,dy){
@@ -1787,7 +1796,7 @@ if(g.acc)g.acc=toPat(g.acc);if(g.lastAcc)g.lastAcc=toPat(g.lastAcc);if(g.heirBox
 if(g.intro==null)g.intro=g.phase==='select'&&!(g.hist||[]).length&&!(g.charms||[]).length?'case':'done';
 buildIcons();buildStatic();applySkin();buildDevBtns();drawCharms();
 if(g.intro==='case'||g.intro==='life')openZoom('intro-'+g.intro);else if(g.intro==='charm')openZoom('intro-charm');
-tick();cancelAhead();if(Native&&!g.notifAsked)askNotifPermission(false);
+tick();scheduleSoon();if(Native&&!g.notifAsked)askNotifPermission(false);
 // fit the whole device into the screen height
 function fitWindow(){const fw=document.querySelector('.flipwrap');fw.style.zoom=1;const tot=document.querySelector('.phone').scrollHeight,own=fw.getBoundingClientRect().height+44;
   // while the decorating sheet is open, shrink the device into the space above it so it stays a live preview
