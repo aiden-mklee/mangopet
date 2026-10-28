@@ -1013,7 +1013,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 66a506',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 6edfc6',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1354,7 +1354,7 @@ const CHARMS=[
   {id:'egg',ko:'미니 알',cond:'첫 키링으로 고르면',starter:1,col:'#EBE5D6',rows:['..####..','.######.','##.#####','########','#####.##','##.#####','.######.','..####..']},
   {id:'star',ko:'별',cond:'처음 졸업하면',col:'#F2D677',rows:['...##...','...##...','########','.######.','..####..','.##..##.','##....##','........']},
   {id:'heart',ko:'하트',cond:'도감 5종을 모으면',col:'#E87A8F',rows:['.##..##.','########','########','########','.######.','..####..','...##...','........']},
-  {id:'cat',ko:'고양이',cond:'고양이 성체를 만나면',col:'#3E434D',col2:'#F2D677',rows:['#.#.....','###.....','o#o.....','###...#.','.###...#','.####..#','.#####.#','.######.']},
+  {id:'cat',ko:'고양이',cond:'고양이 성체를 만나면',col:'#F0A050',col2:'#F2A7B5',rows:['...#......#...','...##....##...','...########...','...#k####k#...','kk.########.kk','...###oo###...','kk.########.kk','....######....']},
   {id:'mango',ko:'망고',cond:'첫 키링으로 고르면',starter:1,col:'#F6C64E',col2:'#6FB04F',rows:['....oo..','...o....','..####..','.######.','########','########','.######.','..####..']},
   {id:'clover',ko:'네잎클로버',cond:'첫 키링으로 고르면',starter:1,col:'#7BC67B',rows:['.##..##.','###..###','########','..####..','########','###..###','.##..##.','....#...']},
   {id:'cherry',ko:'체리',cond:'첫 키링으로 고르면',starter:1,col:'#E85A5A',col2:'#6FB04F',rows:['....o...','...oo...','..o..o..','.o...o..','.o...o..','###.###.','###.###.','.#...#..']},
@@ -1376,21 +1376,25 @@ function drawCharms(){const box=$('charms');if(!box)return;box.innerHTML='';cons
   if(n){const ln=document.createElement('i');ln.className='chainline';ln.style.height=(14+(n-1)*42)+'px';box.appendChild(ln)}
   (g.equip||[]).forEach((id,i)=>{const c=CHARMS.find(x=>x.id===id);if(!c)return;const w=document.createElement('div');w.className='charm';
     w.style.top=(10+i*42)+'px';const cv=document.createElement('canvas');w.appendChild(cv);box.appendChild(w);
-    charmCanvas(cv,c,Math.max(2,Math.round(2.4*(window.devicePixelRatio||1))))});
+    w.style.left=-charmCanvas(cv,c,Math.max(2,Math.round(2.4*(window.devicePixelRatio||1))))/2+'px'});
 }
 const light=hex=>[1,3,5].reduce((t,i)=>t+parseInt(hex.slice(i,i+2),16),0)>600;
 const darken=(hex,a)=>'#'+[1,3,5].map(i=>Math.round(parseInt(hex.slice(i,i+2),16)*(1-a)).toString(16).padStart(2,'0')).join('');
 // a charm in its colour with a dark outline, so light charms read on light shells; locked ones are a faint silhouette
-function charmCanvas(cv,c,k,locked=false){
-  // rows: '#' the charm colour, 'o' a second colour (col2, e.g. a penguin's white belly), 'k' ink (eyes, whiskers)
+function charmCanvas(cv,c,k,locked=false,unit=3.8){
+  // rows: '#' the charm colour, 'o' a second colour (col2, e.g. a penguin's white belly), 'k' ink (eyes, whiskers).
+  // Most charms are 8 wide; a wider one (the cat with its whiskers) keeps the same pixel size, the canvas just grows.
+  const W=c.rows[0].length+2,H=c.rows.length+2;
   const kind=(x,y)=>{const ch=c.rows[y-1]&&c.rows[y-1][x-1];return ch==='#'?1:ch==='o'?2:ch==='k'?3:0};
-  const on=(x,y)=>x>=0&&y>=0&&x<10&&y<10&&kind(x,y)>0,same=(x,y,v)=>on(x,y)&&kind(x,y)===v;
-  const ctx=cv.getContext('2d');cv.width=cv.height=10*k;
-  for(let y=0;y<10;y++)for(let x=0;x<10;x++){const v=kind(x,y);
+  const body=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&(kind(x,y)===1||kind(x,y)===2);
+  const ctx=cv.getContext('2d');cv.width=W*k;cv.height=H*k;cv.style.width=W*unit+'px';cv.style.height=H*unit+'px';
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const v=kind(x,y);
     if(v===3){ctx.fillStyle=locked?'rgba(28,37,22,.28)':'#1c1d21';ctx.fillRect(x*k,y*k,k,k)}
-    else if(v){const col=v===2?c.col2:c.col;ctx.fillStyle=locked?'rgba(28,37,22,.28)':!on(x+1,y)||!on(x,y+1)?darken(col,light(col)?.12:.28):col;ctx.fillRect(x*k,y*k,k,k)}
-    else if(!locked&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>on(x+a,y+b))){ctx.fillStyle='#1c1d21';ctx.fillRect(x*k,y*k,k,k)}}
+    else if(v){const col=v===2?c.col2:c.col;ctx.fillStyle=locked?'rgba(28,37,22,.28)':!body(x+1,y)||!body(x,y+1)?darken(col,light(col)?.12:.28):col;ctx.fillRect(x*k,y*k,k,k)}
+    else if(!locked&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>body(x+a,y+b))){ctx.fillStyle='#1c1d21';ctx.fillRect(x*k,y*k,k,k)}}
+  return W*unit;
 }
+
 
 /* heirlooms are marks drawn into the body (stripes, a forehead star, spots), not items floating overhead */
 // marks are worked out once on the base sprite and reused for its mood variants, so they stay put when the face changes
@@ -1545,7 +1549,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-life]').forEach(b=>b.onclick=()=>{g.life=b.dataset.life;g.lifeNext=null;save();renderScreen(tab,el)});
     el.querySelectorAll('[data-intronext]').forEach(b=>b.onclick=()=>introTo(b.dataset.intronext));
     el.querySelectorAll('[data-starter]').forEach(b=>b.onclick=()=>{unlockCharm(b.dataset.starter);g.equip=g.equip||[];if(!g.equip.includes(b.dataset.starter)){if(g.equip.length>=3)g.equip.pop();g.equip.push(b.dataset.starter)}drawCharms();introTo('done')});
-    el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6));
+    el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6,false,4.8));
   }
   if(tab==='case'||tab==='bg'||tab==='btn'||tab==='charm'){
     const card=(attr,on,pic,name,sub='',dis=false)=>`<button class="pxcardbig" ${attr} aria-pressed="${on}" ${dis?'disabled':''}>${pic}<span>${name}</span>${sub?`<small>${sub}</small>`:''}</button>`;
@@ -1564,7 +1568,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{g.bg=b.dataset.bg;applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-btnst]').forEach(b=>b.onclick=()=>{g.btnStyle=b.dataset.btnst;applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-charm]').forEach(b=>b.onclick=()=>{const id=b.dataset.charm;g.equip=g.equip||[];if(g.equip.includes(id))g.equip=g.equip.filter(x=>x!==id);else if(g.equip.length<3)g.equip.push(id);else{banner('키링은 3개까지 달 수 있어요');return}drawCharms();save();renderScreen(tab,el)});
-    el.querySelectorAll('[data-cc]').forEach(cv=>{const c=CHARMS.find(x=>x.id===cv.dataset.cc);charmCanvas(cv,c,6,cv.hasAttribute('data-lock'))});
+    el.querySelectorAll('[data-cc]').forEach(cv=>{const c=CHARMS.find(x=>x.id===cv.dataset.cc);charmCanvas(cv,c,6,cv.hasAttribute('data-lock'),4.8)});
   }
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
