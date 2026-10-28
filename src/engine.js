@@ -146,7 +146,8 @@ function needsCall(g){
 function notify(g,icon,text,kind,ev){
   if(kind==='need'&&g.notifMode!=='live')return;
   const h=localHour(g);const quiet=h>=22||h<8;let held=null;
-  if(quiet)held='조용한 시간';else if(g.notifCount>=nm(g).cap&&kind!=='urgent')held='하루 한도';
+  // the digest slots themselves keep the day short, so a growth notice earlier in the day can't push the 21:30 bedtime call out
+  if(quiet)held='조용한 시간';else if(g.notifCount>=nm(g).cap&&kind!=='urgent'&&kind!=='digest')held='하루 한도';
   if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
   if(!held)g.notifCount++;
   g.log.unshift({t:g.t,text:icon?`${icon} ${text}`:text,held});g.log.length=Math.min(g.log.length,60);
