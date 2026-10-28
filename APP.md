@@ -18,7 +18,18 @@ app/android/            Android Studio 프로젝트
 - 인터넷이 없으면 `offline.html`("인터넷에 연결되지 않았어요")이 뜹니다.
 - 저장은 GitHub Pages 주소 기준이라, 앱에 들어 있던 예전 버전의 저장과는 따로입니다.
 - **출시 전에는 반드시 되돌립니다**: `capacitor.config.json`에서 `server` 칸을 지우고 `npx cap sync`. 애플은 게임을 밖에서 불러오는 앱을 심사에서 거절할 수 있습니다.
-- Xcode에서 ▶가 필요한 경우: 무료 계정 7일마다, 그리고 앱 껍데기(알림 플러그인, 아이콘, 앱 이름, 이 설정)를 바꿨을 때.
+- Xcode에서 ▶가 필요한 경우: 무료 계정 7일마다, 그리고 앱 껍데기(플러그인, 아이콘, 앱 이름, 이 설정)를 바꿨을 때.
+
+## 쓰는 플러그인
+
+| 플러그인 | 쓰는 곳 |
+|---|---|
+| local-notifications | 예약 알림 |
+| share + filesystem | 졸업 카드 공유 (그림을 캐시에 쓰고 공유 시트로) |
+| haptics | 버튼·부화·진화·졸업 진동 (설정 › 소리 › 진동, 기본 켬) |
+| splash-screen | 켤 때 노란 바탕 망고 화면 (`tools/icons.py`가 그림을 만듦) |
+
+빌드가 각 플러그인의 `dist/plugin.js`를 `app/www`와 `docs`에 복사해 `<script>`로 넣는다 (`tools/build.py`의 `PLUGINS`). 화면 코드는 `Capacitor.isPluginAvailable`로 확인하고 쓰므로, 플러그인이 없는 예전 설치본에서도 오류 없이 그 기능만 빠진다. 플러그인을 더하면 `npm install` → `PLUGINS`에 추가 → `npx cap sync` → 맥에서 다시 설치.
 
 ## 알림이 동작하는 방식
 

@@ -390,6 +390,12 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 
 <script src="capacitor.js"></script>
 <script src="local-notifications.js"></script>
+<script src="share.js"></script>
+<script src="haptics.js"></script>
+<script src="splash-screen.js"></script>
+<script src="synapse.js"></script>
+<script>window.synapse=window.synapse||window.outsystemsSynapse</script>
+<script src="filesystem.js"></script>
 
 <header class="top">
   <h1>MANGOPET</h1>
@@ -1016,7 +1022,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 37cfe8',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · bc5c56',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1034,7 +1040,7 @@ function run(f,...a){const ev=[];const r=f(g,...a,ev);ev.forEach(onEvent);return
 let AC=null;
 const SFX={press:[[1760,25]],eat:[[880,60],[0,30],[660,70]],hatch:[[523,80],[659,80],[784,140]],evolve:[[523,70],[659,70],[784,70],[1047,160]],
   grad:[[784,110],[988,110],[1175,110],[1568,260]],point:[[1320,45]],over:[[440,130],[349,130],[262,220]],charm:[[1175,70],[1568,120]]};
-function sfx(k){if(!g.sound||!SFX[k])return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
+function sfx(k){buzz(k);if(!g.sound||!SFX[k])return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
   let t=AC.currentTime+.01;for(const [f,ms] of SFX[k]){if(f){const o=AC.createOscillator(),v=AC.createGain();o.type='square';o.frequency.value=f;
     v.gain.setValueAtTime(.045,t);v.gain.setValueAtTime(.045,t+ms/1000-.01);v.gain.linearRampToValueAtTime(0,t+ms/1000);o.connect(v).connect(AC.destination);o.start(t);o.stop(t+ms/1000)}t+=ms/1000}}catch(e){}}
 function onEvent(e){
@@ -1577,6 +1583,7 @@ function renderScreenIn(tab,el){
     el.innerHTML=`<img class="gradcard" alt="졸업 카드"><div class="pxrow"><button class="pxbtn" data-cardshare>공유하기</button></div><p class="dim" data-cardmsg>이미지를 길게 눌러 사진에 저장할 수도 있어요</p>`;
     makeGradCard().then(blob=>{const img=el.querySelector('.gradcard');img.src=URL.createObjectURL(blob);
       const sh=el.querySelector('[data-cardshare]'),file=new File([blob],'mangopet.png',{type:'image/png'});
+      if(AppShare){sh.onclick=()=>shareCard(blob).catch(()=>{});return}
       if(!(navigator.canShare&&navigator.canShare({files:[file]})))sh.hidden=true;
       sh.onclick=()=>navigator.share({files:[file],title:'망고펫 졸업 카드'}).catch(()=>{})});
   }
@@ -1624,7 +1631,7 @@ function renderScreenIn(tab,el){
       <h3>케이스</h3><div class="pxrow">${shownCases().map(c=>{const sk=SKINS.find(k=>k.id===c.skin);return `<button class="pxbtn" data-case="${c.id}" aria-pressed="${(g.shape||'egg')===c.shape&&g.skin===c.skin}"><span class="pxsw" style="background:${sk.skin}"></span>${c.ko}${paidTag(c)?' (유료)':''}</button>`}).join('')}</div>
       <div class="pxrow"><button class="pxbtn" data-deco>꾸미기 · 케이스 배경 버튼 키링</button></div>
       ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
-      <h3>소리</h3><div class="pxrow"><button class="pxbtn" data-sound aria-pressed="${!!g.sound}">${g.sound?'효과음 켜짐 ✓':'효과음 켜기'}</button></div>
+      <h3>소리</h3><div class="pxrow"><button class="pxbtn" data-sound aria-pressed="${!!g.sound}">${g.sound?'효과음 켜짐 ✓':'효과음 켜기'}</button>${Haptics?`<button class="pxbtn" data-buzz aria-pressed="${g.buzz!==false}">${g.buzz!==false?'진동 켜짐 ✓':'진동 켜기'}</button>`:''}</div>
       <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>
       ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
       <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>
@@ -1639,6 +1646,7 @@ function renderScreenIn(tab,el){
     const dk=el.querySelector('[data-deco]');if(dk)dk.onclick=()=>openZoom('case');
     const np=el.querySelector('[data-nperm]');if(np)np.onclick=()=>askNotifPermission(true);
     const sd=el.querySelector('[data-sound]');if(sd)sd.onclick=()=>{g.sound=!g.sound;save();sfx('hatch');renderScreen(tab,el)};
+    const bz=el.querySelector('[data-buzz]');if(bz)bz.onclick=()=>{g.buzz=g.buzz===false;save();buzz('hatch');renderScreen(tab,el)};
     const tr=el.querySelector('[data-taprun]');if(tr)tr.onclick=()=>{g.tapRun=!g.tapRun;save();renderScreen(tab,el)};
     const r=el.querySelector('[data-restart-go]');if(r)r.onclick=()=>{flip(false);ui.restartAsk=true;lastCtx=''};
     el.querySelectorAll('[data-backup]').forEach(b=>b.onclick=async()=>{const k=b.dataset.backup;ui.backup=ui.backup===k?null:k;ui.backupMsg='';
@@ -1793,6 +1801,20 @@ function tick(){
 }
 // in the native app, leaving schedules what would happen if nobody came back (the engine's forecast); coming back cancels it
 const Native=window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()?{LocalNotifications:window.capacitorLocalNotifications&&window.capacitorLocalNotifications.LocalNotifications}:null;
+// newer shell plugins: only used when the installed app has them (an older install keeps working without)
+const hasPlugin=n=>!!(Native&&window.Capacitor.isPluginAvailable&&window.Capacitor.isPluginAvailable(n));
+const Haptics=hasPlugin('Haptics')&&window.capacitorHaptics?window.capacitorHaptics.Haptics:null;
+const AppShare=hasPlugin('Share')&&hasPlugin('Filesystem')&&window.capacitorShare&&window.capacitorFilesystemPluginCapacitor?
+  {Share:window.capacitorShare.Share,Filesystem:window.capacitorFilesystemPluginCapacitor.Filesystem,Directory:window.capacitorFilesystemPluginCapacitor.Directory}:null;
+if(hasPlugin('SplashScreen')&&window.capacitorSplashScreen)window.capacitorSplashScreen.SplashScreen.hide().catch(()=>{});
+// vibration follows the same moments as the beeps, on by default (g.buzz)
+const BUZZ={press:'light',point:'light',eat:'light',hatch:'ok',evolve:'ok',grad:'ok',charm:'ok',over:'warn'};
+function buzz(k){if(!Haptics||g.buzz===false||!BUZZ[k])return;const b=BUZZ[k];
+  (b==='light'?Haptics.impact({style:'LIGHT'}):Haptics.notification({type:b==='ok'?'SUCCESS':'WARNING'})).catch(()=>{})}
+async function shareCard(blob){const {Share,Filesystem,Directory}=AppShare;
+  const data=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(',')[1]);f.readAsDataURL(blob)});
+  const {uri}=await Filesystem.writeFile({path:'mangopet-card.png',data,directory:Directory.Cache});
+  await Share.share({title:'망고펫 졸업 카드',files:[uri]})}
 const AHEAD_MIN=7*1440,AHEAD_MAX=60;
 function upcoming(){if(!['alive','egg'].includes(g.phase))return [];
   const ahead=E.forecast(g,AHEAD_MIN).slice(0,AHEAD_MAX);

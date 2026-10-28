@@ -83,12 +83,21 @@ addEventListener('resize',fitWindow);setTimeout(fitWindow,50);setTimeout(fitWind
 """ + s[i:]
 
 
+PLUGINS = (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js'),
+           ('share/dist/plugin.js', 'share.js'), ('haptics/dist/plugin.js', 'haptics.js'),
+           ('splash-screen/dist/plugin.js', 'splash-screen.js'), ('synapse/dist/synapse.js', 'synapse.js'),
+           ('filesystem/dist/plugin.js', 'filesystem.js'))
+
+
 def native(s):
     """Native app: same as the phone beta, minus the web beta note (the app has real notifications)."""
     s = phone(s)
     s = re.sub(r'    <p class="betanote">.*?</p>\n', '', s, count=1)
-    # no bundler: the Capacitor runtime and the notifications plugin come in as plain scripts (copied next to the page)
-    s = s.replace('</style>', '</style>\n<script src="capacitor.js"></script>\n<script src="local-notifications.js"></script>', 1)
+    # no bundler: the Capacitor runtime and the plugins come in as plain scripts (copied next to the page, see PLUGINS);
+    # the filesystem plugin expects a global `synapse`, which the synapse bundle names outsystemsSynapse
+    tags = ''.join(f'<script src="{dst}"></script>\n' + ('<script>window.synapse=window.synapse||window.outsystemsSynapse</script>\n' if dst == 'synapse.js' else '')
+                   for _, dst in PLUGINS)
+    s = s.replace('</style>', '</style>\n' + tags.rstrip('\n'), 1)
     return rep(s, "const KEY='mangopet-beta-v1';", "const KEY='mangopet-app-v1';")
 
 
@@ -157,7 +166,7 @@ def main():
     open(os.path.join(DOCS, 'app.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False, fixed=True))
     open(os.path.join(ROOT, 'app', 'www', 'offline.html'), 'w', encoding='utf-8').write(OFFLINE)
     nm = os.path.join(ROOT, 'node_modules', '@capacitor')
-    for src, dst in (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js')):
+    for src, dst in PLUGINS:
         if os.path.exists(os.path.join(nm, src)):
             for out in (os.path.join(ROOT, 'app', 'www'), DOCS):
                 shutil.copy(os.path.join(nm, src), os.path.join(out, dst))

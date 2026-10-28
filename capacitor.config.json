@@ -11,6 +11,12 @@
   "plugins": {
     "LocalNotifications": {
       "iconColor": "#F6C64E"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#F6C64E",
+      "showSpinner": false
     }
   },
   "server": {

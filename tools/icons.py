@@ -85,6 +85,24 @@ def save(im, *path):
     im.save(p)
 
 
+def splashes():
+    """Launch screens: the icon art (egg and baby) small in the middle of flat mango yellow, at every size the
+    iOS and Android projects already have. iOS fills the screen with the square image, so the art stays centred."""
+    targets = []
+    ios = os.path.join(ROOT, 'app', 'ios', 'App', 'App', 'Assets.xcassets', 'Splash.imageset')
+    targets += [os.path.join(ios, f) for f in sorted(os.listdir(ios)) if f.endswith('.png')]
+    res = os.path.join(ROOT, 'app', 'android', 'app', 'src', 'main', 'res')
+    targets += [os.path.join(res, d, 'splash.png') for d in sorted(os.listdir(res)) if os.path.exists(os.path.join(res, d, 'splash.png'))]
+    for t in targets:
+        w, h = Image.open(t).size
+        im = Image.new('RGBA', (w, h), (246, 198, 78, 255))
+        side = int(min(w, h) * .42)
+        a = art(side * 2, scale=1.0).resize((side, side), Image.LANCZOS)
+        im.alpha_composite(a, ((w - side) // 2, (h - side) // 2))
+        im.convert('RGB').save(t)
+    print('splash screens:', len(targets))
+
+
 def main():
     big = full_icon()
     save(big, 'assets', 'icons', 'icon-1024.png')
@@ -105,6 +123,7 @@ def main():
         save(rnd, *res, f'mipmap-{dpi}', 'ic_launcher_round.png')
         fg = n * 108 // 48
         save(art(fg * 4, scale=.8).resize((fg, fg), Image.LANCZOS), *res, f'mipmap-{dpi}', 'ic_launcher_foreground.png')
+    splashes()
     bg = os.path.join(ROOT, *res, 'values', 'ic_launcher_background.xml')
     open(bg, 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#F6C64E</color>\n</resources>\n')
     print('icons written')
