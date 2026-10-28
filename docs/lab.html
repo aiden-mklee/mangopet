@@ -568,6 +568,8 @@ const localHour=g=>hourOf(lt(g));
 const isNight=g=>{const h=localHour(g);return h>=22||h<8};
 // from 19:00 the player may put the pet to bed early by turning the light off, and wake it again until 22:00
 const EARLY_BED=19,EARLY_WAKE=6;
+// the four charms offered at the end of the first run (one is picked there, the rest come with graduations)
+const STARTERS=['egg','mango','clover','cherry'];
 const LUNCH=['🍙 점심 먹었어?','👀 뭐 해? 나 여기 있어','🌤 오늘도 힘내!'];
 const earlyBed=g=>g.stage!=='baby'&&!g.lights&&localHour(g)>=EARLY_BED;
 // awake in the evening: the screen shows a drowsy face now and then
@@ -628,7 +630,9 @@ function decideAdult(g){
 function record(g,result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
 function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
-  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full})}
+  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full});
+  // each graduation hands over one of the first-run charms the player didn't pick
+  const left=STARTERS.filter(id=>!(g.charms||[]).includes(id));if(left.length)unlockCharm(g,pick(g,left),ev)}
 function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
 function runAway(g,ev){g.phase='away';g.awayUntil=g.t+180;notify(g,'✉️','집을 나갔어요… 편지가 남아 있어요','life',ev);ev.push({type:'away'})}
 function makeSick(g,ev){g.sick=true;g.doses=g.con==='frail'?2:1;notify(g,'🤒','몸이 뜨거워…',g.mode==='classic'?'urgent':'need',ev)}
@@ -997,7 +1001,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 22d4f2',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 4ae723',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1338,13 +1342,13 @@ function restartMsg(){
 const TABS=[['pet','펫',['..####..','.######.','##.##.##','########','###..###','.######.']],['dex','도감',['########','#..#...#','#..#...#','#..#...#','#..#...#','########']],
   ['heir','가보',['.######.','#......#','########','#..##..#','#......#','########']],['set','설정',['..#..#..','.######.','##....##','##....##','.######.','..#..#..']]];
 const CHARMS=[
-  {id:'egg',ko:'미니 알',cond:'첫 키링으로 고르면',starter:1,col:'#EBE5D6',rows:['..####..','.######.','##.#####','########','#####.##','##.#####','.######.','..####..']},
+  {id:'egg',ko:'미니 알',cond:'처음 고르거나 졸업하면',starter:1,col:'#EBE5D6',rows:['..####..','.######.','##.#####','########','#####.##','##.#####','.######.','..####..']},
   {id:'star',ko:'별',cond:'처음 졸업하면',col:'#F2D677',rows:['...##...','...##...','########','.######.','..####..','.##..##.','##....##','........']},
   {id:'heart',ko:'하트',cond:'도감 5종을 모으면',col:'#E87A8F',rows:['.##..##.','########','########','########','.######.','..####..','...##...','........']},
   {id:'cat',ko:'고양이',cond:'고양이 성체를 만나면',col:'#3E434D',col2:'#F2D677',rows:['...#......#...','...##....##...','...########...','...#o####o#...','kk.########.kk','...###kk###...','kk.########.kk','....######....']},
-  {id:'mango',ko:'망고',cond:'첫 키링으로 고르면',starter:1,col:'#F6C64E',col2:'#6FB04F',rows:['....oo..','...o....','..####..','.######.','########','########','.######.','..####..']},
-  {id:'clover',ko:'네잎클로버',cond:'첫 키링으로 고르면',starter:1,col:'#7BC67B',rows:['.##..##.','###..###','########','..####..','########','###..###','.##..##.','....#...']},
-  {id:'cherry',ko:'체리',cond:'첫 키링으로 고르면',starter:1,col:'#E85A5A',col2:'#6FB04F',rows:['....o...','...oo...','..o..o..','.o...o..','.o...o..','###.###.','###.###.','.#...#..']},
+  {id:'mango',ko:'망고',cond:'처음 고르거나 졸업하면',starter:1,col:'#F6C64E',col2:'#6FB04F',rows:['....oo..','...o....','..####..','.######.','########','########','.######.','..####..']},
+  {id:'clover',ko:'네잎클로버',cond:'처음 고르거나 졸업하면',starter:1,col:'#7BC67B',rows:['.##..##.','###..###','########','..####..','########','###..###','.##..##.','....#...']},
+  {id:'cherry',ko:'체리',cond:'처음 고르거나 졸업하면',starter:1,col:'#E85A5A',col2:'#6FB04F',rows:['....o...','...oo...','..o..o..','.o...o..','.o...o..','###.###.','###.###.','.#...#..']},
   {id:'bear',ko:'곰',cond:'곰 성체를 만나면',col:'#A0703C',col2:'#D9B48A',rows:['##....##','########','########','##.##.##','##oooo##','##o..o##','###oo###','.######.']},
   {id:'rabbit',ko:'토끼',cond:'토끼 성체를 만나면',col:'#F2EEE6',col2:'#F2A7B5',rows:['.##..##.','.#o..o#.','.#o..o#.','.######.','##.##.##','########','########','.######.']},
   {id:'frog',ko:'개구리',cond:'개구리 성체를 만나면',col:'#7BC67B',rows:['.##..##.','#.####.#','########','########','#......#','########','.######.','.#....#.']},
@@ -1550,7 +1554,7 @@ function renderScreenIn(tab,el){
     if(tab==='btn')h=`<h2>버튼</h2><div class="pxcards">${[['flat','납작','가장 잘 보여요'],['dent','오목','케이스에 살짝 파였어요'],['pill','알약','게임보이처럼 비스듬해요']].map(([v,l,d])=>
       card(`data-btnst="${v}"`,(g.btnStyle||'flat')===v,`<div class="pv-btn ${v}"><span></span><span></span></div>`,l,d)).join('')}</div>`;
     if(tab==='charm'){const eq=g.equip||[];
-      h=`<h2>키링 <small>${eq.length} / 3</small></h2><p class="dim">눌러서 달거나 빼요. 3개까지 달 수 있어요.</p><div class="pxcards">${CHARMS.filter(c=>!c.starter||(g.charms||[]).includes(c.id)).map(c=>{const got=(g.charms||[]).includes(c.id),i=eq.indexOf(c.id);
+      h=`<h2>키링 <small>${eq.length} / 3</small></h2><p class="dim">눌러서 달거나 빼요. 3개까지 달 수 있어요.</p><div class="pxcards">${CHARMS.map(c=>{const got=(g.charms||[]).includes(c.id),i=eq.indexOf(c.id);
         return got?card(`data-charm="${c.id}"`,i>=0,`<canvas data-cc="${c.id}"></canvas>${i>=0?`<b class="no">${i+1}</b>`:''}`,c.ko):card('',false,`<canvas data-cc="${c.id}" data-lock></canvas>`,'???',c.cond,true)}).join('')}</div>`}
     el.innerHTML=h;
     el.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>{const c=CASES.find(x=>x.id===b.dataset.case);g.shape=c.shape;g.skin=c.skin;applySkin();save();renderScreen(tab,el)});

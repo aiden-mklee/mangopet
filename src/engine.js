@@ -53,6 +53,8 @@ const localHour=g=>hourOf(lt(g));
 const isNight=g=>{const h=localHour(g);return h>=22||h<8};
 // from 19:00 the player may put the pet to bed early by turning the light off, and wake it again until 22:00
 const EARLY_BED=19,EARLY_WAKE=6;
+// the four charms offered at the end of the first run (one is picked there, the rest come with graduations)
+const STARTERS=['egg','mango','clover','cherry'];
 const LUNCH=['🍙 점심 먹었어?','👀 뭐 해? 나 여기 있어','🌤 오늘도 힘내!'];
 const earlyBed=g=>g.stage!=='baby'&&!g.lights&&localHour(g)>=EARLY_BED;
 // awake in the evening: the screen shows a drowsy face now and then
@@ -113,7 +115,9 @@ function decideAdult(g){
 function record(g,result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
 function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
-  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full})}
+  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full});
+  // each graduation hands over one of the first-run charms the player didn't pick
+  const left=STARTERS.filter(id=>!(g.charms||[]).includes(id));if(left.length)unlockCharm(g,pick(g,left),ev)}
 function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
 function runAway(g,ev){g.phase='away';g.awayUntil=g.t+180;notify(g,'✉️','집을 나갔어요… 편지가 남아 있어요','life',ev);ev.push({type:'away'})}
 function makeSick(g,ev){g.sick=true;g.doses=g.con==='frail'?2:1;notify(g,'🤒','몸이 뜨거워…',g.mode==='classic'?'urgent':'need',ev)}
