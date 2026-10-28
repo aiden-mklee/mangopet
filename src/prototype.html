@@ -843,7 +843,7 @@ const GAMES={
       const top=GND-h+1-lift,bot=GND-lift;
       if(G.obs.some(o=>o.x<3+s.w-3&&o.x+o.w>5&&o.y<=bot&&o.y+o.h-1>=top+1)){
         const m=runMeters(G);g.records=g.records||{};G.best=g.records.run||0;G.newBest=m>G.best;if(G.newBest)g.records.run=m;
-        G.wins=Math.min(5,Math.floor(m/40));G.phase='end';G.until=t+2200}},
+        G.wins=Math.min(5,Math.floor(m/40));gameOver(G,t,true)}},
     draw(G,P,s,y){s=runPet();const t=now(),duck=t<G.duckUntil,sp=duck?duckSprite(s):s;
       for(const o of G.obs)P.spr(o.bird?BIRD[ui.frame%2]:ROCK,Math.round(o.x),o.y);
       P.spr(sp,3,GND-sp.h+1-Math.round(jumpLift(G,t)));
@@ -861,10 +861,11 @@ const GAMES={
         if(I.y+sp.h>=GND+1){I.done=true;continue}   // missed: it lands on the floor and is gone
         if(I.y+sp.h>=GND-s.h+2&&I.y<GND-s.h+4&&over){I.done=true;{if(I.poop){I.hit=t;
             g.records=g.records||{};G.best=g.records.catch||0;G.newBest=G.got>G.best;if(G.newBest)g.records.catch=G.got;
-            G.wins=Math.min(5,Math.floor(G.got/3));G.phase='end';G.until=t+2200;return}
+            G.wins=Math.min(5,Math.floor(G.got/3));gameOver(G,t,true);return}
           G.got++;I.got=t}}}
       G.items=G.items.filter(I=>!I.done||t-(I.got||0)<400)},
-    draw(G,P,s,y){const t=now();for(const I of G.items)if(!I.done)P.spr(I.poop?POOP_S:S.cookie,I.x,Math.round(I.y));
+    draw(G,P,s,y){const t=now();for(const I of G.items)if(!I.done||I.hit)P.spr(I.poop?POOP_S:S.cookie,I.x,Math.round(I.y));
+      if(G.phase==='crash')s=S[(g.stage==='adult'?g.species:g.stage)+'@sad']||s;
       const yum=G.items.some(I=>I.got&&t-I.got<400);P.spr(s,G.x,y-(yum?1:0));P.text(String(G.got),LW-1-String(G.got).length*4,1)},
     end(G,P,s,y){P.spr(S[(g.stage==='adult'?g.species:g.stage)+'@sad']||s,Math.floor((LW-s.w)/2),y);P.ctext(G.got+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}},
   // will the next number be higher or lower?
@@ -898,12 +899,21 @@ const catchSpeed=(G,t)=>Math.min(60,16+(t-G.t0)/1000*1.4);   // falling pixels a
 const POOP_S={w:5,h:4,rows:['..#..','.###.','#####','#####']};
 function startGame(){const ids=Object.keys(GAMES).filter(k=>k!==ui.lastGame),id=ids[Math.floor(Math.random()*ids.length)];
   ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
-function endGame(G){G.phase='end';G.until=now()+1600;G.wins=Math.min(5,G.wins)}
-function gameInput(k,d=0,dy=0){const G=ui.game;if(G&&G.phase!=='end')GAMES[G.id].input(G,k,d,dy)}
+function endGame(G){G.wins=Math.min(5,G.wins);gameOver(G,now(),false)}
+// The result stays until a button is pressed, so a thumb still on the d-pad doesn't skip past it.
+// A crash first freezes the scene for a beat; then button presses are ignored for a moment before the result
+// listens, and it closes by itself after a while if nothing is pressed.
+function gameOver(G,t,crash){G.phase=crash?'crash':'end';G.at=t;G.until=t+(crash?650:0)+700;G.autoClose=t+(crash?650:0)+9000}
+function finishGame(){const G=ui.game;if(!G)return;E.playDone(g,G.wins);check();ui.game=null;save();scheduleSoon()}
+function gameInput(k,d=0,dy=0){const G=ui.game;if(!G)return;
+  if(G.phase==='crash')return;
+  if(G.phase==='end'){if(k!=='dir'&&now()>=G.until)finishGame();return}   // the d-pad never closes it
+  GAMES[G.id].input(G,k,d,dy)}
 function choose(d){gameInput('dir',d)}
 function gameTick(){
   const G=ui.game;if(!G)return;const t=now();
-  if(G.phase==='end'){if(t>=G.until){E.playDone(g,G.wins);check();ui.game=null;save();scheduleSoon()}return}
+  if(G.phase==='crash'){if(t>=G.at+650)G.phase='end';return}
+  if(G.phase==='end'){if(t>=G.autoClose)finishGame();return}
   GAMES[G.id].tick(G,t);
 }
 
@@ -1402,7 +1412,7 @@ function render(){
   if(ih){const n=['egg','meal','pet','clean'].indexOf(g.intro)+1,h=`<small>따라 해 봐요 · ${n} / 4</small><p>${ih}</p><button class="hintskip" data-introskip>건너뛰기</button>`;
     if(h!==lastHint){lastHint=h;tb.innerHTML=h;tb.hidden=false;tb.querySelector('[data-introskip]').onclick=introSkip}}
   else{lastHint='';tb.hidden=true}
-  {  $('hint').textContent=ui.game?GAMES[ui.game.id].hint+'  ·  취소로 나가기':ui.view==='stats'?'◀ ▶ 넘기기  ·  취소로 돌아가기':
+  {  $('hint').textContent=ui.game?(ui.game.phase==='end'||ui.game.phase==='crash'?'선택이나 취소를 누르면 돌아가요':GAMES[ui.game.id].hint+'  ·  취소로 나가기'):ui.view==='stats'?'◀ ▶ 넘기기  ·  취소로 돌아가기':
     ui.view==='dex'?(()=>{const k=DEX[ui.dexIdx||0],seen=g.dex[k]&&g.dex[k].seen;return `${seen?SP[k].ko:'???'}  ·  ◀ ▶ 넘기기  ·  선택: 크게 보기`})():
     '';}
   $('zoomBtn').hidden=ui.view!=='dex'||ui.flipped;
@@ -1478,7 +1488,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(ui.menuOpen){closeMenu();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(ui.menuOpen){closeMenu();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{const [x,y]=b.dataset.nav.split(',').map(Number);nav(x,y)});
 document.addEventListener('keydown',e=>{
