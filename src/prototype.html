@@ -811,7 +811,8 @@ function act(a){
   ui.view='main';
   if(a==='light'){E.toggleLight(g);check();scheduleSoon();return}
   if(!g.lights){say('DARK');return}
-  if(g.sleeping){say('ZZZ');return}
+  // a sleeping pet can still have its poop cleared (quietly, it stays asleep); everything else waits for morning
+  if(g.sleeping&&a!=='clean'){say('ZZZ');return}
   check();
   const t=now();
   if(a==='meal'){if(E.meal(g)==='full'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'meal',start:t,dur:2000};sfx('eat');introDid('meal')}

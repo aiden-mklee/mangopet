@@ -1023,7 +1023,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · e2c0b5',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 1e62d1',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1095,7 +1095,8 @@ function act(a){
   ui.view='main';
   if(a==='light'){E.toggleLight(g);check();scheduleSoon();return}
   if(!g.lights){say('DARK');return}
-  if(g.sleeping){say('ZZZ');return}
+  // a sleeping pet can still have its poop cleared (quietly, it stays asleep); everything else waits for morning
+  if(g.sleeping&&a!=='clean'){say('ZZZ');return}
   check();
   const t=now();
   if(a==='meal'){if(E.meal(g)==='full'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'meal',start:t,dur:2000};sfx('eat');introDid('meal')}
