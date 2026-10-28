@@ -50,10 +50,10 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
   background:radial-gradient(110% 75% at 32% 18%,color-mix(in srgb,var(--skin) 55%,#fff) 0%,var(--skin) 42%,color-mix(in srgb,var(--skin) 82%,#000) 100%);
   box-shadow:inset 7px 9px 16px rgba(255,255,255,.5),inset -10px -16px 26px rgba(0,0,0,.16);
   display:flex;flex-direction:column;align-items:center;padding-top:14%}
-.shell.square{border-radius:42px;aspect-ratio:330/520;padding-top:9%}
+.shell.square{border-radius:42px;width:min(322px,100%);margin:0 auto;aspect-ratio:322/500;padding-top:9%}
 .brand{font-family:var(--font-px);font-size:11px;letter-spacing:.3em;color:var(--skin-ink);margin-bottom:8px;padding-left:.3em}
 .face{width:64%;padding:7px;border-radius:20px 20px 28px 28px;background:var(--skin-lo);box-shadow:inset 0 3px 6px rgba(0,0,0,.2),0 1px 0 rgba(255,255,255,.55)}
-.shell.square .face{width:82%;border-radius:18px}
+.shell.square .face{width:84%;border-radius:18px}
 .bezel{background:#24262b;border-radius:14px 14px 20px 20px;padding:8px 8px 10px}
 .shell.square .bezel{border-radius:12px}
 .lcd{background:var(--lcd);border-radius:4px;padding:3px;display:flex;flex-direction:column;gap:2px}
@@ -137,6 +137,9 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 .shell[data-btn=pill] .pbw span{margin-top:2px}
 .flipinner.flipped{transform:rotateY(180deg)}
 .flipinner>.shell{width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+/* the square and compact cases are narrower than the egg; this must outrank the rule above */
+.flipinner>.shell.square{width:min(322px,100%)}
+.flipinner>.shell.mini{width:min(296px,100%)}
 .shell.back{position:absolute;inset:0;height:100%;transform:rotateY(180deg)}
 /* the back reuses the front's face box: whatever shell is drawn later, settings sit exactly where the screen sits */
 .face{position:relative}
@@ -1095,7 +1098,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · aba5cd',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 974fcb',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
