@@ -2598,6 +2598,853 @@
    }
   },
   {
+   "name": "early-riser",
+   "seed": 17,
+   "mode": "relaxed",
+   "script": [
+    [
+     -30,
+     "light"
+    ],
+    [
+     1410,
+     "light"
+    ],
+    [
+     2850,
+     "light"
+    ],
+    [
+     4290,
+     "light"
+    ],
+    [
+     5730,
+     "light"
+    ],
+    [
+     7170,
+     "light"
+    ],
+    [
+     8610,
+     "light"
+    ],
+    [
+     10050,
+     "light"
+    ],
+    [
+     -29,
+     "care"
+    ],
+    [
+     330,
+     "care"
+    ],
+    [
+     720,
+     "care"
+    ],
+    [
+     1411,
+     "care"
+    ],
+    [
+     1770,
+     "care"
+    ],
+    [
+     2160,
+     "care"
+    ],
+    [
+     2851,
+     "care"
+    ],
+    [
+     3210,
+     "care"
+    ],
+    [
+     3600,
+     "care"
+    ],
+    [
+     4291,
+     "care"
+    ],
+    [
+     4650,
+     "care"
+    ],
+    [
+     5040,
+     "care"
+    ],
+    [
+     5731,
+     "care"
+    ],
+    [
+     6090,
+     "care"
+    ],
+    [
+     6480,
+     "care"
+    ],
+    [
+     7171,
+     "care"
+    ],
+    [
+     7530,
+     "care"
+    ],
+    [
+     7920,
+     "care"
+    ],
+    [
+     8611,
+     "care"
+    ],
+    [
+     8970,
+     "care"
+    ],
+    [
+     9360,
+     "care"
+    ],
+    [
+     10051,
+     "care"
+    ],
+    [
+     10410,
+     "care"
+    ],
+    [
+     10800,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "poopy",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": null,
+       "seed": 2399460303
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "poopy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 11,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 1,
+       "acc": null,
+       "seed": 3535249249
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "poopy",
+       "hunger": 3,
+       "happy": 2,
+       "weight": 13,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 1,
+       "night": 0,
+       "checks": 3,
+       "acc": null,
+       "seed": 1447918648
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "poopy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 23,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 2,
+       "night": 0,
+       "checks": 6,
+       "acc": null,
+       "seed": 496376993
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "sun_chick",
+       "con": "poopy",
+       "hunger": 3,
+       "happy": 3,
+       "weight": 30,
+       "poops": 1,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 3,
+       "night": 0,
+       "checks": 9,
+       "acc": null,
+       "seed": 112729811
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "sun_chick",
+       "con": "poopy",
+       "hunger": 3,
+       "happy": 4,
+       "weight": 34,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 5,
+       "night": 0,
+       "checks": 15,
+       "acc": null,
+       "seed": 736989181
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "sun_chick",
+       "con": "poopy",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 40,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 2,
+       "morning": 7,
+       "night": 0,
+       "checks": 21,
+       "acc": null,
+       "seed": 1929143024
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🐣 알이 깨어났어요! · 🍙 배고파",
+      "sent"
+     ],
+     [
+      750,
+      "🍙 배고파",
+      "sent"
+     ],
+     [
+      1110,
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      1920,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      2190,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      2550,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      3360,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      3630,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      3990,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      4800,
+      "✨ 햇삐약(으)로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      5070,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      5430,
+      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      6240,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      6510,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      6870,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      7680,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      7950,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      8310,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      9120,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      9390,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      9750,
+      "💩 똥 쌌어",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "sun_chick": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "sun_chick",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "late-sleeper",
+   "seed": 23,
+   "mode": "relaxed",
+   "script": [
+    [
+     360,
+     "care"
+    ],
+    [
+     690,
+     "care"
+    ],
+    [
+     880,
+     "care"
+    ],
+    [
+     1800,
+     "care"
+    ],
+    [
+     2130,
+     "care"
+    ],
+    [
+     2320,
+     "care"
+    ],
+    [
+     3240,
+     "care"
+    ],
+    [
+     3570,
+     "care"
+    ],
+    [
+     3760,
+     "care"
+    ],
+    [
+     4680,
+     "care"
+    ],
+    [
+     5010,
+     "care"
+    ],
+    [
+     5200,
+     "care"
+    ],
+    [
+     6120,
+     "care"
+    ],
+    [
+     6450,
+     "care"
+    ],
+    [
+     6640,
+     "care"
+    ],
+    [
+     7560,
+     "care"
+    ],
+    [
+     7890,
+     "care"
+    ],
+    [
+     8080,
+     "care"
+    ],
+    [
+     9000,
+     "care"
+    ],
+    [
+     9330,
+     "care"
+    ],
+    [
+     9520,
+     "care"
+    ],
+    [
+     10440,
+     "care"
+    ],
+    [
+     10770,
+     "care"
+    ],
+    [
+     10960,
+     "care"
+    ]
+   ],
+   "expect": {
+    "checkpoints": [
+     {
+      "minute": 60,
+      "state": {
+       "phase": "alive",
+       "stage": "baby",
+       "species": null,
+       "con": "frail",
+       "hunger": 0,
+       "happy": 2,
+       "weight": 5,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 0,
+       "morning": 0,
+       "night": 0,
+       "checks": 0,
+       "acc": "줄무늬",
+       "seed": 4231026122
+      }
+     },
+     {
+      "minute": 360,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "frail",
+       "hunger": 4,
+       "happy": 4,
+       "weight": 11,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": true,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 0,
+       "checks": 1,
+       "acc": "줄무늬",
+       "seed": 1071847772
+      }
+     },
+     {
+      "minute": 1440,
+      "state": {
+       "phase": "alive",
+       "stage": "child",
+       "species": null,
+       "con": "frail",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 14,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 1,
+       "checks": 3,
+       "acc": "줄무늬",
+       "seed": 184247314
+      }
+     },
+     {
+      "minute": 2880,
+      "state": {
+       "phase": "alive",
+       "stage": "teen",
+       "species": null,
+       "con": "frail",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 23,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 3,
+       "checks": 6,
+       "acc": "줄무늬",
+       "seed": 2895837285
+      }
+     },
+     {
+      "minute": 4380,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "sun_rabbit",
+       "con": "frail",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 30,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": false,
+       "lights": false,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 5,
+       "checks": 9,
+       "acc": "줄무늬",
+       "seed": 3144025773
+      }
+     },
+     {
+      "minute": 7200,
+      "state": {
+       "phase": "alive",
+       "stage": "adult",
+       "species": "sun_rabbit",
+       "con": "frail",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 36,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 9,
+       "checks": 15,
+       "acc": "줄무늬",
+       "seed": 3704343946
+      }
+     },
+     {
+      "minute": 10140,
+      "state": {
+       "phase": "graduated",
+       "stage": "adult",
+       "species": "sun_rabbit",
+       "con": "frail",
+       "hunger": 4,
+       "happy": 3,
+       "weight": 42,
+       "poops": 0,
+       "sick": false,
+       "tummy": false,
+       "sleeping": true,
+       "lights": false,
+       "careMiss": 1,
+       "morning": 0,
+       "night": 13,
+       "checks": 21,
+       "acc": "줄무늬",
+       "seed": 601530493
+      }
+     }
+    ],
+    "notices": [
+     [
+      480,
+      "🐣 알이 깨어났어요! · 🍙 배고파",
+      "sent"
+     ],
+     [
+      750,
+      "🍙 배고파",
+      "sent"
+     ],
+     [
+      1110,
+      "💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      1290,
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      1920,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      2190,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      2550,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      2730,
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      3360,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      3630,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      3990,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      4170,
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      4800,
+      "✨ 햇토(으)로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      5070,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      5430,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      5610,
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      6240,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      6510,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      6870,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      7050,
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      7680,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      7950,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      8310,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      8490,
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      9120,
+      "☀️ 일어났어! 불 켜 줘",
+      "sent"
+     ],
+     [
+      9390,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      9750,
+      "💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      9930,
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "sent"
+     ]
+    ],
+    "dex": {
+     "sun_rabbit": {
+      "seen": true,
+      "grad": 1,
+      "best": 2
+     }
+    },
+    "hist": [
+     {
+      "sp": "sun_rabbit",
+      "mode": "relaxed",
+      "result": "졸업 ★★",
+      "days": 7
+     }
+    ]
+   }
+  },
+  {
    "name": "early-graduation",
    "seed": 5,
    "mode": "relaxed",
@@ -2961,5 +3808,34 @@
    }
   ],
   "matchesRealRun": true
+ },
+ "comeback": {
+  "ahead": 6,
+  "comeback": [
+   {
+    "t": 5430,
+    "text": "🥺 요즘 안 와서 심심해…",
+    "kind": "comeback",
+    "who": null
+   },
+   {
+    "t": 11190,
+    "text": "✉️ 일주일째 기다리고 있어",
+    "kind": "comeback",
+    "who": null
+   },
+   {
+    "t": 21270,
+    "text": "🥚 아직 여기 있어. 한 번만 들러 줘",
+    "kind": "comeback",
+    "who": null
+   },
+   {
+    "t": 44310,
+    "text": "💛 오랜만이야! 다시 같이 놀자",
+    "kind": "comeback",
+    "who": null
+   }
+  ]
  }
 }

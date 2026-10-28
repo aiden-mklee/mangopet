@@ -21,6 +21,10 @@ const CASES=[
   {name:'snacker',seed:99,mode:'relaxed',script:[...visits(OFFICE),...visits([[15,0],[16,0]]).map(([t])=>[t,'snack']),...visits([[16,1]]).map(([t])=>[t,'play:4'])]},
   // a night worker on the 'night' rhythm (asleep 9:00-19:00), visiting at their own morning, noon, evening, bedtime
   {name:'night-worker',seed:11,mode:'relaxed',life:'night',script:visits([[19,0],[23,30],[5,30],[8,30]]).map(([t,a])=>[t-7*60,a])},
+  // an early riser: wakes the pet at 6:30 by turning the light on (no 8:00 wake-up call); the 19:00 visit puts it to bed early
+  {name:'early-riser',seed:17,mode:'relaxed',script:[...visits([[6,30]]).map(([t])=>[t-7*60,'light']),...visits([[6,31],[12,30],[19,0]]).map(([t])=>[t-7*60,'care'])]},
+  // a late sleeper: never turns the light on in the morning, so the pet gets up alone at noon (leans moon)
+  {name:'late-sleeper',seed:23,mode:'relaxed',script:visits([[13,0],[18,30],[21,40]]).map(([t])=>[t-7*60,'care'])},
   {name:'early-graduation',seed:5,mode:'relaxed',script:[...visits(OFFICE,4),[3*1440+9*60,'graduate']]},
 ];
 const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
@@ -43,6 +47,7 @@ function act(g,a,ev){
   const [name,arg]=a.split(':');
   if(name==='care')return care(g,ev);
   if(name==='graduate'){E.graduate(g,E.fullTerm(g),ev);return}
+  if(name==='light'){E.toggleLight(g);E.visit(g);return}
   if(!g.lights||g.sleeping)return;
   E.visit(g);
   if(name==='snack')E.snack(g);else if(name==='play')E.playDone(g,+arg);
@@ -70,7 +75,12 @@ function forecastCase(){
   return {forecast:f,matchesRealRun:JSON.stringify(f)===JSON.stringify(sent)};
 }
 
-const result={engine:'mangopet',cases:CASES.map(c=>({...c,expect:runCase(c)})),forecast:forecastCase()};
+// long absences: the reminders on days 3, 7, 14 and 30 after the app closes, once the forecast runs dry
+function comebackCase(){
+  const g=E.fresh(31);g.t=7*60;E.newPet(g,'relaxed');E.advance(g,10,[],{autoHatch:true});
+  const ahead=E.forecast(g,7*1440);return {ahead:ahead.length,comeback:E.comeBack(g,ahead)};
+}
+const result={engine:'mangopet',cases:CASES.map(c=>({...c,expect:runCase(c)})),forecast:forecastCase(),comeback:comebackCase()};
 if(process.argv.includes('--update')){fs.mkdirSync(path.dirname(FILE),{recursive:true});fs.writeFileSync(FILE,JSON.stringify(result,null,1)+'\n');console.log('wrote',path.relative(process.cwd(),FILE));process.exit(0)}
 const want=JSON.parse(fs.readFileSync(FILE,'utf8'));let bad=0;
 for(const c of result.cases){const w=want.cases.find(x=>x.name===c.name);
@@ -78,4 +88,6 @@ for(const c of result.cases){const w=want.cases.find(x=>x.name===c.name);
   const last=c.expect.checkpoints.at(-1).state;console.log((ok?'ok  ':'FAIL')+' '+c.name.padEnd(18)+` → ${last.phase} ${last.species||''} · notices ${c.expect.notices.length}`)}
 const fok=result.forecast.matchesRealRun&&JSON.stringify(want.forecast)===JSON.stringify(result.forecast);if(!fok)bad++;
 console.log((fok?'ok  ':'FAIL')+' forecast           → '+result.forecast.forecast.length+' notifications ahead, same as a real run: '+result.forecast.matchesRealRun);
+const cok=JSON.stringify(want.comeback)===JSON.stringify(result.comeback);if(!cok)bad++;
+console.log((cok?'ok  ':'FAIL')+' comeback           → '+result.comeback.comeback.length+' reminders after '+result.comeback.ahead+' forecast notices');
 process.exit(bad?1:0);

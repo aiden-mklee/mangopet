@@ -88,7 +88,7 @@ function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.
 function crack(g){g.cracks=(g.cracks||0)+1;return g.cracks}
 function evolve(g,st,ev){
   g.stage=st;g.weight=Math.max(g.weight,baseW(g));
-  if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);if(/_cat$/.test(g.species))unlockCharm(g,'cat',ev);
+  if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);const an=g.species.split('_')[1];if(an)unlockCharm(g,an,ev);   // one charm per animal: cat, bear, rabbit, frog, penguin, chick
     const lc={sun:'sun',moon:'moon',chub:'donut',wild:'bolt',star:'gem'}[g.species.split('_')[0]];if(lc)unlockCharm(g,lc,ev);
     if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
   else notify(g,'✨','모습이 바뀌었어요!','need',ev);

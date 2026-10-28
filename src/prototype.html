@@ -728,8 +728,10 @@ const CASES=[
   {id:'egg-banana',ko:'망고 알',shape:'egg',skin:'banana',paid:1},
   {id:'egg-smoke',ko:'스모크 알',shape:'egg',skin:'smoke',paid:1},
   {id:'square',ko:'네모 게임기',shape:'square',skin:'classic',paid:1},
-  {id:'cat',ko:'고양이 귀',shape:'cat',skin:'smoke',paid:1},
-  {id:'bear',ko:'곰돌이 귀',shape:'bear',skin:'banana',paid:1}];
+  {id:'cat',ko:'고양이 귀',shape:'cat',skin:'smoke',paid:1,draft:1},
+  {id:'bear',ko:'곰돌이 귀',shape:'bear',skin:'banana',paid:1,draft:1}];
+// the beta (no ads) gives every case away and hides the ear cases until they are redrawn properly
+const shownCases=()=>CASES.filter(c=>ADS||!c.draft),paidTag=c=>c.paid&&ADS;
 const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1시간']];
 
 /* ---------- state ---------- */
@@ -1080,6 +1082,11 @@ const CHARMS=[
   {id:'mango',ko:'망고',cond:'첫 키링으로 고르면',starter:1,col:'#F6C64E',rows:['....##..','...#....','..####..','.######.','########','########','.######.','..####..']},
   {id:'clover',ko:'네잎클로버',cond:'첫 키링으로 고르면',starter:1,col:'#7BC67B',rows:['.##..##.','###..###','########','..####..','########','###..###','.##..##.','....#...']},
   {id:'cherry',ko:'체리',cond:'첫 키링으로 고르면',starter:1,col:'#E85A5A',rows:['....#...','...##...','..#..#..','.#...#..','.#...#..','###.###.','###.###.','.#...#..']},
+  {id:'bear',ko:'곰',cond:'곰 성체를 만나면',col:'#A0703C',rows:['##....##','########','########','##.##.##','########','###..###','########','.######.']},
+  {id:'rabbit',ko:'토끼',cond:'토끼 성체를 만나면',col:'#F2EEE6',rows:['.#....#.','.#....#.','.##..##.','.######.','##.##.##','########','###..###','.######.']},
+  {id:'frog',ko:'개구리',cond:'개구리 성체를 만나면',col:'#7BC67B',rows:['.##..##.','#.####.#','########','########','#......#','########','.######.','.#....#.']},
+  {id:'penguin',ko:'펭귄',cond:'펭귄 성체를 만나면',col:'#4A4F5A',rows:['..####..','.######.','.#.##.#.','.######.','########','########','.######.','.##..##.']},
+  {id:'chick',ko:'병아리',cond:'병아리 성체를 만나면',col:'#F5D547',rows:['...##...','..####..','.#.##.#.','.######.','########','########','.######.','..#..#..']},
   {id:'crown',ko:'왕관',cond:'7일 키워 졸업하면',col:'#F2C94C',rows:['........','#..##..#','##.##.##','########','##.##.##','########','########','........']},
   {id:'sun',ko:'해',cond:'해 계열 성체를 만나면',col:'#F5A623',rows:['...##...','.#....#.','..####..','#.####.#','#.####.#','..####..','.#....#.','...##...']},
   {id:'moon',ko:'초승달',cond:'달 계열 성체를 만나면',col:'#F2D677',rows:['..####..','.###....','###.....','###.....','###.....','###.....','.###....','..####..']},
@@ -1263,8 +1270,8 @@ function renderScreenIn(tab,el){
     const card=(attr,on,pic,name,sub='',dis=false)=>`<button class="pxcardbig" ${attr} aria-pressed="${on}" ${dis?'disabled':''}>${pic}<span>${name}</span>${sub?`<small>${sub}</small>`:''}</button>`;
     const sk=id=>SKINS.find(k=>k.id===id)||SKINS[0];
     let h='';
-    if(tab==='case')h=`<h2>케이스</h2><div class="pxcards">${CASES.map(c=>{const k=sk(c.skin);
-      return card(`data-case="${c.id}"`,(g.shape||'egg')===c.shape&&g.skin===c.skin,`<div class="pv-case ${c.shape}" style="--pv:${k.skin};--pvlo:${k.lo}">${c.shape==='cat'||c.shape==='bear'?'<b></b><b></b>':''}<i></i></div>`,c.ko,c.paid?'유료':'')}).join('')}</div>`;
+    if(tab==='case')h=`<h2>케이스</h2><div class="pxcards">${shownCases().map(c=>{const k=sk(c.skin);
+      return card(`data-case="${c.id}"`,(g.shape||'egg')===c.shape&&g.skin===c.skin,`<div class="pv-case ${c.shape}" style="--pv:${k.skin};--pvlo:${k.lo}">${c.shape==='cat'||c.shape==='bear'?'<b></b><b></b>':''}<i></i></div>`,c.ko,paidTag(c)?'유료':'')}).join('')}</div>`;
     if(tab==='bg')h=`<h2>배경</h2><div class="pxcards">${BGS.map(b=>card(`data-bg="${b.id}"`,(g.bg||'beige')===b.id,`<div class="pv-bg" style="background:radial-gradient(circle,${b.c[0]},${b.c[1]} 60%,${b.c[2]})"><span></span></div>`,b.ko)).join('')}</div>`;
     if(tab==='btn')h=`<h2>버튼</h2><div class="pxcards">${[['flat','납작','가장 잘 보여요'],['dent','오목','케이스에 살짝 파였어요'],['pill','알약','게임보이처럼 비스듬해요']].map(([v,l,d])=>
       card(`data-btnst="${v}"`,(g.btnStyle||'flat')===v,`<div class="pv-btn ${v}"><span></span><span></span></div>`,l,d)).join('')}</div>`;
@@ -1283,14 +1290,14 @@ function renderScreenIn(tab,el){
     el.innerHTML=`<h2>설정</h2>
       <h3>생활 시간</h3>${opt('life',g.life||'day',Object.entries(E.LIFE).map(([k,v])=>[k,v.ko]))}<p class="dim">${E.LIFE[g.lifeNext||g.life||'day'].d}${g.lifeNext?' · 다음에 자고 일어날 때부터':''}</p>
       <h3>알림 빈도</h3>${opt('notifMode',g.notifMode||'normal',Object.entries(NOTIF).map(([k,v])=>[k,v.ko]))}<p class="dim">${nm().d}</p>
-      <h3>케이스</h3><div class="pxrow">${CASES.map(c=>{const sk=SKINS.find(k=>k.id===c.skin);return `<button class="pxbtn" data-case="${c.id}" aria-pressed="${(g.shape||'egg')===c.shape&&g.skin===c.skin}"><span class="pxsw" style="background:${sk.skin}"></span>${c.ko}${c.paid?' (유료)':''}</button>`}).join('')}</div>
+      <h3>케이스</h3><div class="pxrow">${shownCases().map(c=>{const sk=SKINS.find(k=>k.id===c.skin);return `<button class="pxbtn" data-case="${c.id}" aria-pressed="${(g.shape||'egg')===c.shape&&g.skin===c.skin}"><span class="pxsw" style="background:${sk.skin}"></span>${c.ko}${paidTag(c)?' (유료)':''}</button>`}).join('')}</div>
       <div class="pxrow"><button class="pxbtn" data-deco>꾸미기 · 케이스 배경 버튼 키링</button></div>
       ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
       <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>
       ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
       <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>
       ${FEEDBACK_URL?`<h3>의견 보내기</h3><div class="pxrow"><a class="pxbtn" href="${FEEDBACK_URL}" target="_blank" rel="noopener">불편한 점·아이디어 보내기</a></div>`:''}
-      <p class="dim">망고펫 ${VERSION} · 가격은 예시예요</p>`;
+      <p class="dim">망고펫 ${VERSION}${ADS?' · 가격은 예시예요':''}</p>`;
     el.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set,v=b.dataset.v;if(k==='life'){E.setLife(g,v);save();renderScreen(tab,el);return}g[k]=k==='adFree'?v==='true':v;applySkin();lastCtx='';save();renderScreen(tab,el)});
     el.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>{const c=CASES.find(x=>x.id===b.dataset.case);g.shape=c.shape;g.skin=c.skin;applySkin();save();renderScreen(tab,el)});
     const dk=el.querySelector('[data-deco]');if(dk)dk.onclick=()=>openZoom('case');
