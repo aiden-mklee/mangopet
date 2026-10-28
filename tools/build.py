@@ -13,6 +13,7 @@ Outputs
   docs/index.html   phone beta: real time, no dev lab, no ads, installable (PWA)
   docs/lab.html     the full prototype with the dev lab (time speed, test buttons)
   docs/manifest.webmanifest, docs/sw.js, docs/icon-*.png, docs/.nojekyll
+  docs/privacy.html  the privacy policy (copied from src/privacy.html)
   .out/artifact.html  the prototype fragment with the engine inlined, for publishing as a claude.ai artifact
   app/www/index.html  the native app page (Capacitor): the phone build without the web-only install bits
 """
@@ -178,6 +179,8 @@ self.addEventListener('activate',e=>{{e.waitUntil(caches.keys().then(ks=>Promise
 self.addEventListener('fetch',e=>{{if(e.request.method!=='GET')return;
   e.respondWith(fetch(e.request).then(r=>{{const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r}}).catch(()=>caches.match(e.request)))}});
 """)
+    # the privacy policy the stores link to: https://aiden-mklee.github.io/mangopet/privacy.html
+    shutil.copy(os.path.join(ROOT, 'src', 'privacy.html'), os.path.join(DOCS, 'privacy.html'))
     open(os.path.join(DOCS, '.nojekyll'), 'w').close()
     print('built docs/ ·', ver)
 

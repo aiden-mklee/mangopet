@@ -45,6 +45,8 @@ DESIGN.md            디자인 시스템 (케이스, LCD, 버튼, 색, 폰트)
 GAME.md              게임 규칙과 밸런스 요약
 APP.md               앱 실행 방법 (맥·Xcode, 안드로이드 스튜디오)
 NEXT.md              앞으로 할 일 (우선순위 순)
+STORE.md             스토어 등록 문구 초안
+src/privacy.html     개인정보 처리방침 (빌드가 docs/privacy.html로 복사)
 ```
 
 ## 개발
