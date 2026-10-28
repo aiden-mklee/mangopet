@@ -1006,7 +1006,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 6edfc6',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · bcf7ab',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1347,7 +1347,7 @@ const CHARMS=[
   {id:'egg',ko:'미니 알',cond:'첫 키링으로 고르면',starter:1,col:'#EBE5D6',rows:['..####..','.######.','##.#####','########','#####.##','##.#####','.######.','..####..']},
   {id:'star',ko:'별',cond:'처음 졸업하면',col:'#F2D677',rows:['...##...','...##...','########','.######.','..####..','.##..##.','##....##','........']},
   {id:'heart',ko:'하트',cond:'도감 5종을 모으면',col:'#E87A8F',rows:['.##..##.','########','########','########','.######.','..####..','...##...','........']},
-  {id:'cat',ko:'고양이',cond:'고양이 성체를 만나면',col:'#F0A050',col2:'#F2A7B5',rows:['...#......#...','...##....##...','...########...','...#k####k#...','kk.########.kk','...###oo###...','kk.########.kk','....######....']},
+  {id:'cat',ko:'고양이',cond:'고양이 성체를 만나면',col:'#3E434D',col2:'#F2D677',rows:['...#......#...','...##....##...','...########...','...#o####o#...','kk.########.kk','...###kk###...','kk.########.kk','....######....']},
   {id:'mango',ko:'망고',cond:'첫 키링으로 고르면',starter:1,col:'#F6C64E',col2:'#6FB04F',rows:['....oo..','...o....','..####..','.######.','########','########','.######.','..####..']},
   {id:'clover',ko:'네잎클로버',cond:'첫 키링으로 고르면',starter:1,col:'#7BC67B',rows:['.##..##.','###..###','########','..####..','########','###..###','.##..##.','....#...']},
   {id:'cherry',ko:'체리',cond:'첫 키링으로 고르면',starter:1,col:'#E85A5A',col2:'#6FB04F',rows:['....o...','...oo...','..o..o..','.o...o..','.o...o..','###.###.','###.###.','.#...#..']},
