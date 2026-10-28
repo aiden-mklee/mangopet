@@ -50,7 +50,9 @@
 - 개인정보 처리방침: https://aiden-mklee.github.io/mangopet/privacy.html
 - 지원 URL: (의견 보내기 주소를 정하면 같이 쓰기)
 
-## 스크린샷 계획 (6.7인치 기준 5~6장)
+## 스크린샷 (6.7인치, 1290 × 2796)
+
+`python3 tools/build.py && node tools/store.js`가 `assets/store/`에 만든다. 장면과 문구는 `tools/store.js`의 `SCENES`.
 
 1. 알을 톡톡 깨는 첫 화면: "알을 깨워 주세요"
 2. 밥 먹는 장면과 말풍선: "하루 10초면 충분해요"

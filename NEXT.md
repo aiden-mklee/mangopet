@@ -31,7 +31,7 @@
 - [ ] 클래식 모드를 베타에서 뺄지 결정 🙋
 - [ ] **테스트 모드 끄기**: `capacitor.config.json`의 `server` 칸 지우기 (지금은 GitHub Pages에서 게임을 불러옴) 🤖
 - [ ] 앱 시작 화면 이미지 🤖 (아이콘 A를 시작 화면에 쓰는 것도 후보)
-- [ ] 스토어 스크린샷 🤖 · 설명 문구 초안은 `STORE.md` (다듬기 🙋)
+- [x] 스토어 스크린샷 6장 초안: `assets/store/` (`node tools/store.js`로 다시 만듦) · 설명 문구 초안은 `STORE.md` (다듬기 🙋)
 - [x] 개인정보 처리방침 초안: `src/privacy.html` → https://aiden-mklee.github.io/mangopet/privacy.html (문의 연락처 넣기 🙋)
 - [ ] 앱스토어·플레이스토어·키프리스에서 "망고펫" 검색 🙋
 
