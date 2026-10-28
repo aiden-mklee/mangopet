@@ -997,7 +997,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · fbb73d',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · c9a8b3',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1317,6 +1317,9 @@ function applySkin(){
   document.querySelector('.lcd').classList.toggle('nolabel',!g.labels);
   document.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===g.skin));
 }
+// the DAY on the device counts the pet's own days (day 1 = the day it hatched), not the game calendar
+const petDay=()=>g.phase==='alive'||g.phase==='graduated'?Math.floor((g.ageMin||0)/1440)+1:1;
+const fmtClock=()=>`DAY ${petDay()} ${String(hourOf(g.t)).padStart(2,'0')}:${String(g.t%60).padStart(2,'0')}`;
 function fmtT(t){const d=Math.floor(t/1440)+1,h=hourOf(t),m=t%60;return `DAY ${d} ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`}
 function stageName(){if(g.phase==='select')return '새 알';if(g.phase==='egg')return '알';if(g.stage==='adult'||g.phase==='graduated')return SP[g.species].ko;return STAGE_KO[g.stage]||'알'}
 function statusLine(){
@@ -1630,7 +1633,7 @@ function renderWidgets(){
   $('wRt').textContent=`${stageName()}${g.phase==='alive'?` · ${Math.floor(g.ageMin/1440)+1}일째`:''}`;$('wRs').textContent=statusLine();
   drawScene(home,true);home.paint($('wH'),{bg:COL.lcd,on:COL.ink,off:COL.ghost});
   sprCanvas($('nIcon'),s,{on:COL.ink,pad:2,cell:3});
-  const h=hourOf(g.t),m=g.t%60;$('lkTime').textContent=`${h}:${String(m).padStart(2,'0')}`;$('lkDate').textContent=`키운 지 ${Math.floor(g.t/1440)+1}일째 · ${['일','월','화','수','목','금','토'][(Math.floor(g.t/1440)+1)%7]}요일`;
+  const h=hourOf(g.t),m=g.t%60;$('lkTime').textContent=`${h}:${String(m).padStart(2,'0')}`;$('lkDate').textContent=`키운 지 ${petDay()}일째 · ${['일','월','화','수','목','금','토'][(Math.floor(g.t/1440)+1)%7]}요일`;
 }
 function render(){
   gameTick();
@@ -1640,7 +1643,7 @@ function render(){
   [[TOPI,0],[BOTI,SH-6]].forEach(([list,y])=>list.forEach((k,i)=>{
     const on=k==='call'?callOn:(g.phase==='alive'&&ACTS[ui.sel]===k);scr.spr(IC[k],i*12+Math.floor((12-IC[k].w)/2),y,{v:on?1:2})}));
   scr.paint($('lcd'),{bg:COL.lcd,on:COL.ink,off:COL.ghost,faint:'rgba(28,37,22,.3)',gap:.11,fitTo:$('lcd').parentElement});
-  $('clock').textContent=fmtT(g.t);
+  $('clock').textContent=fmtClock();
   const call=g.phase==='alive'&&needsCall();
   for(const k in iconEls){const b=iconEls[k];b.classList.toggle('sel',k!=='call'&&ACTS[ui.sel]===k&&g.phase==='alive');b.classList.toggle('call',k==='call'&&call)}
   // the tutorial speaks from a pixel window over the bottom of the device, in the game's own font
