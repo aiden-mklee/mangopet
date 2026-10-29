@@ -1133,7 +1133,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · ee5b89',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 1d26aa',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1877,7 +1877,7 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
     const plw=Math.round((tr.width-ls)/z/U/2)*2+6,plh=7,plx=Math.round(tcx-plw/2),ply=Math.round(tcy-plh/2);
     for(let yy=0;yy<plh;yy++)for(let xx=0;xx<plw;xx++){if((xx===0||xx===plw-1)&&(yy===0||yy===plh-1))continue;
       P(plx+xx,ply+yy,yy===0||xx===0?mix(pl,[0,0,0],.2):yy===plh-1||xx===plw-1?mix(skin,WARM,.45):pl)}
-    sprite(['.rrr..','rhrrrs','rrrrrs','rrrrrs','.rrrs.','..ss..'],{r:[232,70,62],h:[255,196,178],s:mix(mix(skin,COOL,.3),[0,0,0],.3)},plx-8,ply+1)}
+    sprite(['.dddd.','ddhrdl','drrrrl','drrrql','ddqqll','.llll.'],{d:mix(mix(skin,COOL,.4),[0,0,0],.42),l:mix(skin,WARM,.5),r:[232,70,62],q:[196,52,48],h:[255,196,178]},plx-9,ply+1)}
   // ---- dips the buttons sit in
   const well=mix(mix(skin,COOL,.08),[0,0,0],.05),wsh=mix(mix(skin,COOL,.22),[0,0,0],.14),wlt=mix(skin,WARM,.3);
   const [dx,dy,dw,dh]=rel(shell.querySelector('.dpad')),a=Math.round(dw/3);
