@@ -33,6 +33,12 @@ DEX.push('star');
 const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
 // heirloom patterns, drawn into the body by the screen
 const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
+// Things the pet brings home: [id, name, weight]. Now and then (about once or twice a day, no notification) one lies
+// next to the pet; a tap picks it up into the collection (g.finds, kept across pets). Gem and clover are rare.
+const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],
+  ['leaf','나뭇잎',8],['ginkgo','은행잎',6],['sprout','새싹',6],['feather','깃털',6],['curl','말린 잎',6],
+  ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1]];
+const FIND_P=.12;
 const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 
@@ -77,7 +83,7 @@ const nm=g=>NOTIF[g.notifMode]||NOTIF.normal;
 
 /* ---------- state ---------- */
 function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
-  notifDay:0,notifCount:0,log:[],dex:{},hist:[],seed:seed>>>0,savedAt:0}}
+  notifDay:0,notifCount:0,log:[],dex:{},hist:[],finds:{},found:null,seed:seed>>>0,savedAt:0}}
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
@@ -201,6 +207,8 @@ function step(g,ev,opts={}){
     if(g.poopT>0&&--g.poopT===0){g.poopT=-1;doPoop(g,ev);if(g.poopQ>0){g.poopQ--;g.poopT=Math.max(10,Math.round(poopDelay(g)/2))}}
     if(g.tummy&&++g.tummyMin>=180&&!g.sick){g.tummy=false;makeSick(g,ev)}
   }
+  // a find: rolled at half past each awake, lit hour while nothing is lying there yet
+  if(m===30&&!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P){let r=rand(g)*FINDS.reduce((a,f)=>a+f[2],0);g.found=FINDS.find(f=>(r-=f[2])<0)[0]}
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
     let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
@@ -216,6 +224,9 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 /* ---------- actions ---------- */
 // each returns what happened so the screen can pick the animation; none of them read the clock
 // one visit = one count, however many buttons it takes
+// picking up what the pet brought: into the collection, with whether it is the first of its kind
+function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
+  ev.push({type:'find',id,first});return id}
 function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g,ev=[]){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);if((g.allSnacks=(g.allSnacks||0)+1)>=30)unlockCharm(g,'cookie',ev);return 'ok'}
@@ -258,9 +269,9 @@ function comeBack(g,ahead){
   return out;
 }
 
-const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,NOTIF,DAY,ADULT_AT,FULL_TERM,
+const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
-  notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast};
+  notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
 })(typeof globalThis!=='undefined'?globalThis:this);

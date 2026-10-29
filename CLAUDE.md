@@ -33,6 +33,7 @@
 - 첫 실행: `g.intro`(case → life → egg → meal → pet → clean → charm → done), `introTo`/`introDid`/`introSkip`, 시트는 `openZoom('intro-…')`.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`. 기기 위 HTML 창에서는 방향키 커서 `padMove`/`padChoose`.
 - 꾸미기 모드: `openDeco(tab)`/`closeDeco()`, 미리보기 `decoPreview`, 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
+- 하는 일과 주운 것: `DOING`(시간대별 장면, `ui.doing`, `doingStart`), 엔진 `FINDS`·`E.pickUp`, 그림 `FIND_SPR`, 놓인 것 `g.found`, 모은 것 `g.finds`.
 - 앱 안 알림: 말하는 창 `talk(제목, 한 줄, 큰 소식?)`(큰 소식은 `talkQ`에 줄 서고 `talkNext`로 넘김, 선택·취소 버튼이 먼저 넘김). `banner(text)`는 가벼운 말로 `talk`를 부른다.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
