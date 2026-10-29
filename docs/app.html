@@ -722,8 +722,8 @@ function evolve(g,st,ev){
   if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);const an=g.species.split('_')[1];if(an)unlockCharm(g,an,ev);   // one charm per animal: cat, bear, rabbit, frog, penguin, chick
     const lc={sun:'sun',moon:'moon',chub:'donut',wild:'bolt',star:'gem'}[g.species.split('_')[0]];if(lc)unlockCharm(g,lc,ev);
     if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
-  // growing up in between: right away in 'live' mode; otherwise it rides along in the next digest, so no extra notification
-  else{const t=st==='child'?'🌱 조금 자랐어요!':'🌿 또 자랐어요! 곧 어른이 돼요';if(g.notifMode==='live')notify(g,'',t,'need',ev);else(g.news=g.news||[]).push(t)}
+  // growing up in between: a notification only in 'live' mode; otherwise the screen says it when the app is opened
+  else notify(g,'',st==='child'?'🌱 조금 자랐어요!':'🌿 또 자랐어요! 곧 어른이 돼요','need',ev);
   ev.push({type:'evolve',stage:st});
 }
 // how you cared only tilts the odds; every line can still show up
@@ -1168,7 +1168,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · be4924',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · f4e352',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
