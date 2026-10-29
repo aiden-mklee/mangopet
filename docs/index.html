@@ -1167,7 +1167,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · c04ffb',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · b12570',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1872,25 +1872,25 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   // so the light and shade bands follow the outline smoothly
   const surf=(x,y)=>{let vx,vy,t;
     if(soft){const yy=top0+(y-top0)*(H/(H-top0)),cy=H*.52,ry=yy<cy?H*.52:H*.48,dx=(x-W/2)/(W/2),dy=(yy-cy)/ry,p=yy<cy?2.6:4,f=Math.pow(Math.abs(dx)**4+Math.abs(dy)**p,1/4);
-      vx=Math.sign(dx)*Math.abs(dx)**3/(W/2);vy=Math.sign(dy)*Math.abs(dy)**(p-1)/ry;t=sm(.84,1.02,f)}
+      vx=Math.sign(dx)*Math.abs(dx)**3/(W/2);vy=Math.sign(dy)*Math.abs(dy)**(p-1)/ry;t=sm(.88,1.02,f)}
     else if(rect){const qx=Math.min(Math.max(x,rad),W-rad),qy=Math.min(Math.max(y,rad),H-rad);let ex=x-qx,ey=y-qy,dist;
       if(ex||ey)dist=rad-Math.hypot(ex,ey);else{dist=Math.min(x,W-x,y,H-y);ex=x<W/2?-1:1;ey=0;if(Math.min(y,H-y)<Math.min(x,W-x)){ex=0;ey=y<H/2?-1:1}}
-      vx=ex;vy=ey;t=1-sm(0,9,dist)}
-    else{const cy=H*.54,ry=y<cy?H*.54:H*.46,dx=(x-W/2)/(W/2),dy=(y-cy)/ry;vx=dx/(W/2);vy=dy/ry;t=sm(.8,1.02,Math.hypot(dx,dy))}
+      vx=ex;vy=ey;t=1-sm(0,5,dist)}
+    else{const cy=H*.54,ry=y<cy?H*.54:H*.46,dx=(x-W/2)/(W/2),dy=(y-cy)/ry;vx=dx/(W/2);vy=dy/ry;t=sm(.86,1.02,Math.hypot(dx,dy))}
     const n=Math.hypot(vx,vy)||1;return [vx/n,vy/n,t*.92]};
   // ---- body pixels
   const img=new ImageData(CW,CH),D=img.data;
   const set=(x,y,col,a=255)=>{x+=M;y+=M;if(x<0||y<0||x>=CW||y>=CH)return;const o=(y*CW+x)*4;D[o]=col[0];D[o+1]=col[1];D[o+2]=col[2];D[o+3]=a};
-  const T={hl:mix(skin,WARM,.55),lit:mix(skin,WARM,.22),base:skin,mid:mix(mix(skin,COOL,.16),[0,0,0],.06),sh:mix(mix(skin,COOL,.3),[0,0,0],.16),deep:mix(mix(skin,COOL,.42),[0,0,0],.3)};
+  const T={hl:mix(skin,WARM,.55),lit:mix(skin,WARM,.22),base:skin,mid:mix(mix(skin,COOL,.12),[0,0,0],.04),sh:mix(mix(skin,COOL,.22),[0,0,0],.1),deep:mix(mix(skin,COOL,.32),[0,0,0],.2)};
   // a hard pixel shadow: the same silhouette nudged down and right
-  for(let y=-M;y<H+M;y++)for(let x=-M;x<W+M;x++)if(body(x-2,y-3)&&!body(x,y))set(x,y,[20,24,40],70);
+  for(let y=-M;y<H+M;y++)for(let x=-M;x<W+M;x++)if(body(x-1,y-2)&&!body(x,y))set(x,y,[20,24,40],48);
   for(let y=-M;y<H;y++)for(let x=0;x<W;x++){if(!body(x,y))continue;
     // selective outline: softer where the light hits, deepest in the shade
     if(!body(x-1,y)||!body(x+1,y)||!body(x,y-1)||!body(x,y+1)){const litSide=!body(x-1,y)||!body(x,y-1),shadeSide=!body(x+1,y)||!body(x,y+1);
       set(x,y,litSide&&!shadeSide?mix(T.sh,[40,30,60],.35):mix(T.deep,[20,14,36],.45));continue}
     // a lit bevel just inside the outline on the top-left
     if((!body(x-2,y)||!body(x,y-2))&&body(x+2,y)&&body(x,y+2)&&body(x-1,y)&&body(x,y-1)){set(x,y,T.hl);continue}
-    const [gx,gy,t]=surf(x+.5,y+.5);let nx=gx*t+(x/W-.5)*.2,ny=gy*t+(y/H-.5)*.2;const nz=Math.sqrt(Math.max(0,1-nx*nx-ny*ny)),L=-.5*nx-.62*ny+.6*nz;
+    const [gx,gy,t]=surf(x+.5,y+.5);let nx=gx*t+(x/W-.5)*.12,ny=gy*t+(y/H-.5)*.12;const nz=Math.sqrt(Math.max(0,1-nx*nx-ny*ny)),L=-.5*nx-.62*ny+.6*nz;
     set(x,y,L>.84?T.lit:L>.4?T.base:L>.22?T.mid:L>.06?T.sh:T.deep)}
   if(ears){const pink=mix(skin,[240,140,160],.45),pd=mix(pink,[0,0,0],.15);for(let y=0;y<H*.2;y++)for(let x=0;x<W;x++)if(earInner(x+.5,y+.5)&&body(x,y-1)&&body(x,y+1))set(x,y,earInner(x+.5,y-.5)?pink:pd)}
   cv.width=CW;cv.height=CH;const c=cv.getContext('2d');c.putImageData(img,0,0);c.setTransform(1,0,0,1,M,M);
@@ -1902,8 +1902,9 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   const sprite=(rows,pal,x0,y0,put=P)=>rows.forEach((row,yy)=>[...row].forEach((ch,xx)=>{if(pal[ch])put(x0+xx,y0+yy,pal[ch])}));
   // ---- the screen: a recess in the case, then the dark bezel (same on every shape)
   const edge=mix(skin,[0,0,0],.42),[fx,fy,fw,fh]=rel(shell.querySelector('.face'));
-  rrect(fx-1,fy-1,fw+2,fh+2,6,(x,y)=>P(x,y,edge));
-  rrect(fx,fy,fw,fh,5,(x,y,xx,yy,w,h)=>P(x,y,yy<1||xx<1?mix(lo,[0,0,0],.3):yy<2||xx<2?mix(lo,[0,0,0],.14):yy>=h-1||xx>=w-1?mix(lo,[255,255,255],.45):lo));
+  // one line around the recess: shaded where the light can't reach (top, left), lit on the lower right
+  rrect(fx-1,fy-1,fw+2,fh+2,6,(x,y,xx,yy,w,h)=>P(x,y,(yy<1&&xx<w-2)||(xx<1&&yy<h-2)?mix(mix(skin,COOL,.3),[0,0,0],.3):mix(skin,WARM,.5)));
+  rrect(fx,fy,fw,fh,5,(x,y,xx,yy)=>P(x,y,yy<1||xx<1?mix(lo,[0,0,0],.16):lo));
   const [bx,by,bw,bh]=rel(shell.querySelector('.bezel'));rrect(bx,by,bw,bh,3,(x,y,xx,yy)=>P(x,y,yy<1?[64,66,74]:[36,38,43]));
   // ---- the logo plate, centred on the lettering (the font stays), with a small round power light beside it
   const br=shell.querySelector('.brand'),rg=document.createRange();rg.selectNodeContents(br);const tr=rg.getBoundingClientRect(),ls=parseFloat(getComputedStyle(br).letterSpacing)||0;
