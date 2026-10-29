@@ -1136,7 +1136,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 080a4a',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 1196c1',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1878,7 +1878,9 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   const br=shell.querySelector('.brand'),rg=document.createRange();rg.selectNodeContents(br);const tr=rg.getBoundingClientRect(),ls=parseFloat(getComputedStyle(br).letterSpacing)||0;
   if(tr.width){const tcx=((tr.left+tr.right-ls)/2-sr.left)/z/U;let tcy=((tr.top+tr.bottom)/2-sr.top)/z/U;
     // sit the lettering in the middle of the band between the top edge of the case and the screen recess, on every shape
-    {let top=0;while(top<H&&!body(Math.floor(W/2),top))top++;const target=Math.round((top+1+fy-1)/2),dy0=parseFloat(br.dataset.dy||0),dy=dy0+(target-tcy)*U;
+    // measured at both ends of the plate and power light, so on the egg (narrow at the top) it sits where the room really is
+    {const half=Math.round((tr.width-ls)/z/U/2)+3,topAt=x=>{let t=0;while(t<H&&!body(Math.round(x),t))t++;return t};
+      const top=Math.max(topAt(tcx-half-9),topAt(tcx+half));const target=Math.round((top+1+fy-1)/2),dy0=parseFloat(br.dataset.dy||0),dy=dy0+(target-tcy)*U;
       br.style.transform=`translateY(${dy}px)`;br.dataset.dy=dy;tcy=target}
     const pl=mix(mix(skin,COOL,.1),[0,0,0],.05);
     const plw=Math.round((tr.width-ls)/z/U/2)*2+6,plh=7,plx=Math.round(tcx-plw/2),ply=Math.round(tcy-plh/2);
