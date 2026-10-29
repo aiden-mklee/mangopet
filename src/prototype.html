@@ -1592,7 +1592,7 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
     const plw=Math.round((tr.width-ls)/z/U/2)*2+6,plh=7,plx=Math.round(tcx-plw/2),ply=Math.round(tcy-plh/2);
     for(let yy=0;yy<plh;yy++)for(let xx=0;xx<plw;xx++){if((xx===0||xx===plw-1)&&(yy===0||yy===plh-1))continue;
       P(plx+xx,ply+yy,yy===0||xx===0?mix(pl,[0,0,0],.2):yy===plh-1||xx===plw-1?mix(skin,WARM,.45):pl)}
-    sprite(['.dddd.','ddhrdl','drrrrl','drrrql','ddqqll','.llll.'],{d:mix(mix(skin,COOL,.4),[0,0,0],.42),l:mix(skin,WARM,.5),r:[232,70,62],q:[196,52,48],h:[255,196,178]},plx-9,ply+1)}
+    sprite(['.ooo.','ohrro','orrro','orrqo','.ooo.'],{o:[120,30,30],r:[232,70,62],q:[196,52,48],h:[255,196,178]},plx-8,ply+1)}
   // ---- dips the buttons sit in
   const well=mix(mix(skin,COOL,.08),[0,0,0],.05),wsh=mix(mix(skin,COOL,.22),[0,0,0],.14),wlt=mix(skin,WARM,.3);
   const [dx,dy,dw,dh]=rel(shell.querySelector('.dpad')),a=Math.round(dw/3);
