@@ -718,7 +718,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -822,6 +822,11 @@ function step(g,ev,opts={}){
     else g.lights=true}
   if(g.wakeDark&&h===12&&m===0){g.wakeDark=false;g.lights=true;g.night++}
   if(g.sleeping&&night&&g.lights){g.lightMin++;if(g.lightMin===120)g.careMiss++}
+  // a night's sleep leaves the pet a little hungry and a little bored (one or two each), never down to empty,
+  // so the morning has something to do without a "배고파" call
+  const less=v=>Math.min(v,Math.max(1,v-1-(rand(g)<.5?1:0)));
+  if(g.sleeping&&night)g.slept=true;
+  else if(!g.sleeping&&g.slept){g.slept=false;g.hunger=less(g.hunger);g.happy=less(g.happy)}
   if(nm(g).slots.some(([dh,dm])=>dh===h&&dm===m)){const L=[...(g.news||[]),...needList(g).map(n=>n.t)];g.news=[];
     // the lunch slot always says something, so a quiet morning doesn't feel like the app stopped
     if(!L.length&&h===12&&m===30&&!g.sleeping&&g.stage!=='baby')L.push(LUNCH[day%LUNCH.length]);
@@ -1178,7 +1183,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · d170a0',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · b8e9c5',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
