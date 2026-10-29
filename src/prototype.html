@@ -199,6 +199,7 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .engslots{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:2px 0 8px}
 .engslots span{border-bottom:2px solid currentColor;text-align:center;font-size:15px;line-height:1.5;min-height:1.5em;opacity:.45}
 .engslots span.on{opacity:1}.engslots span.cur{opacity:1;border-bottom-width:4px}
+.englock{text-align:center;padding-top:28%;line-height:1.7}.englock b{font-size:26px;display:block;margin-bottom:6px}.englock p{margin:0}
 .engkeys{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px}
 .engkeys .pxbtn{padding:2px 0;font-size:12px;min-width:0;text-align:center}
 .engkeys .wide{grid-column:span 4}
@@ -820,6 +821,8 @@ const SKINS=[{id:'classic',ko:'기본',skin:'#ebe5d6',lo:'#ddd5c2',ink:'rgba(0,0
   {id:'banana',ko:'망고',skin:'#f6c64e',lo:'#ecb437',ink:'#6b4a12',btn:'#5a3d12',paid:1},
   {id:'smoke',ko:'스모크',skin:'#3a3d44',lo:'#30333a',ink:'rgba(255,255,255,.5)',btn:'#c9c3b5',paid:1}];
 // button colours (decorating > 버튼): 'case' follows the case's own button colour
+// how many pets have graduated (from the dex), used for unlocks like the engraving
+const gradCount=()=>Object.values(g.dex||{}).reduce((n,d)=>n+(d.grad||0),0);
 const ENG_KEYS=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789','♥','★','!','?','.','-',':','&','(',')',' ','+'],ENG_DEFAULT='MANGOPET';
 const BTNS=[{id:'case',ko:'케이스에 맞춤',d:'케이스마다 어울리는 색'},{id:'charcoal',ko:'차콜',c:'#2c2e33',d:'단단한 검정'},{id:'cream',ko:'크림',c:'#e6dfcb',d:'부드러운 크림'},
   {id:'red',ko:'빨강',c:'#d8443c',d:'오락실 빨강'},{id:'blue',ko:'파랑',c:'#3a64c8',d:'시원한 파랑'},{id:'yellow',ko:'노랑',c:'#f0be3c',d:'망고 노랑'},
@@ -1853,7 +1856,7 @@ function renderScreen(tab,el){
 function padRoots(){if(ui.deco)return [$('decoBox'),$('decoPanel')];if(!$('zoom').hidden)return [$('zoom')];if(ui.flipped)return [$('setPanel')];return null}
 function padItems(){const r=padRoots();return r?r.flatMap(x=>[...x.querySelectorAll('button:not([disabled])')]).filter(b=>b.offsetParent):[]}
 const padKey=el=>[...el.attributes].filter(a=>a.name.startsWith('data-')||a.name==='id').map(a=>a.name+'='+a.value).join('&')||el.textContent;
-function padCur(){const it=padItems();return (ui.padKey!=null&&it.find(b=>padKey(b)===ui.padKey))||it.find(b=>b.getAttribute('aria-pressed')==='true'&&!b.closest('.dtabs,.ztabs,#ztabs'))||(ui.deco&&it.find(b=>b.closest('#decoPanel')))||it[0]}
+function padCur(){const it=padItems();return (ui.padKey!=null&&it.find(b=>padKey(b)===ui.padKey))||it.find(b=>b.getAttribute('aria-pressed')==='true'&&!b.closest('.dtabs,.ztabs,#ztabs'))||(ui.deco&&(it.find(b=>b.closest('#decoPanel'))||it.find(b=>b.dataset.dtab===ui.deco.tab)))||it[0]}
 function padShow(){document.querySelectorAll('.padfocus').forEach(b=>b.classList.remove('padfocus'));if(!padRoots())return;const el=padCur();if(el){el.classList.add('padfocus');if(ui.deco)decoText(el)}}
 function padMove(dx,dy){document.body.classList.add('padvis');const cur=padCur();if(!cur)return;
   // decorating: on the tab row, left/right flips tabs like a game's L/R; going up from the grid lands on the open tab
@@ -1892,7 +1895,7 @@ function openDeco(tab){if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(
 function closeDeco(){if(!ui.deco)return;decoPreview(null);if(g.engrave!=null){g.engrave=g.engrave.trimEnd();if(!g.engrave)g.engrave=null;applySkin()}save();ui.deco=null;document.body.classList.remove('decomode');$('decoBox').hidden=$('decoPanel').hidden=true;padShow();dispatchEvent(new Event('resize'))}
 // the dialog names what the cursor is on, with one short line about it
 function decoText(el){let n='',d='';const ds=el.dataset;
-  if(ds.dtab){n=ZTABS.deco.find(([k])=>k===ds.dtab)[1];d='◀ ▶ 로 고르고, 선택으로 바꿔요'}
+  if(ds.dtab){n=ZTABS.deco.find(([k])=>k===ds.dtab)[1];d=ds.dtab==='eng'&&!gradCount()?'첫 졸업을 하면 열려요':'◀ ▶ 로 고르고, 선택으로 바꿔요'}
   else if(ds.dclose!==undefined){n='끝';d='꾸미기를 마쳐요'}
   else if(ds.case){const c=CASES.find(x=>x.id===ds.case);n=c.ko;d=DECO_DESC[c.shape]||''}
   else if(ds.bg){const b=BGS.find(x=>x.id===ds.bg);n=b.ko;d=b.scene?DECO_DESC[b.scene]:'은은한 단색 배경'}
@@ -1958,6 +1961,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-starter]').forEach(b=>b.onclick=()=>{unlockCharm(b.dataset.starter);g.equip=g.equip||[];if(!g.equip.includes(b.dataset.starter)){if(g.equip.length>=3)g.equip.pop();g.equip.push(b.dataset.starter)}drawCharms();introTo('done')});
     el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6,false,4.8));
   }
+  if(tab==='eng'&&!gradCount()){el.innerHTML=`<div class="englock"><b>🔒</b><p>첫 졸업을 하면<br>내 각인을 새길 수 있어요</p></div>`;return}
   if(tab==='eng'){const t=(g.engrave??ENG_DEFAULT).padEnd(8,' ').slice(0,8),len=(g.engrave??ENG_DEFAULT).length;
     el.innerHTML=`<div class="engslots">${[...t].map((ch,i)=>`<span class="${i<len?'on':''}${i===Math.min(len,7)&&len<8?' cur':''}">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>
       <div class="engkeys">${ENG_KEYS.map(k=>`<button class="pxbtn" data-ch="${k}">${k===' '?'␣':k}</button>`).join('')}
@@ -2216,7 +2220,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='eng'&&(g.engrave??ENG_DEFAULT).length){g.engrave=(g.engrave??ENG_DEFAULT).slice(0,-1);applySkin();save();renderScreen('eng',$('decoPanel'));return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='eng'&&gradCount()&&(g.engrave??ENG_DEFAULT).length){g.engrave=(g.engrave??ENG_DEFAULT).slice(0,-1);applySkin();save();renderScreen('eng',$('decoPanel'));return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
