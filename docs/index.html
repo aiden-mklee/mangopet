@@ -1184,7 +1184,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · b8e9c5',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 6777a2',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2548,7 +2548,9 @@ function tick(){
   const raw=Math.floor((now-g.clockAt)*g.speed/60000);
   let min=raw;
   if(REALTIME){const d=new Date(now),wall=d.getHours()*60+d.getMinutes();let off=((wall-(g.t+min))%1440+1440)%1440;if(off>720)off-=1440;min+=off}
-  if(raw>0)g.clockAt+=raw*60000/g.speed;
+  // on the real clock, game minutes start on the wall clock's minute (not on whatever second the app first opened),
+  // so a notification forecast for 8:00 is scheduled at 8:00:00 and not up to a minute early
+  if(REALTIME)g.clockAt=Math.floor(now/60000)*60000;else if(raw>0)g.clockAt+=raw*60000/g.speed;
   if(min<=0)return;
   if(min>14*1440){min=14*1440;g.clockAt=now}
   if(min<=3)for(let i=0;i<min;i++)stepMinute();else{ui.catching=true;try{advance(min)}finally{ui.catching=false}}

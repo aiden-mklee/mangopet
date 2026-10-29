@@ -2257,7 +2257,9 @@ function tick(){
   const raw=Math.floor((now-g.clockAt)*g.speed/60000);
   let min=raw;
   if(REALTIME){const d=new Date(now),wall=d.getHours()*60+d.getMinutes();let off=((wall-(g.t+min))%1440+1440)%1440;if(off>720)off-=1440;min+=off}
-  if(raw>0)g.clockAt+=raw*60000/g.speed;
+  // on the real clock, game minutes start on the wall clock's minute (not on whatever second the app first opened),
+  // so a notification forecast for 8:00 is scheduled at 8:00:00 and not up to a minute early
+  if(REALTIME)g.clockAt=Math.floor(now/60000)*60000;else if(raw>0)g.clockAt+=raw*60000/g.speed;
   if(min<=0)return;
   if(min>14*1440){min=14*1440;g.clockAt=now}
   if(min<=3)for(let i=0;i<min;i++)stepMinute();else{ui.catching=true;try{advance(min)}finally{ui.catching=false}}
