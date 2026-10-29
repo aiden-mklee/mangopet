@@ -840,19 +840,19 @@ const BGS=[{id:'beige',ko:'베이지',c:['#f3eee6','#ddd6cb','#cdc5b9']},{id:'sk
   {id:'scene-fire',ko:'불멍',c:['#1a1e3a','#2a2a40','#3a5a3a'],dark:1,scene:'fire',pv:'radial-gradient(circle at 30% 78%,#f8b83a 8%,#d8402a 14%,transparent 24%),linear-gradient(#141832,#2e3060 60%,#24443a 60%)'},
   {id:'scene-season',ko:'계절 따라',c:['#6fb0e8','#a6d2f2','#5f9a5a'],dark:1,scene:'season',pv:'linear-gradient(90deg,#f6b8cc 25%,#2f78b8 25%,#2f78b8 50%,#e0782e 50%,#e0782e 75%,#f2f6fb 75%)'}];
 const CASES=[
-  {id:'egg-cream',ko:'기본 알 · 크림',shape:'egg',skin:'classic'},
-  {id:'egg-berry',ko:'딸기우유 알',shape:'egg',skin:'berry'},
-  {id:'egg-mint',ko:'민트초코 알',shape:'egg',skin:'mint'},
-  {id:'egg-banana',ko:'망고 알',shape:'egg',skin:'banana',paid:1},
-  {id:'egg-smoke',ko:'스모크 알',shape:'egg',skin:'smoke',paid:1},
-  {id:'square',ko:'네모 게임기',shape:'square',skin:'classic',paid:1},
-  {id:'mini-cream',ko:'컴팩트 · 크림',shape:'mini',skin:'classic',paid:1},
-  {id:'mini-berry',ko:'컴팩트 · 딸기우유',shape:'mini',skin:'berry',paid:1},
-  {id:'mini-mint',ko:'컴팩트 · 민트초코',shape:'mini',skin:'mint',paid:1},
-  {id:'round-mint',ko:'둥근 네모 · 민트초코',shape:'round',skin:'mint',paid:1},
-  {id:'round-banana',ko:'둥근 네모 · 망고',shape:'round',skin:'banana',paid:1},
-  {id:'cat',ko:'고양이 귀',shape:'cat',skin:'smoke',paid:1},
-  {id:'bear',ko:'곰돌이 귀',shape:'bear',skin:'banana',paid:1}];
+  {id:'egg-cream',s:'크림',ko:'기본 알 · 크림',shape:'egg',skin:'classic'},
+  {id:'egg-berry',s:'딸기',ko:'딸기우유 알',shape:'egg',skin:'berry'},
+  {id:'egg-mint',s:'민트',ko:'민트초코 알',shape:'egg',skin:'mint'},
+  {id:'egg-banana',s:'망고',ko:'망고 알',shape:'egg',skin:'banana',paid:1},
+  {id:'egg-smoke',s:'스모크',ko:'스모크 알',shape:'egg',skin:'smoke',paid:1},
+  {id:'square',s:'네모',ko:'네모 게임기',shape:'square',skin:'classic',paid:1},
+  {id:'mini-cream',s:'크림',ko:'컴팩트 · 크림',shape:'mini',skin:'classic',paid:1},
+  {id:'mini-berry',s:'딸기',ko:'컴팩트 · 딸기우유',shape:'mini',skin:'berry',paid:1},
+  {id:'mini-mint',s:'민트',ko:'컴팩트 · 민트초코',shape:'mini',skin:'mint',paid:1},
+  {id:'round-mint',s:'민트',ko:'둥근 네모 · 민트초코',shape:'round',skin:'mint',paid:1},
+  {id:'round-banana',s:'망고',ko:'둥근 네모 · 망고',shape:'round',skin:'banana',paid:1},
+  {id:'cat',s:'고양이',ko:'고양이 귀',shape:'cat',skin:'smoke',paid:1},
+  {id:'bear',s:'곰돌이',ko:'곰돌이 귀',shape:'bear',skin:'banana',paid:1}];
 // the beta (no ads) gives every case away and hides the ear cases until they are redrawn properly
 const shownCases=()=>CASES.filter(c=>ADS||!c.draft),paidTag=c=>c.paid&&ADS;
 const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1시간']];
@@ -1971,7 +1971,7 @@ function renderScreenIn(tab,el){
     const sk=id=>SKINS.find(k=>k.id===id)||SKINS[0];
     let h='';
     if(tab==='case')h=`<h2>케이스</h2><div class="pxcards">${shownCases().map(c=>{const k=sk(c.skin);
-      return card(`data-case="${c.id}"`,(g.shape||'egg')===c.shape&&g.skin===c.skin,`<div class="pv-case ${c.shape}" style="--pv:${k.skin};--pvlo:${k.lo}">${c.shape==='cat'||c.shape==='bear'?'<b></b><b></b>':''}<i></i></div>`,c.ko,paidTag(c)?'유료':'')}).join('')}</div>`;
+      return card(`data-case="${c.id}"`,(g.shape||'egg')===c.shape&&g.skin===c.skin,`<div class="pv-case ${c.shape}" style="--pv:${k.skin};--pvlo:${k.lo}">${c.shape==='cat'||c.shape==='bear'?'<b></b><b></b>':''}<i></i></div>`,c.s||c.ko,paidTag(c)?'유료':'')}).join('')}</div>`;
     if(tab==='bg')h=`<h2>배경</h2><div class="pxcards">${BGS.map(b=>card(`data-bg="${b.id}"`,(g.bg||'beige')===b.id,`<div class="pv-bg" style="background:${b.pv||`radial-gradient(circle,${b.c[0]},${b.c[1]} 60%,${b.c[2]})`}"><span></span></div>`,b.ko)).join('')}</div>`;
     if(tab==='lcd')h=`<h2>액정</h2><div class="pxcards">${LCDS.map(l=>card(`data-lcd="${l.id}"`,(g.lcd||'green')===l.id,`<div class="pv-lcd" style="--l:${l.lcd};--i:${l.ink};--f:${l.faint}"><b></b><i></i></div>`,l.ko)).join('')}</div>`;
     if(tab==='btn')h=`<h2>버튼</h2><div class="pxcards">${BTNS.map(b=>card(`data-btnc="${b.id}"`,(g.btnColor||'case')===b.id,
