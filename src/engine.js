@@ -127,8 +127,8 @@ function queuePoop(g){if(g.poopT<0)g.poopT=poopDelay(g);else g.poopQ=(g.poopQ||0
 function doPoop(g,ev){if(g.con==='blocked'&&rand(g)<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify(g,'😣','배가 아파… 쓰다듬어 줘','need',ev)}else addPoop(g,ev)}
 function needList(g){
   if(g.phase!=='alive')return [];const L=[];
-  if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'light',t:'💡 졸려… 불 꺼 줘',a:'불 끄기'});return L}
-  if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'light',t:'🥱 슬슬 졸려',a:'불 끄기'});
+  if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'sleepy',t:'💡 졸려… 불 꺼 줘',a:'불 끄기'});return L}
+  if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'sleepy',t:'🥱 슬슬 졸려',a:'불 끄기'});
   if(g.wakeDark)L.push({mini:'light',t:'☀️ 일어났어! 불 켜 줘',a:'불 켜기'});
   if(g.sick)L.push({mini:'sick',t:'🤒 몸이 아파',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
   if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파',a:'펫을 3번 쓰다듬기 (또는 약)'});
