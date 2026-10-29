@@ -32,7 +32,7 @@
 - 상태: 전역 `g`(저장되는 게임 상태, 엔진이 읽고 쓴다)와 `ui`(화면 상태). 화면 쪽 `stepMinute()`/`advance(min)`은 엔진을 부르고 이벤트를 처리하는 얇은 감싸개다.
 - 첫 실행: `g.intro`(case → life → egg → meal → pet → clean → charm → done), `introTo`/`introDid`/`introSkip`, 시트는 `openZoom('intro-…')`.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`. 기기 위 HTML 창에서는 방향키 커서 `padMove`/`padChoose`.
-- 꾸미기 모드: `openDeco(tab)`/`closeDeco()`, 미리보기 `decoPreview`, 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가).
+- 꾸미기 모드: `openDeco(tab)`/`closeDeco()`, 미리보기 `decoPreview`, 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
 
@@ -49,7 +49,8 @@
 
 ## 하지 않기로 한 것
 
-- 기기 전체를 픽셀로 그린 케이스 (너무 이상하다는 평)
+- 대충 픽셀로 깎은 케이스 (너무 이상하다는 평). 지금의 도트 케이스는 명암·디테일을 제대로 넣어 다시 만든 것
+- 케이스에 따로 붙인 고리 귀(케이스마다 손이 감), 하트 케이스, 레고 브릭 알(보류)
 - 반투명 케이스 (예쁘지만 무광이 낫다는 결론)
 - 알 모양 컴팩트 케이스: 액정이 알 테두리에서 벗어나 보임. 컴팩트는 네모로
 - 블록(마인크래프트풍) 케이스: 풀·나무·망고 블록 시안을 봤지만 생각한 느낌이 아니었다
