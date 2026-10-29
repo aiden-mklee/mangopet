@@ -1113,7 +1113,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · ee861b',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · d9b125',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1796,7 +1796,7 @@ const COOL=[70,60,130],WARM=[255,246,214];
 const on=()=>!ui.cssCase;
 function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   shell.classList.toggle('px',on());
-  if(!on()){if(cv){cv.hidden=rv.hidden=true}kg.style.left=kg.style.top=kg.style.right='';return}
+  if(!on()){if(cv){cv.hidden=rv.hidden=true}kg.style.left=kg.style.top=kg.style.right='';const b0=shell.querySelector('.brand');b0.style.transform='';b0.dataset.dy=0;return}
   if(!cv){cv=document.createElement('canvas');cv.id='pxcase';rv=document.createElement('canvas');rv.id='pxring';shell.prepend(cv);shell.append(rv)}
   cv.hidden=rv.hidden=false;shell.style.setProperty('--pm',M*U+'px');
   const sr=shell.getBoundingClientRect(),z=parseFloat(document.querySelector('.flipwrap').style.zoom||1)||1;
@@ -1853,7 +1853,11 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   const [bx,by,bw,bh]=rel(shell.querySelector('.bezel'));rrect(bx,by,bw,bh,3,(x,y,xx,yy)=>P(x,y,yy<1?[64,66,74]:[36,38,43]));
   // ---- the logo plate, centred on the lettering (the font stays), with a small round power light beside it
   const br=shell.querySelector('.brand'),rg=document.createRange();rg.selectNodeContents(br);const tr=rg.getBoundingClientRect(),ls=parseFloat(getComputedStyle(br).letterSpacing)||0;
-  if(tr.width){const tcx=((tr.left+tr.right-ls)/2-sr.left)/z/U,tcy=((tr.top+tr.bottom)/2-sr.top)/z/U,pl=mix(mix(skin,COOL,.1),[0,0,0],.05);
+  if(tr.width){const tcx=((tr.left+tr.right-ls)/2-sr.left)/z/U;let tcy=((tr.top+tr.bottom)/2-sr.top)/z/U;
+    // sit the lettering in the middle of the band between the top edge of the case and the screen recess, on every shape
+    {let top=0;while(top<H&&!body(Math.floor(W/2),top))top++;const target=Math.round((top+1+fy-1)/2),dy0=parseFloat(br.dataset.dy||0),dy=dy0+(target-tcy)*U;
+      br.style.transform=`translateY(${dy}px)`;br.dataset.dy=dy;tcy=target}
+    const pl=mix(mix(skin,COOL,.1),[0,0,0],.05);
     const plw=Math.round((tr.width-ls)/z/U/2)*2+6,plh=7,plx=Math.round(tcx-plw/2),ply=Math.round(tcy-plh/2);
     for(let yy=0;yy<plh;yy++)for(let xx=0;xx<plw;xx++){if((xx===0||xx===plw-1)&&(yy===0||yy===plh-1))continue;
       P(plx+xx,ply+yy,yy===0||xx===0?mix(pl,[0,0,0],.2):yy===plh-1||xx===plw-1?mix(skin,WARM,.45):pl)}
