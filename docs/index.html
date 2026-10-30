@@ -1195,7 +1195,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 478c20',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 8beb88',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1228,7 +1228,7 @@ function onEvent(e){
     if(e.stage==='child')talk(`🌱 ${w}쑥 자랐어요!`,'이제 꼬마예요',true);
     else if(e.stage==='teen')talk(`🌿 ${w}또 자랐어요!`,'이제 청소년이에요. 곧 어른이 돼요',true);
     else if(e.stage==='adult'&&SP[g.species])talk(`✨ ${w}어른이 됐어요!`,`${SP[g.species].ko}(으)로 자랐어요. 이제 졸업할 수 있어요`,true)}
-  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];if(e.first)talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요!`,'주운 것에 새로 넣었어요',true);else talk(`🎁 ${ko} 하나 더! (${n}개)`)}
+  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];if(e.first)talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요!`,'주운 것에 새로 넣었어요',true);else talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요! (${n}개)`)}
   else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);talk('🔑 새 키링 참을 받았어요!',(g.equip||[]).includes(c.id)?`${c.ko} 참을 키링에 달았어요`:`${c.ko} · 꾸미기의 키링에서 달 수 있어요`,true);drawCharms()}
 }
 function newPet(mode){E.newPet(g,mode);ui.view='main';ui.game=null;ui.anim=null}
