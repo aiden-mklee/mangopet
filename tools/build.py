@@ -29,13 +29,25 @@ BETA = '베타 0.1'  # bump when friends get a new round to test
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
 
 
+def ks_hangul():
+    """The 2,350 everyday Hangul syllables (KS X 1001), so names people type or friends send never fall back to another font."""
+    out = set()
+    for hi in range(0xB0, 0xC9):
+        for lo in range(0xA1, 0xFF):
+            try:
+                out.add(bytes([hi, lo]).decode('euc-kr'))
+            except UnicodeDecodeError:
+                pass
+    return out
+
+
 def subset_font():
-    """Re-embed Galmuri11 with only the characters the prototype uses. Run after any text change."""
+    """Re-embed Galmuri11 with the characters the prototype uses plus everyday Hangul. Run after any text change."""
     s = open(SRC, encoding='utf-8').read()
     m = FONT_RE.search(s)
     rest = s[:m.start()] + s[m.end():]
     engine = open(ENGINE, encoding='utf-8').read()
-    chars = ''.join(sorted(set(rest) | set(engine) | {chr(c) for c in range(32, 127)}))
+    chars = ''.join(sorted(set(rest) | set(engine) | {chr(c) for c in range(32, 127)} | ks_hangul()))
     with tempfile.TemporaryDirectory() as d:
         txt, out = os.path.join(d, 'chars.txt'), os.path.join(d, 'sub.woff2')
         open(txt, 'w', encoding='utf-8').write(chars)
