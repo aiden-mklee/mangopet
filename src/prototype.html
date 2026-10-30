@@ -1010,7 +1010,8 @@ function talkShow(){const b=$('talkBox'),it=talkQ[0]||talkLight,on=!!it&&!ui.dec
   const v=talkQ.length?'<span class="tv">▼</span>':'';
   b.innerHTML=`<p class="tl">${it.t}${it.s?'':v}</p>${it.s?`<p class="ts">${it.s}${v}</p>`:''}${talkQ.length&&n>1?`<span class="tp">${talkSeen+1}/${n}</span>`:''}`}
 // 선택 or a tap: the next page of news (false when there is none, so the button does its usual job)
-function talkNext(){if(talkQ.length){talkQ.shift();talkSeen=talkQ.length?talkSeen+1:0;talkShow();return true}
+function talkNext(){if(ui.deco)return false;   // hidden while decorating: the buttons belong to decorating then
+  if(talkQ.length){talkQ.shift();talkSeen=talkQ.length?talkSeen+1:0;talkShow();return true}
   if(talkLight){talkLight=null;talkShow()}return false}
 $('talkBox').onclick=e=>{e.stopPropagation();talkNext()};
 function banner(text){talk(text)}
@@ -2217,7 +2218,11 @@ function padMove(dx,dy){document.body.classList.add('padvis');const cur=padCur()
     if(along<=4)continue;const sc=along+across*2.5;if(sc<bs){bs=sc;best=b}}
   if(!best)return;ui.padKey=padKey(best);padShow();best.scrollIntoView({block:'nearest',inline:'nearest'});
   if(ui.deco)decoPreview(best)}
-function padChoose(){document.body.classList.add('padvis');const el=padCur();if(!el)return;ui.padKey=padKey(el);el.click();requestAnimationFrame(padShow)}
+function padChoose(){document.body.classList.add('padvis');const el=padCur();if(!el)return;ui.padKey=padKey(el);ui.padChoosing=true;try{el.click()}finally{ui.padChoosing=false}requestAnimationFrame(padShow)}
+// In decorating, a tap on a card works like the d-pad: it moves the cursor there and tries the item on; 선택 (or a
+// second tap on the same card) applies it or opens a shape's colours. The engraving's letter keys still type at once
+addEventListener('click',e=>{if(!ui.deco||ui.padChoosing)return;const b=e.target.closest('#decoPanel .pxcardbig');if(!b||b.disabled)return;
+  if(ui.padKey===padKey(b))return;e.stopPropagation();e.preventDefault();document.body.classList.add('padvis');ui.padKey=padKey(b);padShow();decoPreview(b)},true);
 // in decorating, any press on a choice (select or a tap) keeps it
 function decoKept(){if(ui.deco)ui.deco.keep=decoKeep()}
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('.controls'))document.body.classList.remove('padvis')},true);
@@ -2651,7 +2656,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkNext())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b)b.click();return}if(ui.deco&&ui.deco.tab==='eng'&&!lockOf('eng','eng')&&(g.engrave??ENG_DEFAULT).length){g.engrave=(g.engrave??ENG_DEFAULT).slice(0,-1);applySkin();save();renderScreen('eng',$('decoPanel'));return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkNext())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco&&ui.deco.tab==='eng'&&!lockOf('eng','eng')&&(g.engrave??ENG_DEFAULT).length){g.engrave=(g.engrave??ENG_DEFAULT).slice(0,-1);applySkin();save();renderScreen('eng',$('decoPanel'));return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
