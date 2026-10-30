@@ -1229,7 +1229,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · ac5ca7',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · fd88a1',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2042,7 +2042,7 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
     // leopard: a broken dark ring round a darker middle, one per cell, nudged by a hash so it doesn't look like a grid
     if(p==='leopard'){const C=10,cx=Math.floor(x/C),cy=Math.floor(y/C),hh=hash(cx,cy),ox=cx*C+3+hh%4,oy=cy*C+3+(hh>>3)%4,d=Math.hypot(x-ox,y-oy);
       if(d<1.6)return 2;if(d<2.7&&((Math.atan2(y-oy,x-ox)*2+hh)%6+6)%6>1.2)return 1;return false}
-    if(p==='hearts'){const HR=['#.#.','####','.##.'],cx=((x+(Math.floor(y/8)%2)*5)%10+10)%10,cy=(y%8+8)%8;return cx<4&&cy<3&&HR[cy][cx]==='#'}
+    if(p==='hearts'){const HR=['##.##','#####','.###.','..#..'],cx=((x+(Math.floor(y/8)%2)*5)%10+10)%10,cy=(y%8+8)%8;return cx<5&&cy<4&&HR[cy][cx]==='#'}
     return false};
   // a hard pixel shadow: the same silhouette nudged down and right
   for(let y=-M;y<H+M;y++)for(let x=-M;x<W+M;x++)if(body(x-1,y-2)&&!body(x,y))set(x,y,[20,24,40],48);
@@ -2421,7 +2421,7 @@ function pickUp(){const ev=[];if(!E.pickUp(g,ev))return;ev.forEach(onEvent);sfx(
 // picked from the hour of the day, the same for the whole half hour. Only when nothing is needed; any action ends it
 const BALL=parse(['.##.','#..#','#..#','.##.']),NOTE=parse(['.##','.#.','.#.','##.','##.']),
   ZS=parse(['####','..#.','.#..','####']),MOUND=parse(['..####..','.######.','########']),WIN=parse(['#########','#...#...#','#...#...#','#########','#...#...#','#...#...#','#########']),
-  FLY=[parse(['#.#','.#.','#.#']),parse(['.#.','.#.','.#.'])],GUEST=[parse(['.##..','####.','.###.','..#..']),parse(['#..#.','.##..','.###.','..#..'])];
+  FLY=[parse(['#...#','##.##','.###.','##.##']),parse(['.....','.#.#.','.###.','.#.#.'])],GUEST=[parse(['.##..','####.','.###.','..#..']),parse(['#..#.','.##..','.###.','..#..'])];
 const tri=v=>1-Math.abs(v%2-1);
 const BOOK=[parse(['.###.###.','#...#...#','#.#.#.#.#','#########']),parse(['.###.##..','#...##...','#.#.#.#..','#########'])];
 // things that open as the player keeps coming back (by E.appDay, the app's own day count, not the pet's)
