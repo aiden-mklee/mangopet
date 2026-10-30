@@ -49,6 +49,9 @@ const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 // mulberry32 on g.seed: the sequence lives in the save, so a copy of the save replays identically
 function rand(g){let t=(g.seed=(g.seed+0x6D2B79F5)>>>0);t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}
 const pick=(g,list)=>list[Math.floor(rand(g)*list.length)];
+// Korean particles by the last syllable: 받침 → a, none → b; 로 also follows ㄹ
+const jong=w=>{const c=String(w).charCodeAt(String(w).length-1);return c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0};
+const josa=(w,a,b)=>jong(w)?a:b,ro=w=>{const j=jong(w);return j&&j!==8?'으로':'로'};
 
 /* ---------- time and growth ---------- */
 const hourOf=t=>Math.floor(t/60)%24;
@@ -102,7 +105,7 @@ function evolve(g,st,ev){
   g.stage=st;g.weight=Math.max(g.weight,baseW(g));
   if(st==='adult'){g.species=decideAdult(g);g.dex[g.species]=Object.assign({seen:true},g.dex[g.species]);const an=g.species.split('_')[1];if(an)unlockCharm(g,an,ev);   // one charm per animal: cat, bear, rabbit, frog, penguin, chick
     const lc={sun:'sun',moon:'moon',chub:'donut',wild:'bolt',star:'gem'}[g.species.split('_')[0]];if(lc)unlockCharm(g,lc,ev);
-    if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}(으)로 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
+    if(Object.values(g.dex).filter(d=>d.seen).length>=5)unlockCharm(g,'heart',ev);notify(g,'✨',`${SP[g.species].ko}${ro(SP[g.species].ko)} 자랐어요! 이제 졸업할 수 있어요`,'life',ev)}
   // growing up in between: right away in 'live' mode; otherwise it rides along in the next digest, so no extra notification
   else{const t=st==='child'?'🌱 조금 자랐어요!':'🌿 또 자랐어요! 곧 어른이 돼요';if(g.notifMode==='live')notify(g,'',t,'need',ev);else(g.news=g.news||[]).push(t)}
   ev.push({type:'evolve',stage:st});
@@ -125,7 +128,7 @@ function decideAdult(g){
 function record(g,result){g.hist.unshift({sp:g.species||g.stage,name:g.name||null,acc:g.acc||null,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
 function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
-  record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full});
+  record(g,full?'졸업 ★★':'졸업 ★');{const who=g.name||SP[g.species].ko;notify(g,'🎓',`${who}${josa(who,'이','가')} 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev)};ev.push({type:'graduate',full});
   // each graduation hands over one of the first-run charms the player didn't pick
   const left=STARTERS.filter(id=>!(g.charms||[]).includes(id));if(left.length)unlockCharm(g,pick(g,left),ev)}
 function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
