@@ -25,7 +25,7 @@ const personas={
    for(let day=0;day<8&&D.g.phase==='alive'||day===0;day++){
      for(const [h,m] of checks){
        const target=(Math.floor(now()/1440))*1440+h*60+m; let tt=target; if(tt<=now())tt+=1440;
-       D.advance(tt-now()); if(D.g.phase!=='alive')break;
+       D.advance(tt-now()); if(D.g.gradReady){D.E.graduate(D.g,true,[]);}if(D.g.phase!=='alive')break;
        const g=D.g;stats.checks++;let a=0;
        stats.poopsSeen.push(g.poops);if(g.hunger===0)stats.hungrySeen++;if(g.sick)stats.sickSeen++;if(g.tummy)stats.tummySeen++;
        const lh=D.E.localHour(g);

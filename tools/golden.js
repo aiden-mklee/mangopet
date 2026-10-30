@@ -37,6 +37,7 @@ const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
 const KEYS=['phase','stage','species','con','hunger','happy','weight','poops','sick','tummy','sleeping','lights','careMiss','morning','night','checks','acc','seed'];
 
 function care(g,ev){
+  if(g.gradReady){E.graduate(g,true,ev);return}   // opening the app graduates a pet that reached full term
   if(g.lights&&g.sleeping&&E.isNight(g)){E.toggleLight(g);E.visit(g);return}
   if(g.sleeping)return;
   if(!g.lights)E.toggleLight(g);

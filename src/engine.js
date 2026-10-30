@@ -96,7 +96,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,name:null,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,name:null,gradReady:false,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -129,7 +129,7 @@ function decideAdult(g){
   return line+'_'+ANIMAL_OF[g.con];
 }
 function record(g,result){g.hist.unshift({sp:g.species||g.stage,name:g.name||null,acc:g.acc||null,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
-function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
+function graduate(g,full,ev){g.gradReady=false;unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
   record(g,full?'졸업 ★★':'졸업 ★');{const who=g.name||SP[g.species].ko;notify(g,'🎓',`${who}${josa(who,'이','가')} 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev)};ev.push({type:'graduate',full});
   // each graduation hands over one of the first-run charms the player didn't pick
@@ -184,7 +184,9 @@ function step(g,ev,opts={}){
   // awake minutes since the player last did anything for the pet; the screen shows a sulk from 12 hours (no penalty)
   if(!g.sleeping)g.unseen=(g.unseen||0)+1;
   const st=stageFor(g.ageMin);
-  if(st==='grad'){graduate(g,true,ev);return}
+  // full term: the pet waits (nothing changes) until the player opens the app and sees it graduate, so it never graduates
+  // alone in the night; the notification says it's ready (held to the morning digest in quiet hours)
+  if(st==='grad'){if(!g.gradReady){g.gradReady=true;notify(g,'🎓','다 컸어요! 열어서 졸업을 축하해 주세요','life',ev)}return}
   if(st!==g.stage)evolve(g,st,ev);
   if(g.con==='sleepy'&&h===14&&m===0&&g.stage!=='baby')g.napUntil=g.t+60;
   if(g.upEarly&&!isNight(g))g.upEarly=false;
