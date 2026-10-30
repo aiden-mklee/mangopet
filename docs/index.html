@@ -1271,7 +1271,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · c9450f',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · df1c27',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1298,7 +1298,12 @@ function onEvent(e){
   // Big news waits to be read; while catching up after the app was closed, passing needs are left to the screen itself
   if(e.type==='notice'&&e.sent&&!/자랐어요|졸업했어요|졸업을 축하해/.test(e.text)){const t=e.icon?`${e.icon} ${e.text}`:e.text;if(e.kind==='life')talkNotice(t,true);else if(!ui.catching)talkNotice(t)}
   else if(e.type==='hatchReady'){if(!(ui.anim&&ui.anim.type==='hatch'))ui.anim={type:'hatch',start:now(),dur:1500}}
-  else if(e.type==='evolve'){ui.anim={type:'evolve',start:performance.now(),dur:1600};sfx('evolve');
+  else if(e.type==='evolve'){
+    // the growing-up show (see drawPet): when it happened while the app was closed it waits a beat, so it's seen on opening.
+    // Two steps at once (child, then teen) play as one, from the oldest look
+    const from=ui.anim&&ui.anim.type==='evolve'?ui.anim.from:{child:'baby',teen:'child',adult:'teen'}[e.stage],st=now()+(ui.catching?700:0);
+    ui.anim={type:'evolve',start:st,dur:EVOLVE_MS,from};ui.sparkFrom=st+EVOLVE_MS*.7;ui.sparkUntil=st+EVOLVE_MS+1800;
+    clearTimeout(ui.evoT);ui.evoT=setTimeout(()=>sfx('evolve'),st-now()+EVOLVE_MS*.6);
     // growing up in between has no notice of its own (it waits for the digest), so say it on screen
     const w=ui.catching?'그사이 ':'';diaryNote('grew',e.stage);
     // the new look is right there on the screen, so in-between growth is only a passing word
@@ -1374,6 +1379,7 @@ function talkNotice(text,big){const i=text.indexOf('! ');talk(i>0?text.slice(0,i
 
 /* ---------- actions ---------- */
 const now=()=>performance.now();
+const EVOLVE_MS=2600;
 function say(t,ms=1100){ui.msg={t,until:now()+ms}}
 function act(a){
   ui.armed=false;ui.doing=null;if(ui.sulk&&['meal','snack','play'].includes(a)){ui.sulk=null;ui.heartUntil=now()+1500}
@@ -1673,7 +1679,10 @@ function drawScene(P,widget){
     else if(f%6!==5){const ex=Math.round(ui.petX)+6,ey=GND-8;P.rect(ex,ey,2,2,0);P.rect(ex+6,ey,2,2,0)}return}
   if(!widget&&ui.view==='stats')return drawStats(P);
   if(!widget&&ui.game)return drawGame(P);
-  const s=petSprite(),t=now(),A=widget?null:ui.anim;
+  let s=petSprite();const t=now(),A=widget?null:ui.anim;
+  // growing up: the old and new looks swap faster and faster on a blinking screen, the screen goes blank, then the new one
+  const evo=A&&A.type==='evolve'?(t-A.start)/A.dur:null,evoN=evo>0?Math.floor(((t-A.start)/1000)**1.8*8):0;
+  if(evo!==null&&S[A.from]&&(evo<0||(evo<.6&&evoN%2===0)))s=S[A.from];
   const maxX=petMaxX(s);
   let x=Math.max(petMinX(),Math.min(ui.petX,maxX)),y=GND-s.h+1;
   if(!g.sleeping&&f%2)y-=1;
@@ -1718,7 +1727,7 @@ function drawScene(P,widget){
   // the petting heart sits above the head and any accessory, on a cleared patch so it always reads
   if(!widget&&t<ui.heartUntil){const hx=Math.max(1,x+Math.floor(s.w/2)-2),hy=Math.max(1,top-6);P.rect(hx-1,hy-1,7,7,0);P.spr(S.hF,hx,hy)}
   if(!widget&&ui.msg&&t<ui.msg.until){const w=ui.msg.t.length*4+1,mx=Math.floor((LW-w)/2);P.rect(mx-1,0,w+2,7,0);P.text(ui.msg.t,mx+1,1)}
-  if(!widget&&A&&A.type==='evolve'&&Math.floor(t/200)%2)P.invert();
+  if(!widget&&evo!==null&&evo>=0&&evo<.7){if(evo>=.6)P.clear(0);else if(Math.floor((t-A.start)/240)%2)P.invert()}
 }
 function drawDexLCD(P){
   const k=DEX[ui.dexIdx||0],d=g.dex[k]||{},seen=!!d.seen,s=S[k];
