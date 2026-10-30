@@ -1210,7 +1210,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · ea12cb',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 169127',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2296,6 +2296,11 @@ function guestSprite(){const v=g.guest,b=S[v.s];let o=v.a?patterned(b,b,v.a):b;c
 async function sendVisit(){const code=visitCode(),who=g.name||'우리 아이',text=`${who}${josa(who,'이','가')} 놀러 가고 싶대요! 망고펫 설정 › 친구 아이 맞이하기에 이 코드를 넣어 주세요.\n${code}\n웹: ${VISIT_URL}${encodeURIComponent(code)}`;
   try{if(AppShare){await AppShare.Share.share({title:'망고펫 놀러 가기',text});return 'shared'}if(navigator.share){await navigator.share({title:'망고펫 놀러 가기',text});return 'shared'}}catch(e){if(e&&e.name==='AbortError')return 'cancel'}
   try{await navigator.clipboard.writeText(text);return 'copied'}catch(e){return 'show'}}
+// Growth hint: once a day, opening the app while the pet is a child or teen, a passing word says which way it leans
+// when one line clearly leads (E.lineOdds: the same odds that pick the adult). No numbers, and it never decides anything
+const HINT={sun:'☀️ 아침마다 와 줘서 햇살 기운이 생기는 중',moon:'🌙 밤에 자주 놀아 줘서 달빛 기운이 생기는 중',chub:'🍪 간식을 좋아해서 통통해지는 중',wild:'🌿 혼자 있는 시간이 많아서 야생 기운이 생기는 중'};
+function growthHint(){if(g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
+  const w=E.lineOdds(g),[a,b]=Object.entries(w).sort((x,y)=>y[1]-x[1]);if(a[1]<.4||a[1]-b[1]<.1)return;g.hintDay=day;save();talk(HINT[a[0]])}
 // the first opening on a special day says it once
 function festGreet(){const f=fest();if(!f||g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const key=f.day+':'+f.k;if(g.festSeen===key)return;g.festSeen=key;save();
   const F=FEST[f.k];talk(f.k==='anniv'?`🎉 망고펫과 함께한 지 ${f.n}일째!`:F.t,F.s,true)}
@@ -2350,7 +2355,7 @@ function backView(sp){let o=BACKS.get(sp);if(o)return o;const W=sp.w+2,H=sp.h+2,
   while(st.length){const [x,y]=st.pop();if(x<0||y<0||x>=W||y>=H||out[y][x]||on(x,y))continue;out[y][x]=true;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}
   o={...sp,rows:sp.rows.map((r,y)=>[...r].map((ch,x)=>out[y+1][x+1]?'.':'#').join(''))};BACKS.set(sp,o);return o}
 function moodOnOpen(){ui.greet=ui.sulk=null;if(g.phase!=='alive'||g.sleeping||!g.lights||g.stage==='egg'||ui.game||(g.intro&&g.intro!=='done'))return;const u=g.unseen||0;
-  festGreet();
+  festGreet();setTimeout(growthHint,2500);
   if(u>=SULK_AT){ui.sulk={pats:0,huff:0};ui.doing=null}else if(u>=GREET_IN[0]&&u<GREET_IN[1])ui.greet={start:now(),x0:ui.petX}}
 function sulkPat(){if(!ui.sulk)return;if(++ui.sulk.pats>=2)ui.sulk=null;else ui.sulk.huff=now()+1500}
 function doingOk(){return !ui.sulk&&!ui.greet&&g.phase==='alive'&&!g.sleeping&&g.lights&&!g.sick&&!ui.anim&&!ui.game&&ui.view==='main'&&!needList().length}

@@ -37,6 +37,7 @@
 - 이름: `g.name`(엔진 `newPet`에서 비움, 알림 제목 `who`, 키운 기록 `hist[].name`), 화면 `askName`·`openZoom('name')`·`nameSubj()`.
 - 특별한 날: `FEST`·`fest()`(폰 날짜, 생일 `g.birthday`)·`festDraw`·`festGreet`(`g.festSeen`).
 - 친구와 놀기: `visitCode`/`readVisit`/`welcomeGuest`/`sendVisit`, 손님 `g.guest`(하루), 그림 `guestSprite`.
+- 성장 힌트: `growthHint`(하루 한 번, `E.lineOdds`, `g.hintDay`).
 - 나를 알아보기: 엔진 `g.unseen`(깨어 있는 동안 아무것도 안 해 준 분), 화면 `moodOnOpen`·`ui.greet`·`ui.sulk`·`backView`.
 - 앱 안 알림: 말하는 창 `talk(제목, 한 줄, 큰 소식?)`(큰 소식은 `talkQ`에 줄 서고 `talkNext`로 넘김, 선택·취소 버튼이 먼저 넘김). `banner(text)`는 가벼운 말로 `talk`를 부른다.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
