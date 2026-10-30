@@ -1233,7 +1233,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · f41112',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · f07092',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1262,11 +1262,11 @@ function onEvent(e){
   else if(e.type==='hatchReady'){if(!(ui.anim&&ui.anim.type==='hatch'))ui.anim={type:'hatch',start:now(),dur:1500}}
   else if(e.type==='evolve'){ui.anim={type:'evolve',start:performance.now(),dur:1600};sfx('evolve');
     // growing up in between has no notice of its own (it waits for the digest), so say it on screen
-    const w=ui.catching?'그사이 ':'';
+    const w=ui.catching?'그사이 ':'';diaryNote('grew',e.stage);
     if(e.stage==='child')talk(`🌱 ${nameSubj()}${w}쑥 자랐어요!`,'이제 꼬마예요',true);
     else if(e.stage==='teen')talk(`🌿 ${nameSubj()}${w}또 자랐어요!`,'이제 청소년이에요. 곧 어른이 돼요',true);
     else if(e.stage==='adult'&&SP[g.species])talk(`✨ ${nameSubj()}${w}어른이 됐어요!`,`${SP[g.species].ko}(으)로 자랐어요. 이제 졸업할 수 있어요`,true)}
-  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];if(e.first)talk(`🎁 ${nameSubj()}${ko}${josa(ko,'을','를')} 주워 왔어요!`,'주운 것에 새로 넣었어요',true);else talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요! (${n}번째)`)}
+  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];diaryNote('finds',ko);if(e.first)talk(`🎁 ${nameSubj()}${ko}${josa(ko,'을','를')} 주워 왔어요!`,'주운 것에 새로 넣었어요',true);else talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요! (${n}번째)`)}
   else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);talk('🔑 새 키링 참을 받았어요!',(g.equip||[]).includes(c.id)?`${c.ko} 참을 키링에 달았어요`:`${c.ko} · 꾸미기의 키링에서 달 수 있어요`,true);drawCharms()}
 }
 function newPet(mode){E.newPet(g,mode);ui.view='main';ui.game=null;ui.anim=null}
@@ -2313,16 +2313,31 @@ const VISIT_TAG='MGVISIT1:',VISIT_URL='https://aiden-mklee.github.io/mangopet/#v
 function visitCode(){const sp=g.stage==='adult'?g.species:g.stage;return VISIT_TAG+btoa(unescape(encodeURIComponent(JSON.stringify({s:sp,n:g.name||'',a:g.acc&&!g.accOff?g.acc:'',h:g.hat||''})))).replace(/=+$/,'')}
 function readVisit(code){try{const m=String(code).trim().match(/MGVISIT1:([A-Za-z0-9+/]+)/);if(!m)return null;const d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
   if(!S[d.s]||!(SP[d.s]||STAGE_KO[d.s]))return null;return {s:d.s,n:cleanName(d.n),a:E.PATTERNS.includes(d.a)?d.a:'',h:HATS.some(h=>h.id===d.h)?d.h:''}}catch(e){return null}}
-function welcomeGuest(v){if(g.phase!=='alive')return false;g.guest={...v,until:g.t+1440};save();const who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');
+function welcomeGuest(v){if(g.phase!=='alive')return false;g.guest={...v,until:g.t+1440};const who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');diaryNote('guest',who);save();
   talk(`🐾 ${who}${josa(who,'이','가')} 놀러 왔어요!`,'하루 동안 같이 놀다 갈 거예요',true);return true}
 function guestSprite(){const v=g.guest,b=S[v.s];let o=v.a?patterned(b,b,v.a):b;const h=v.h&&HATS.find(x=>x.id===v.h);return h?hatted(o,h):o}
 async function sendVisit(){const code=visitCode(),who=g.name||'우리 아이',text=`${who}${josa(who,'이','가')} 놀러 가고 싶대요! 망고펫 설정 › 친구 아이 맞이하기에 이 코드를 넣어 주세요.\n${code}\n웹: ${VISIT_URL}${encodeURIComponent(code)}`;
   try{if(AppShare){await AppShare.Share.share({title:'망고펫 놀러 가기',text});return 'shared'}if(navigator.share){await navigator.share({title:'망고펫 놀러 가기',text});return 'shared'}}catch(e){if(e&&e.name==='AbortError')return 'cancel'}
   try{await navigator.clipboard.writeText(text);return 'copied'}catch(e){return 'show'}}
+// Diary: the first opening on a new day (days turn at 8:00) tells in one line what the pet did since the last one:
+// growing up, a friend's visit, things found, games, meals, pats. Counts come from the engine's own counters
+const DIARY_KEYS=['meals','snacks','plays','pets'],diaryDay=()=>Math.floor((g.t-8*60)/1440);
+const diaryNew=()=>({day:diaryDay(),base:Object.fromEntries(DIARY_KEYS.map(k=>[k,g[k]||0])),finds:[],grew:null,guest:null});
+// notes go into the open diary whatever its day: what happened while the app was closed is told on the next opening
+function diaryNote(k,v){if(g.phase!=='alive'||!g.diary)return;if(k==='finds'){if(!g.diary.finds.includes(v))g.diary.finds.push(v)}else g.diary[k]=v}
+function diaryOpen(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const d=diaryDay(),D=g.diary;
+  if(!D||D.day>=d||D.born!==undefined&&D.born!==g.born){if(!D||D.born!==g.born)g.diary={...diaryNew(),born:g.born};return}
+  const n=k=>Math.max(0,(g[k]||0)-(D.base[k]||0)),c=[];
+  if(D.grew)c.push('쑥 자랐');if(D.guest)c.push(`${D.guest}${josa(D.guest,'과','와')} 놀았`);
+  if(D.finds.length)c.push(`${D.finds.slice(0,2).join(', ')}${josa(D.finds[Math.min(1,D.finds.length-1)],'을','를')} 주웠`);
+  if(n('plays'))c.push(`미니게임을 ${n('plays')}판 했`);if(n('meals'))c.push(`밥을 ${n('meals')}번 먹었`);else if(n('snacks'))c.push(`간식을 ${n('snacks')}번 먹었`);
+  if(n('pets')>=2)c.push('쓰다듬어 줘서 기분이 좋았');
+  g.diary={...diaryNew(),born:g.born};save();if(!c.length)return;
+  const who=g.name||'우리 아이';talk(`📖 ${d-D.day>1?'지난번에':'어제'} ${who}${josa(who,'은','는')}`,c.slice(0,3).join('고 ')+'어요',true)}
 // Growth hint: once a day, opening the app while the pet is a child or teen, a passing word says which way it leans
 // when one line clearly leads (E.lineOdds: the same odds that pick the adult). No numbers, and it never decides anything
 const HINT={sun:'☀️ 아침마다 와 줘서 햇살 기운이 생기는 중',moon:'🌙 밤에 자주 놀아 줘서 달빛 기운이 생기는 중',chub:'🍪 간식을 좋아해서 통통해지는 중',wild:'🌿 혼자 있는 시간이 많아서 야생 기운이 생기는 중'};
-function growthHint(){if(g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
+function growthHint(){if(talkQ.length||g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
   const w=E.lineOdds(g),[a,b]=Object.entries(w).sort((x,y)=>y[1]-x[1]);if(a[1]<.4||a[1]-b[1]<.1)return;g.hintDay=day;save();talk(HINT[a[0]])}
 // the first opening on a special day says it once
 function festGreet(){const f=fest();if(!f||g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const key=f.day+':'+f.k;if(g.festSeen===key)return;g.festSeen=key;save();
@@ -2388,7 +2403,7 @@ function backView(sp){let o=BACKS.get(sp);if(o)return o;const W=sp.w+2,H=sp.h+2,
   while(st.length){const [x,y]=st.pop();if(x<0||y<0||x>=W||y>=H||out[y][x]||on(x,y))continue;out[y][x]=true;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}
   o={...sp,rows:sp.rows.map((r,y)=>[...r].map((ch,x)=>out[y+1][x+1]?'.':'#').join(''))};BACKS.set(sp,o);return o}
 function moodOnOpen(){ui.greet=ui.sulk=null;if(g.phase!=='alive'||g.sleeping||!g.lights||g.stage==='egg'||ui.game||(g.intro&&g.intro!=='done'))return;const u=g.unseen||0;
-  festGreet();setTimeout(growthHint,2500);
+  diaryOpen();festGreet();setTimeout(growthHint,2500);
   if(u>=SULK_AT){ui.sulk={pats:0,huff:0};ui.doing=null}else if(u>=GREET_IN[0]&&u<GREET_IN[1])ui.greet={start:now(),x0:ui.petX}}
 function sulkPat(){if(!ui.sulk)return;if(++ui.sulk.pats>=2)ui.sulk=null;else ui.sulk.huff=now()+1500}
 function doingOk(){return !ui.sulk&&!ui.greet&&g.phase==='alive'&&!g.sleeping&&g.lights&&!g.sick&&!ui.anim&&!ui.game&&ui.view==='main'&&!needList().length}
