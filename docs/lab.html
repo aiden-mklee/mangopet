@@ -684,6 +684,12 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
   ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['chestnut','밤',0,[9,10,11]]];
 const SEASON_W=10;
+// the groups of the collection; filling one gives its keyring charm, and every everyday find (not the seasonal ones) the loupe
+const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunflower','rose','mushroom','redcap'],'mushroom'],
+  ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover'],'feather'],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap'],'acorn'],
+  ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit'],'ring'],
+  ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone'],'key'],['작은 친구',['snail','ladybug','worm'],'ladybug'],
+  ['계절',['petal','shell','melon','conch','maple','chestnut','pinecone','snow'],'maple']];
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
@@ -891,7 +897,10 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 // one visit = one count, however many buttons it takes
 // picking up what the pet brought: into the collection, with whether it is the first of its kind
 function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
-  ev.push({type:'find',id,first});return id}
+  ev.push({type:'find',id,first});
+  if(first){for(const [,ids,charm] of FIND_GROUPS)if(ids.includes(id)&&ids.every(k=>g.finds[k]))unlockCharm(g,charm,ev);
+    if(FINDS.every(f=>f[3]||g.finds[f[0]]))unlockCharm(g,'loupe',ev)}
+  return id}
 function visit(g){g.unseen=0;if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 // every second snack makes a poop (a meal always does), so treats don't double the cleaning
@@ -936,7 +945,7 @@ function comeBack(g,ahead){
   return out;
 }
 
-const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,NOTIF,DAY,ADULT_AT,FULL_TERM,
+const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
@@ -1175,13 +1184,13 @@ SKINS.push(mkSkin('soda','하늘 소다','#a9d8ef',{btn:'#2f5f86'}),mkSkin('lave
   // special finishes (fin): metal with banded reflections, a rainbow hologram, glitter; and kitsch prints
   mkSkin('gold','황금','#e6b83a',{btn:'#5a3a0a',ink:'#5a3a0a',fin:'gold'}),mkSkin('chrome','크롬','#b8bec8',{btn:'#3a3e48',fin:'chrome'}),
   mkSkin('holo','홀로그램','#d8c8f0',{btn:'#5a4a8a',fin:'holo'}),mkSkin('glitter','핑크 글리터','#f2a8c4',{btn:'#7a2e4a',fin:'glitter'}),
-  mkSkin('leopard','호피','#e8b86a',{btn:'#3a2410',pat:'leopard',pc:'#3a2410',pc2:'#b07a30'}),mkSkin('hearts','하트','#fbe4ec',{btn:'#b0304a',pat:'hearts',pc:'#ee5a7a'}),
+  mkSkin('leopard','호피','#e8b86a',{btn:'#3a2410',pat:'leopard',pc:'#3a2410',pc2:'#b07a30'}),mkSkin('hearts','하트','#fbe4ec',{btn:'#b0304a',pat:'hearts',pc:'#ee5a7a'}),mkSkin('forest','숲','#9cbf86',{btn:'#3f5a32',pat:'dots',pc:'#7aa364'}),
   mkSkin('stars','별밤','#3a3d58',{btn:'#e6dfcb',ink:'rgba(255,255,255,.5)',pat:'stars',pc:'#f3d36a'}),mkSkin('cow','젖소','#f3f1ea',{btn:'#2c2e33',pat:'patch',pc:'#3a3a3e'}));
 // case shapes, each with the colours that suit it (picked shape first, then a colour from its own list)
-const SHAPES=[{id:'egg',ko:'알',skins:['classic','berry','mint','soda','lavender','banana','dots','stars','gold','glitter']},
+const SHAPES=[{id:'egg',ko:'알',skins:['classic','berry','mint','soda','lavender','banana','dots','stars','forest','gold','glitter']},
   {id:'square',ko:'네모',skins:['gbgray','classic','smoke','grape','ocean','cherry','check','gold','chrome']},
   {id:'mini',ko:'컴팩트',skins:['classic','berry','mint','lemon','cherry','mintstripe','holo','hearts']},
-  {id:'round',ko:'둥근 네모',skins:['mint','banana','peach','lavender','soda','peachdots','holo','glitter']},
+  {id:'round',ko:'둥근 네모',skins:['mint','banana','peach','lavender','soda','peachdots','forest','holo','glitter']},
   {id:'cat',ko:'고양이 귀',skins:['smoke','cheese','snow','silver','cow','leopard']},
   {id:'bear',ko:'곰돌이 귀',skins:['brown','honey','snow','berry','banana','hearts']}];
 const shapeOf=id=>SHAPES.find(x=>x.id===(id||'egg'))||SHAPES[0];
@@ -1199,11 +1208,11 @@ const UNLOCK={
   shape:{round:{g:2,won:1100},cat:{dex:8,won:2200},bear:{finds:10,won:3300}},
   skin:{banana:{g:1,won:1100},smoke:{full:1,won:3300},soda:'ad',lavender:'ad',peach:'ad',lemon:'ad',cherry:{g:2,won:1100},grape:'ad',ocean:'ad',
     honey:{g:1,won:1100},silver:{finds:5,won:2200},dots:{finds:8,won:2200},check:{g:5,won:2200},mintstripe:{g:3,won:2200},peachdots:{finds:8,won:2200},stars:{full:1,won:3300},cow:{dex:6,won:2200},
-    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:{g:3,won:2200}},
+    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:{g:3,won:2200},forest:{finds:30,won:2200}},
   bg:{'scene-spring':{g:1,won:1100},'scene-summer':{g:2,won:1100},'scene-autumn':{g:3,won:2200},'scene-winter':{g:4,won:2200},'scene-season':{g:5,won:2200},
     'scene-city':{dex:6,won:2200},'scene-skyline':{dex:6,won:2200},'scene-space':'ad','scene-sea':'ad','scene-fire':'ad'},
   lcd:{amber:'ad',rose:'ad',darkgreen:'ad',blackgreen:'ad'},
-  hat:{beanie:{g:1,won:1100},bow:{g:3,won:2200},crown:{dex:8,won:2200},cloverpin:{item:'clover',n:3,won:2200}},
+  hat:{beanie:{g:1,won:1100},bow:{g:3,won:2200},crown:{dex:8,won:2200},cloverpin:{item:'clover',n:3,won:2200},sproutpin:{finds:20,won:2200}},
   btn:{blue:'ad',yellow:'ad',mint:'ad',pink:'ad',purple:'ad'}};
 const dexSeen=()=>Object.values(g.dex||{}).filter(d=>d.seen).length;
 // null when open, otherwise the one line that says how to open it
@@ -1242,7 +1251,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 931f49',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · c9450f',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1276,7 +1285,9 @@ function onEvent(e){
     if(e.stage==='child')talk(`🌱 ${nameSubj()}${w}쑥 자랐어요!`);
     else if(e.stage==='teen')talk(`🌿 ${nameSubj()}${w}또 자랐어요!`);
     else if(e.stage==='adult'&&SP[g.species])talk(`✨ ${nameSubj()}${w}어른이 됐어요!`,`${SP[g.species].ko}${roOf(SP[g.species].ko)} 자랐어요. 이제 졸업할 수 있어요`,true)}
-  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];diaryNote('finds',ko)}   // no words: the item going into the collection is enough (도감 창 › 주운 것)
+  else if(e.type==='find'){const ko=FIND_KO[e.id];diaryNote('finds',ko);if(!e.first)return;const k=Object.keys(g.finds).length;
+    // the finds-count unlocks say so when they open (the group charms speak through their own charm event)
+    const m=FIND_MILESTONES.find(x=>x[0]===k);if(m)talk(`🎁 ${m[1]}`,`주운 것 ${k}종! ${m[2]}`,true)}   // no words: the item going into the collection is enough (도감 창 › 주운 것)
   else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);(ui.newCharms=ui.newCharms||[]).push(c.ko);drawCharms();
     // charms often come in twos and threes (growing up, graduating): told once, after the news they came with
     clearTimeout(ui.charmT);ui.charmT=setTimeout(()=>{const l=ui.newCharms;ui.newCharms=[];if(!l.length)return;
@@ -2287,7 +2298,16 @@ const CHARMS=[
   {id:'gem',ko:'보석',cond:'희귀종을 만나면',col:'#7FD3E8',rows:['........','.######.','########','########','.######.','..####..','...##...','........']},
   {id:'cookie',ko:'쿠키',cond:'간식을 30번 주면',col:'#C98A4B',rows:['..####..','.###.##.','########','#.######','#####.##','##.#####','.######.','..####..']},
   {id:'poop',ko:'똥',cond:'똥을 50번 치우면',col:'#9A6A3A',rows:['...#....','..##....','..####..','.######.','.######.','########','########','........']},
-  {id:'tag',ko:'이름표',cond:'2대째를 키우면',col:'#B8C4A0',rows:['..####..','########','#......#','#.####.#','#......#','#.##...#','#......#','########']}];
+  {id:'tag',ko:'이름표',cond:'2대째를 키우면',col:'#B8C4A0',rows:['..####..','########','#......#','#.####.#','#......#','#.##...#','#......#','########']},
+  // one for each filled group of 주운 것, and the loupe for all the everyday ones
+  {id:'mushroom',ko:'버섯',cond:'주운 것 꽃·버섯을 다 모으면',col:'#E85A5A',col2:'#F2EEE6',rows:['..####..','.#o##o#.','########','#o####o#','########','..oooo..','..oooo..','.oooooo.']},
+  {id:'feather',ko:'깃털',cond:'주운 것 잎·깃털을 다 모으면',col:'#7FB8E8',rows:['......##','.....###','....###.','...###..','..###...','.###....','.#......','#.......']},
+  {id:'acorn',ko:'도토리',cond:'주운 것 열매·간식을 다 모으면',col:'#C98A4B',col2:'#7A5230',rows:['...o....','.oooooo.','oooooooo','.######.','.######.','..####..','...##...','........']},
+  {id:'ring',ko:'반지',cond:'주운 것 돌·반짝이를 다 모으면',col:'#F2C94C',col2:'#7FD3E8',rows:['...oo...','..oooo..','...oo...','.######.','##....##','#......#','##....##','.######.']},
+  {id:'key',ko:'열쇠',cond:'주운 것 물건을 다 모으면',col:'#F2C94C',rows:['.####...','##..##..','##..##..','.####...','..##....','..####..','..##....','..###...']},
+  {id:'ladybug',ko:'무당벌레',cond:'주운 것 작은 친구를 다 모으면',col:'#E85A5A',col2:'#3E434D',rows:['...oo...','..oooo..','.##oo##.','#o#o##o#','###o####','#o#o##o#','.##o###.','..####..']},
+  {id:'maple',ko:'단풍',cond:'주운 것 계절을 다 모으면',col:'#E8833A',rows:['...##...','.#.##.#.','########','.######.','########','..####..','...##...','...##...']},
+  {id:'loupe',ko:'돋보기',cond:'계절 것 말고 주운 것을 다 모으면',col:'#F2C94C',col2:'#BFE3EE',rows:['.####...','#oooo#..','#oooo#..','#oooo#..','#oooo#..','.####...','.....##.','......##']}];
 function drawCharms(){const box=$('charms');if(!box)return;box.innerHTML='';const n=(g.equip||[]).length;$('keyring').hidden=false;
   if(n){const ln=document.createElement('i');ln.className='chainline';ln.style.height=(14+(n-1)*42)+'px';box.appendChild(ln)}
   (g.equip||[]).forEach((id,i)=>{const c=CHARMS.find(x=>x.id===id);if(!c)return;const w=document.createElement('div');w.className='charm';
@@ -2393,7 +2413,8 @@ const HATS=[{id:'party',ko:'고깔모자',s:'고깔',rows:['..#..','..#..','.#.#
   {id:'beanie',ko:'비니',rows:['...#...','..###..','.#####.','#######','#######','ooooooo'],dy:2},
   {id:'bow',ko:'리본',rows:['##...##','###.###','#######','###.###','##...##'],right:1},
   {id:'crown',ko:'왕관',rows:['#..#..#','##.#.##','#######','#.#.#.#'],dy:-1},
-  {id:'cloverpin',ko:'클로버 핀',s:'클로버',rows:['##.##','#####','.###.','#####','##.##'],right:1}];
+  {id:'cloverpin',ko:'클로버 핀',s:'클로버',rows:['##.##','#####','.###.','#####','##.##'],right:1},
+  {id:'sproutpin',ko:'새싹 핀',s:'새싹',rows:['#...#','##.##','.###.','..#..','..#..'],right:1}];
 const HAT_CACHE=new Map();
 function hatted(s,h){const key=h.id+'|'+s.rows.join('/');let o=HAT_CACHE.get(key);if(o)return o;
   const cx=Math.floor(s.w/2);let top=0;while(top<s.h&&s.rows[top][cx]!=='#')top++;if(top>=s.h)top=0;
@@ -2492,12 +2513,9 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   chestnut:['..#..','.###.','#####','#####','.###.']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
-// the 주운 것 tab, in groups; every engine FIND belongs to exactly one (the seasonal ones go last)
-const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunflower','rose','mushroom','redcap']],
-  ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover']],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap']],
-  ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit']],
-  ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone']],['작은 친구',['snail','ladybug','worm']],
-  ['계절',['petal','shell','melon','conch','maple','chestnut','pinecone','snow']]];
+// the 주운 것 tab, in the engine's groups (filling one gives its charm)
+const FIND_GROUPS=E.FIND_GROUPS;
+const FIND_MILESTONES=[[20,'새싹 핀이 열렸어요','꾸미기 › 아이에서 써 볼 수 있어요'],[30,'숲 케이스가 열렸어요','꾸미기 › 케이스의 알·둥근 네모에 있어요']];
 // names that need a space to wrap nicely on the card
 const FIND_SHORT={clover:'네잎 클로버',sock:'양말 한짝',shell:'조개 껍데기',dandelion:'민들레 씨앗',lolli:'막대 사탕',ladybug:'무당 벌레'};
 const EXCL=parse(['#','#','#','.','#']);
