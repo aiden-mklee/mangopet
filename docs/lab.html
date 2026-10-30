@@ -1162,7 +1162,7 @@ const UNLOCK={
   shape:{round:{g:2,won:1100},cat:{dex:8,won:2200},bear:{finds:10,won:3300}},
   skin:{banana:{g:1,won:1100},smoke:{full:1,won:3300},soda:'ad',lavender:'ad',peach:'ad',lemon:'ad',cherry:{g:2,won:1100},grape:'ad',ocean:'ad',
     honey:{g:1,won:1100},silver:{finds:5,won:2200},dots:{finds:8,won:2200},check:{g:5,won:2200},mintstripe:{g:3,won:2200},peachdots:{finds:8,won:2200},stars:{full:1,won:3300},cow:{dex:6,won:2200},
-    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:{g:2,won:1100}},
+    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:{g:3,won:2200}},
   bg:{'scene-spring':{g:1,won:1100},'scene-summer':{g:2,won:1100},'scene-autumn':{g:3,won:2200},'scene-winter':{g:4,won:2200},'scene-season':{g:5,won:2200},
     'scene-city':{dex:6,won:2200},'scene-skyline':{dex:6,won:2200},'scene-space':'ad','scene-sea':'ad','scene-fire':'ad'},
   lcd:{amber:'ad',rose:'ad',darkgreen:'ad',blackgreen:'ad'},
@@ -1204,7 +1204,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 78dc4e',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 6545cb',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
