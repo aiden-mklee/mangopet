@@ -126,7 +126,8 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 .flipinner>.shell{width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 /* pixel case (PxCase): the case is drawn on canvases, so the HTML parts only keep the layout and the taps */
 #pxcase,#pxring{position:absolute;left:calc(var(--pm) * -1);top:calc(var(--pm) * -1);width:calc(100% + var(--pm) * 2);height:calc(100% + var(--pm) * 2);image-rendering:pixelated;pointer-events:none}
-#pxcase{z-index:-1}#pxring{z-index:4}
+#pxcase,#pxring,#pxglint{position:absolute;left:calc(var(--pm) * -1);top:calc(var(--pm) * -1);width:calc(100% + var(--pm) * 2);height:calc(100% + var(--pm) * 2);image-rendering:pixelated;pointer-events:none}
+#pxcase{z-index:-1}#pxring{z-index:4}#pxglint{z-index:3}
 .shell.px{background:none!important;box-shadow:none!important;isolation:isolate}
 .flipinner:has(.shell.px){filter:none!important}
 .shell.px .face{background:none!important;box-shadow:none!important;padding:7px!important}
@@ -1624,7 +1625,7 @@ return {set,draw}})();
 // with ears). Light comes from the top left: hue-shifted bands follow each shape's curve, a lit bevel and a selective outline,
 // a hard pixel shadow, a logo plate under the lettering with a power light, button dips, a speaker grille, and a steel ring
 // threaded through a hole near the top-right edge (the charms hang from it). Redrawn only when the case or the layout changes.
-const PxCase=(()=>{const U=4,M=6;let cv=null,rv=null,queued=false;
+const PxCase=(()=>{const U=4,M=6;let cv=null,rv=null,gv=null,queued=false;
 const hex=h=>{h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
 const parse=c=>c.startsWith('#')?hex(c):c.match(/\d+/g).slice(0,3).map(Number);
 const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
@@ -1636,9 +1637,9 @@ const COOL=[70,60,130],WARM=[255,246,214];
 const on=()=>!ui.cssCase;
 function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
   shell.classList.toggle('px',on());
-  if(!on()){if(cv){cv.hidden=rv.hidden=true}kg.style.left=kg.style.top=kg.style.right='';const b0=shell.querySelector('.brand');b0.style.transform='';b0.dataset.dy=0;return}
-  if(!cv){cv=document.createElement('canvas');cv.id='pxcase';rv=document.createElement('canvas');rv.id='pxring';shell.prepend(cv);shell.append(rv)}
-  cv.hidden=rv.hidden=false;shell.style.setProperty('--pm',M*U+'px');
+  if(!on()){if(cv){cv.hidden=rv.hidden=gv.hidden=true;glint.pts=[]}kg.style.left=kg.style.top=kg.style.right='';const b0=shell.querySelector('.brand');b0.style.transform='';b0.dataset.dy=0;return}
+  if(!cv){cv=document.createElement('canvas');cv.id='pxcase';rv=document.createElement('canvas');rv.id='pxring';gv=document.createElement('canvas');gv.id='pxglint';shell.prepend(cv);shell.append(gv,rv)}
+  cv.hidden=rv.hidden=gv.hidden=false;shell.style.setProperty('--pm',M*U+'px');
   const sr=shell.getBoundingClientRect(),z=parseFloat(document.querySelector('.flipwrap').style.zoom||1)||1;
   const W=Math.round(shell.offsetWidth/U),H=Math.round(shell.offsetHeight/U),CW=W+2*M,CH=H+2*M;if(!W||!H)return;
   const skin=parse(cssv('--skin')),btn=parse(cssv('--btn')),lo=parse(cssv('--skin-lo'));
@@ -1721,6 +1722,11 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
     if(Rf(x,y)){P(x,y,Rf(x,y-1)&&Rf(x-1,y)?lo:mix(lo,[0,0,0],.16));continue}
     // the edge line: shaded on the top and left (up to the diagonal in the corners), lit on the bottom and right
     P(x,y,o[0]+o[1]<=0?mix(mix(skin,COOL,.3),[0,0,0],.3):mix(skin,WARM,.5))}
+  // ---- shiny finishes twinkle now and then: spots on the rim (and a few on the face of the case), away from the screen
+  glint.pts=[];gv.width=CW;gv.height=CH;if(['gold','chrome','holo','glitter'].includes(SK.fin)){
+    const near=(x,y)=>x>=bx-5&&x<bx+bw+5&&y>=by-5&&y<by+bh+5,rim=(x,y)=>!body(x-2,y)||!body(x+2,y)||!body(x,y-2)||!body(x,y+2);
+    for(let y=0;y<H;y+=1)for(let x=0;x<W;x+=1)if(body(x,y)&&!near(x,y)&&(rim(x,y)?hash(x,y)%5===0:hash(x,y)%41===0))glint.pts.push([x+M,y+M]);
+    glint.col=SK.fin==='gold'?'#fff4c4':'#ffffff'}
   // ---- the logo plate, centred on the lettering (the font stays), with a small round power light beside it
   const br=shell.querySelector('.brand'),rg=document.createRange();rg.selectNodeContents(br);const tr=rg.getBoundingClientRect(),ls=parseFloat(getComputedStyle(br).letterSpacing)||0;
   if(tr.width){const tcx=((tr.left+tr.right-ls)/2-sr.left)/z/U;let tcy=((tr.top+tr.bottom)/2-sr.top)/z/U;
@@ -1773,6 +1779,13 @@ function draw(){queued=false;const shell=$('shell'),kg=$('keyring');
 // redraw once per frame at most, whenever something that moves the layout changes
 function queue(){if(queued)return;queued=true;requestAnimationFrame(draw)}
 addEventListener('resize',queue);if(window.ResizeObserver)new ResizeObserver(queue).observe($('shell'));if(document.fonts)document.fonts.ready.then(queue);
+// the twinkle: one or two little stars at a time, each growing and fading over about a second, a pause of 1.5 to 4 s between
+const glint={pts:[],on:[],next:0,col:'#fff'};
+setInterval(()=>{if(!gv||document.hidden)return;const c=gv.getContext('2d'),t=performance.now();c.clearRect(0,0,gv.width,gv.height);if(!glint.pts.length)return;
+  if(t>glint.next&&glint.on.length<2){const [x,y]=glint.pts[Math.floor(Math.random()*glint.pts.length)];glint.on.push({x,y,t0:t});glint.next=t+1500+Math.random()*2500}
+  c.fillStyle=glint.col;glint.on=glint.on.filter(o=>{const k=Math.floor((t-o.t0)/130);if(k>6)return false;const r=[0,1,2,3,2,1,0][k];
+    c.fillRect(o.x,o.y,1,1);for(let i=1;i<=r;i++){c.fillRect(o.x+i,o.y,1,1);c.fillRect(o.x-i,o.y,1,1);c.fillRect(o.x,o.y+i,1,1);c.fillRect(o.x,o.y-i,1,1)}
+    if(r>=3){c.globalAlpha=.6;[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([a,b])=>c.fillRect(o.x+a,o.y+b,1,1));c.globalAlpha=1}return true})},65);
 return {queue,draw}})();
 function applySkin(){
   const k=SKINS.find(s=>s.id===g.skin)||SKINS[0];const r=document.documentElement.style;
