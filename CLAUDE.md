@@ -34,7 +34,7 @@
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`. 기기 위 HTML 창에서는 방향키 커서 `padMove`/`padChoose`.
 - 꾸미기 모드: `openDeco(tab)`/`closeDeco()`, 미리보기 `decoPreview`, 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
 - 하는 일과 주운 것: `DOING`(시간대별 장면, `ui.doing`, `doingStart`), 엔진 `FINDS`·`E.pickUp`, 그림 `FIND_SPR`, 놓인 것 `g.found`, 모은 것 `g.finds`.
-- 이름: `g.name`(엔진 `newPet`에서 비움, 알림 제목 `who`, 키운 기록 `hist[].name`), 화면 `askName`·`openZoom('name')`·`nameSubj()`.
+- 이름: `g.name`(엔진 `newPet`에서 비움, 알림 제목 `who`, 키운 기록 `hist[].name`), 화면 `giveName`(부화 때 랜덤 이름)·`openZoom('name')`(바꾸기)·`nameSubj()`.
 - 특별한 날: `FEST`·`fest()`(폰 날짜, 생일 `g.birthday`)·`festDraw`·`festGreet`(`g.festSeen`).
 - 친구와 놀기: `visitCode`/`readVisit`/`welcomeGuest`/`sendVisit`, 손님 `g.guest`(하루), 그림 `guestSprite`.
 - 오늘의 일기: `diaryOpen`(하루 첫 열기)·`diaryNote`, 저장 `g.diary`.

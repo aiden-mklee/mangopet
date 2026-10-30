@@ -743,7 +743,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,name:null,nameAsked:false,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,name:null,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -1236,7 +1236,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 7bef40',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 33c9ce',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1285,12 +1285,12 @@ function introTo(step){g.intro=step;lastHint='';
   if(step==='meal'){g.hunger=0}
   if(step==='clean'){if(!g.poops){g.poops=1;g.poopSince=g.t}}
   if(step==='charm')openZoom('intro-charm');
-  if(step==='done'){closeZoom(true);banner('🎉 이제 혼자서도 잘 키울 수 있어요')}
+  if(step==='done'){closeZoom(true);giveName();talk('🎉 이제 혼자서도 잘 키울 수 있어요',g.name?`이름은 ${g.name}! 설정에서 바꿀 수 있어요`:'',true)}
   save()}
 // called after each player action; moves the tutorial on when it was the one asked for
 function introDid(a){const want={meal:'meal',pet:'pet',clean:'clean'}[g.intro];if(want&&want===a)introTo({meal:'pet',pet:'clean',clean:'charm'}[a])}
 function introSkip(){if(g.phase==='select')newPet('relaxed');if(!(g.charms||[]).some(id=>CHARMS.find(c=>c.id===id&&c.starter)))unlockCharm('egg');introTo('done')}
-const hatch=()=>{const r=run(E.hatch);sfx('hatch');if(g.intro==='egg')introTo('meal');setTimeout(askName,1700);return r};
+const hatch=()=>{const r=run(E.hatch);sfx('hatch');if(g.intro==='egg')introTo('meal');giveName(true);return r};
 const graduate=full=>run(E.graduate,full);
 const needList=()=>E.needList(g),needsCall=()=>E.needsCall(g),nm=()=>E.nm(g),check=()=>E.visit(g);
 const unlockCharm=id=>run(E.unlockCharm,id);
@@ -2376,7 +2376,9 @@ const petName=()=>g.phase==='alive'&&g.name?g.name:null;
 // "망고가 " / "구름이 " (empty without a name), for lines like "망고가 쑥 자랐어요!"
 const nameSubj=()=>{const n=petName();return n?n+josa(n,'이','가')+' ':''};
 const cleanName=v=>String(v||'').replace(/[<>&"'`]/g,'').trim().slice(0,6);
-function askName(){if(g.phase!=='alive'||g.name||g.nameAsked||ui.zoomOn==='name')return;openZoom('name')}
+// a newborn gets a random name at once (nothing pops up, the first-run guide is never interrupted); it can be changed
+// any time in settings › 아이 이름. say: tell it in the talk box (held back during the first-run guide, which says it at the end)
+function giveName(say){if(g.phase!=='alive'||g.name)return;g.name=nameIdea();save();if(say)talk(`🐣 이름은 ${g.name}!`,'설정 › 아이 이름에서 바꿀 수 있어요',true)}
 function pickUp(){const ev=[];if(!E.pickUp(g,ev))return;ev.forEach(onEvent);sfx('charm');save()}
 
 // What the pet is up to when the app is opened (and at each new half hour while it stays open), for about 45 seconds:
@@ -2441,7 +2443,7 @@ function openZoom(tab,sel){
   if(group==='book')ui.zoomTab=tab;if(sel)ui.dexSel=sel;
   if(group==='deco'&&ui.flipped)flip(false);
   const sheet=group==='deco'||group==='intro'||group==='name',z=$('zoom');z.hidden=false;z.classList.toggle('sheet',sheet);document.body.classList.toggle('sheeted',sheet);
-  $('ztabs').innerHTML=group==='card'?'<span class="ztitle">졸업 카드</span><button class="pxbtn" id="zclose">닫기</button>':group==='name'?'<span class="ztitle">이름 짓기</span><button class="pxbtn" id="zclose">나중에</button>':group==='intro'?`<span class="ztitle">처음 시작하기 · ${{'intro-case':1,'intro-life':2,'intro-charm':3}[tab]} / 3</span><button class="pxbtn" id="zclose">건너뛰기</button>`
+  $('ztabs').innerHTML=group==='card'?'<span class="ztitle">졸업 카드</span><button class="pxbtn" id="zclose">닫기</button>':group==='name'?'<span class="ztitle">이름 바꾸기</span><button class="pxbtn" id="zclose">닫기</button>':group==='intro'?`<span class="ztitle">처음 시작하기 · ${{'intro-case':1,'intro-life':2,'intro-charm':3}[tab]} / 3</span><button class="pxbtn" id="zclose">건너뛰기</button>`
     :ZTABS[group].map(([k,l])=>`<button class="pxbtn" data-ztab="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')+'<button class="pxbtn" id="zclose">닫기</button>';
   $('ztabs').querySelectorAll('[data-ztab]').forEach(b=>b.onclick=()=>openZoom(b.dataset.ztab));
   $('zclose').onclick=group==='intro'?introSkip:()=>closeZoom();
@@ -2449,7 +2451,7 @@ function openZoom(tab,sel){
   ui.padKey=null;renderScreen(tab,body);dispatchEvent(new Event('resize'));
 }
 // the first-run sheets only close by finishing or skipping them (force)
-function closeZoom(force){if(!force&&String(ui.zoomOn).startsWith('intro'))return;if(ui.zoomOn==='name'&&!g.name){g.nameAsked=true;save()}$('zoom').hidden=true;ui.zoomOn=null;ui.padKey=null;padShow();if(document.body.classList.contains('sheeted')){document.body.classList.remove('sheeted');dispatchEvent(new Event('resize'))}}
+function closeZoom(force){if(!force&&String(ui.zoomOn).startsWith('intro'))return;$('zoom').hidden=true;ui.zoomOn=null;ui.padKey=null;padShow();if(document.body.classList.contains('sheeted')){document.body.classList.remove('sheeted');dispatchEvent(new Event('resize'))}}
 function flip(on){
   ui.flipped=on;$('setPanel').hidden=!on;ui.padKey=null;if(on){if(ui.deco)closeDeco();renderScreen('set',$('setPanel'))}else padShow();
   $('flipBtn').querySelector('span').textContent=on?'설정 닫기':'설정';
@@ -2550,12 +2552,12 @@ function renderScreenIn(tab,el){
   }
   if(tab==='name'){
     const idea=ui.nameIdea||(ui.nameIdea=nameIdea());
-    el.innerHTML=`<h2>${g.name?'이름 바꾸기':'이름을 지어 주세요'}</h2><p class="dim">알림과 도감에 이 이름이 나와요. 6글자까지, 나중에 설정에서 바꿀 수 있어요.</p>
+    el.innerHTML=`<h2>이름 바꾸기</h2><p class="dim">알림과 도감에 이 이름이 나와요. 6글자까지, 비워 두면 추천 이름으로 정해요.</p>
       <input class="pxname" maxlength="6" value="${g.name||''}" placeholder="${idea}" aria-label="펫 이름" autocomplete="off" enterkeyhint="done">
       <div class="pxrow"><button class="pxbtn" data-nameidea>다른 이름 추천</button><button class="pxbtn" data-namego>이 이름으로</button></div>`;
     const inp=el.querySelector('.pxname');
-    const go=()=>{const v=cleanName(inp.value)||idea;const first=!g.name;g.name=v;ui.nameIdea=null;save();closeZoom(true);lastCtx='';
-      if(first)talk(`💛 반가워, ${v}!`,'앞으로 잘 부탁해',true);else talk(`💛 이제 ${v}${josa(v,'이','')}에요`)};
+    const go=()=>{const v=cleanName(inp.value)||idea;g.name=v;ui.nameIdea=null;save();closeZoom(true);lastCtx='';
+      talk(`💛 이제 ${v}${josa(v,'이','')}에요`)};
     el.querySelector('[data-nameidea]').onclick=()=>{let n=nameIdea();while(n===idea)n=nameIdea();ui.nameIdea=n;inp.placeholder=ui.nameIdea;if(!g.name)inp.value='';renderScreen(tab,el)};
     el.querySelector('[data-namego]').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
   }
@@ -2795,7 +2797,7 @@ function loop(){
   if(t-ui.lastWander>450){ui.lastWander=t;ui.frame++;
     if(ui.doing&&(now()>ui.doing.until||!doingOk()))ui.doing=null;
     // a pet from before names existed (or one whose naming sheet was never seen) is asked once, a moment after opening
-    if(ui.opened===undefined){ui.opened=true;if(/#visit=/.test(location.hash)){const v=readVisit(decodeURIComponent(location.hash));history.replaceState(null,'',location.pathname+location.search);if(v)welcomeGuest(v)}moodOnOpen();if(!g.intro||g.intro==='done')setTimeout(askName,1500)}
+    if(ui.opened===undefined){ui.opened=true;if(/#visit=/.test(location.hash)){const v=readVisit(decodeURIComponent(location.hash));history.replaceState(null,'',location.pathname+location.search);if(v)welcomeGuest(v)}moodOnOpen();if(!g.intro||g.intro==='done')giveName(true)}
     if(g.guest&&(g.t>=g.guest.until||g.phase!=='alive')){const v=g.guest,who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');g.guest=null;save();if(g.phase==='alive')talk(`👋 ${who}${josa(who,'이','가')} 집에 돌아갔어요`)}
     if(!ui.doing&&g.phase==='alive'&&Math.floor(g.t/30)!==ui.doingBlock)doingStart();
     if(g.phase==='alive'&&!g.sleeping&&!ui.anim&&!ui.game&&!ui.doing&&!ui.greet&&!ui.sulk&&Math.random()<.6)ui.petX+=Math.floor(Math.random()*5)-2;
