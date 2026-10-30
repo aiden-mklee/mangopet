@@ -41,7 +41,7 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
 const SEASON_W=10;
-const FIND_P=.12;
+const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
