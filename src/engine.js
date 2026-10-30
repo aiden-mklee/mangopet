@@ -87,7 +87,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,unseen:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -172,6 +172,8 @@ function step(g,ev,opts={}){
   if(g.phase==='egg'){g.cracks=Math.min(5,(g.cracks||0)+1);if(g.cracks>=5){if(opts.autoHatch)hatch(g,ev);else ev.push({type:'hatchReady'})}return}
   if(g.phase!=='alive')return;
   g.ageMin++;
+  // awake minutes since the player last did anything for the pet; the screen shows a sulk from 12 hours (no penalty)
+  if(!g.sleeping)g.unseen=(g.unseen||0)+1;
   const st=stageFor(g.ageMin);
   if(st==='grad'){graduate(g,true,ev);return}
   if(st!==g.stage)evolve(g,st,ev);
@@ -227,7 +229,7 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 // picking up what the pet brought: into the collection, with whether it is the first of its kind
 function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
   ev.push({type:'find',id,first});return id}
-function visit(g){if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
+function visit(g){g.unseen=0;if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}
 function snack(g,ev=[]){g.happy=Math.min(4,g.happy+1);g.weight+=2;g.snacks++;queuePoop(g);if((g.allSnacks=(g.allSnacks||0)+1)>=30)unlockCharm(g,'cookie',ev);return 'ok'}
 function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
@@ -240,6 +242,7 @@ function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(--g.doses<=0){g.sick=false;g.sickMin=0;return 'cured'}return 'dose'}
 function clean(g,ev=[]){const n=g.poops;g.poops=0;if(n&&(g.allCleans=(g.allCleans||0)+1)>=50)unlockCharm(g,'poop',ev);return n}
 function pet(g){
+  g.unseen=0;
   if(g.tummy){if(++g.rub>=3){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'plop'}return 'rub'}
   if(g.t-g.lastPet>=60){g.happy=Math.min(4,g.happy+1);g.lastPet=g.t;g.pets=(g.pets||0)+1;return 'happy'}
   return 'ok'}
