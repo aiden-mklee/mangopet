@@ -1244,7 +1244,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 507449',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 1b7d7f',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2708,6 +2708,7 @@ function renderScreenIn(tab,el){
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
     el.innerHTML=`<h2>설정</h2>
+      ${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
       <h3>생활 시간</h3>${opt('life',g.life||'day',Object.entries(E.LIFE).map(([k,v])=>[k,v.ko]))}<p class="dim">${E.LIFE[g.lifeNext||g.life||'day'].d}${g.lifeNext?' · 다음에 자고 일어날 때부터':''}</p>
       <h3>알림 빈도</h3>${opt('notifMode',g.notifMode||'normal',Object.entries(NOTIF).map(([k,v])=>[k,v.ko]))}<p class="dim">${nm().d}</p>
       <h3>케이스</h3><div class="pxrow">${SHAPES.filter(c=>!lockOf('shape',c.id)).map(c=>`<button class="pxbtn" data-shape="${c.id}" aria-pressed="${(g.shape||'egg')===c.id}">${c.ko}</button>`).join('')}</div>
@@ -2718,7 +2719,6 @@ function renderScreenIn(tab,el){
       <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>
       ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
       <h3>내 생일</h3><div class="pxrow"><select class="pxsel" data-bm aria-label="생일 월"><option value="">월</option>${[...Array(12)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(0,2)===i+1?' selected':''}>${i+1}월</option>`).join('')}</select><select class="pxsel" data-bd aria-label="생일 일"><option value="">일</option>${[...Array(31)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(3)===i+1?' selected':''}>${i+1}일</option>`).join('')}</select></div><p class="dim">그날 아이가 축하해 줘요. 이 기기에만 저장돼요.</p>
-      ${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
       <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>
       <h3>친구와 놀기</h3><p class="dim">서버 없이 코드로 놀러 가요. 받은 친구 화면에 하루 동안 같이 있어요.</p>
       <div class="pxrow"><button class="pxbtn" data-visit-send ${g.phase==='alive'&&g.stage!=='egg'?'':'disabled'}>우리 아이 놀러 보내기</button><button class="pxbtn" data-visit-in aria-pressed="${!!ui.visitIn}">친구 아이 맞이하기</button></div>
