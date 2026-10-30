@@ -38,15 +38,23 @@ const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
 const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],
   ['leaf','나뭇잎',8],['ginkgo','은행잎',6],['sprout','새싹',6],['feather','깃털',6],['curl','말린 잎',6],
   ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1],
+  ['dandelion','민들레 씨앗',6],['sunflower','해바라기',5],['rose','장미',4],['mushroom','버섯',6],['redcap','점박이 버섯',3],
+  ['peanut','땅콩',6],['candy','사탕',6],['lolli','막대사탕',4],['cap','병뚜껑',5],
+  ['roundstone','동글 돌',7],['stripestone','줄무늬 돌',5],['heartstone','하트 돌',3],['marble','구슬',5],['ring','반지',2],['diamond','다이아',2],['starbit','별 조각',1],
+  ['button2','두 구멍 단추',5],['heartbutton','하트 단추',3],['note','쪽지',5],['key','열쇠',3],['sock','양말 한 짝',5],['dice','주사위',3],['bone','뼈다귀',5],
+  ['snail','달팽이 껍데기',5],['ladybug','무당벌레',4],['worm','지렁이',4],
   // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
-  ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
+  ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
+  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['chestnut','밤',0,[9,10,11]]];
 const SEASON_W=10;
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
-const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
-function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
+const FIND_LIKES={sun:['tulip','daisy','potflower','sprout','dandelion','sunflower','rose'],
+  moon:['pebble','button','letter','gem','roundstone','stripestone','heartstone','marble','ring','diamond','starbit','button2','heartbutton','note','key'],
+  chub:['acorn','acornS','peanut','candy','lolli','cap','sock','dice'],wild:['leaf','ginkgo','curl','feather','mushroom','redcap','bone','snail','ladybug','worm']};
+function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[2]<=1?1.5:2):1))}
 const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 

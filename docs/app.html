@@ -355,6 +355,8 @@ body:not(.sheeted) .phone.scenic{justify-content:flex-start!important}
 .screen p{margin:0}
 .screen .dim{opacity:.78}
 .pxgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+/* 주운 것: five across so the names fit, wrapping by word onto a second line */
+.pxgrid.fgrid{grid-template-columns:repeat(5,minmax(0,1fr))}.fgrid .pxcard span{white-space:normal;word-break:keep-all;line-height:1.15;text-align:center}
 .pxcard{appearance:none;background:none;border:2px solid var(--ink);padding:4px 2px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--ink);
   font-family:inherit;font-size:12px;min-width:0;position:relative}
 .pxcard canvas{width:100%;max-width:54px;image-rendering:pixelated}
@@ -692,15 +694,23 @@ const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
 const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],
   ['leaf','나뭇잎',8],['ginkgo','은행잎',6],['sprout','새싹',6],['feather','깃털',6],['curl','말린 잎',6],
   ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1],
+  ['dandelion','민들레 씨앗',6],['sunflower','해바라기',5],['rose','장미',4],['mushroom','버섯',6],['redcap','점박이 버섯',3],
+  ['peanut','땅콩',6],['candy','사탕',6],['lolli','막대사탕',4],['cap','병뚜껑',5],
+  ['roundstone','동글 돌',7],['stripestone','줄무늬 돌',5],['heartstone','하트 돌',3],['marble','구슬',5],['ring','반지',2],['diamond','다이아',2],['starbit','별 조각',1],
+  ['button2','두 구멍 단추',5],['heartbutton','하트 단추',3],['note','쪽지',5],['key','열쇠',3],['sock','양말 한 짝',5],['dice','주사위',3],['bone','뼈다귀',5],
+  ['snail','달팽이 껍데기',5],['ladybug','무당벌레',4],['worm','지렁이',4],
   // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
-  ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
+  ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
+  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['chestnut','밤',0,[9,10,11]]];
 const SEASON_W=10;
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
-const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
-function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
+const FIND_LIKES={sun:['tulip','daisy','potflower','sprout','dandelion','sunflower','rose'],
+  moon:['pebble','button','letter','gem','roundstone','stripestone','heartstone','marble','ring','diamond','starbit','button2','heartbutton','note','key'],
+  chub:['acorn','acornS','peanut','candy','lolli','cap','sock','dice'],wild:['leaf','ginkgo','curl','feather','mushroom','redcap','bone','snail','ladybug','worm']};
+function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[2]<=1?1.5:2):1))}
 const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 
@@ -1248,7 +1258,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 511dd3',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 6a5688',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2485,9 +2495,27 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   feather:['....##.','...##.#','..##.##','.##.##.','.#.##..','#.##...','#......'],curl:['.####..','##..##.','#.##.##','.##..##','..####.','.....#.','......#'],
   pebble:['.###.','##..#','#####'],button:['.###.','#...#','#.#.#','#...#','.###.'],letter:['#######','##...##','#.#.#.#','#..#..#','#######'],
   gem:['.###.','#.#.#','#####','.#.#.','..#..'],clover:['##.##','#####','.###.','#####','##.##','..#..'],
-  petal:['..#..','##.##','#.#.#','##.##','.#.#.'],shell:['..###..','.#.#.#.','#.#.#.#','#######','.#####.'],maple:['...#...','..###..','#.###.#','#######','.#####.','..#.#..','...#...'],pinecone:['..#..','.###.','#.#.#','.###.','#.#.#','.###.']};
+  petal:['..#..','##.##','#.#.#','##.##','.#.#.'],shell:['..###..','.#.#.#.','#.#.#.#','#######','.#####.'],maple:['...#...','..###..','#.###.#','#######','.#####.','..#.#..','...#...'],pinecone:['..#..','.###.','#.#.#','.###.','#.#.#','.###.'],
+  dandelion:['.#.#.','#.#.#','.###.','#.#.#','.#.#.','..#..','..#..'],sunflower:['.#.#.','#####','##.##','#####','.#.#.','..#..','.##..'],
+  rose:['.###.','#.#.#','##.##','.###.','..#..','##...','.##..'],mushroom:['.###.','##.##','#####','..#..','.###.'],redcap:['.###.','#.#.#','#####','.#.#.','.#.#.'],
+  peanut:['.##.','#..#','.##.','#..#','.##.'],candy:['#.###.#','#######','#.###.#'],lolli:['.###.','#.#.#','##.##','.###.','..#..','..#..'],cap:['.#.#.#.','#######','#.....#','.#####.'],
+  roundstone:['.###.','#####','.###.'],stripestone:['.###.','#...#','#####','.###.'],heartstone:['##.##','#####','.###.','..#..'],marble:['.###.','#..##','#.###','#####','.###.'],
+  ring:['..#..','.#.#.','.###.','#...#','#...#','.###.'],diamond:['.###.','#####','.###.','..#..'],starbit:['..#..','..#..','#####','.###.','.#.#.'],
+  button2:['.###.','#...#','##.##','#...#','.###.'],heartbutton:['##.##','#.#.#','#####','.###.','..#..'],note:['#####','#...#','#.#.#','#####'],key:['.##....','#..####','.##.#.#'],
+  sock:['.###','.###','.###','####','###.'],dice:['#####','#.#.#','##.##','#.#.#','#####'],bone:['##...##','.#####.','##...##'],
+  snail:['..###..','.#...#.','.#.#.#.','.#..##.','#######'],ladybug:['.#.#.','#####','##.##','#####','.###.'],worm:['#.....','##..##','.####.'],
+  snow:['#.#.#','.###.','##.##','.###.','#.#.#'],melon:['#######','##.#.##','.#####.','..###..','...#...'],conch:['..#..','.##..','#.##.','##.##','.####'],
+  chestnut:['..#..','.###.','#####','#####','.###.']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
+// the 주운 것 tab, in groups; every engine FIND belongs to exactly one (the seasonal ones go last)
+const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunflower','rose','mushroom','redcap']],
+  ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover']],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap']],
+  ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit']],
+  ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone']],['작은 친구',['snail','ladybug','worm']],
+  ['계절',['petal','shell','melon','conch','maple','chestnut','pinecone','snow']]];
+// names that need a space to wrap nicely on the card
+const FIND_SHORT={clover:'네잎 클로버',sock:'양말 한짝',shell:'조개 껍데기',dandelion:'민들레 씨앗',lolli:'막대 사탕',ladybug:'무당 벌레'};
 const EXCL=parse(['#','#','#','.','#']);
 // 을/를, 이/가 … by whether the word ends in a final consonant
 const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?a:b};
@@ -2709,8 +2737,9 @@ function renderScreenIn(tab,el){
   }
   if(tab==='finds'){
     const F=g.finds||{},got=E.FINDS.filter(f=>F[f[0]]).length;
+    const card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}"><canvas></canvas><span>${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
     el.innerHTML=`<h2>주운 것 <small>${got} / ${E.FINDS.length}</small></h2><p class="dim">아이가 가끔 뭔가 주워 와요. 화면 왼쪽에 놓여 있으면 눌러서 받아요.</p>
-      <div class="pxgrid">${E.FINDS.map(([k,ko])=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}"><canvas></canvas><span>${F[k]?({clover:'클로버',acornS:'작은도토리',shell:'조개'}[k]||ko):'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`).join('')}</div>`;
+      ${FIND_GROUPS.map(([t,ks])=>`<h3>${t} <small>${ks.filter(k=>F[k]).length} / ${ks.length}</small></h3><div class="pxgrid fgrid">${ks.map(card).join('')}</div>`).join('')}`;
     el.querySelectorAll('[data-find]').forEach(b=>{const k=b.dataset.find,seen=!!F[k];sprCanvas(b.querySelector('canvas'),FIND_SPR[k],{on:seen?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!seen,cell:TH,frame:[11,10],gap:0})});
   }
   if(tab==='card'){

@@ -342,6 +342,8 @@ body:not(.sheeted) .phone.scenic{justify-content:flex-start!important}
 .screen p{margin:0}
 .screen .dim{opacity:.78}
 .pxgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+/* 주운 것: five across so the names fit, wrapping by word onto a second line */
+.pxgrid.fgrid{grid-template-columns:repeat(5,minmax(0,1fr))}.fgrid .pxcard span{white-space:normal;word-break:keep-all;line-height:1.15;text-align:center}
 .pxcard{appearance:none;background:none;border:2px solid var(--ink);padding:4px 2px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--ink);
   font-family:inherit;font-size:12px;min-width:0;position:relative}
 .pxcard canvas{width:100%;max-width:54px;image-rendering:pixelated}
@@ -2165,9 +2167,27 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   feather:['....##.','...##.#','..##.##','.##.##.','.#.##..','#.##...','#......'],curl:['.####..','##..##.','#.##.##','.##..##','..####.','.....#.','......#'],
   pebble:['.###.','##..#','#####'],button:['.###.','#...#','#.#.#','#...#','.###.'],letter:['#######','##...##','#.#.#.#','#..#..#','#######'],
   gem:['.###.','#.#.#','#####','.#.#.','..#..'],clover:['##.##','#####','.###.','#####','##.##','..#..'],
-  petal:['..#..','##.##','#.#.#','##.##','.#.#.'],shell:['..###..','.#.#.#.','#.#.#.#','#######','.#####.'],maple:['...#...','..###..','#.###.#','#######','.#####.','..#.#..','...#...'],pinecone:['..#..','.###.','#.#.#','.###.','#.#.#','.###.']};
+  petal:['..#..','##.##','#.#.#','##.##','.#.#.'],shell:['..###..','.#.#.#.','#.#.#.#','#######','.#####.'],maple:['...#...','..###..','#.###.#','#######','.#####.','..#.#..','...#...'],pinecone:['..#..','.###.','#.#.#','.###.','#.#.#','.###.'],
+  dandelion:['.#.#.','#.#.#','.###.','#.#.#','.#.#.','..#..','..#..'],sunflower:['.#.#.','#####','##.##','#####','.#.#.','..#..','.##..'],
+  rose:['.###.','#.#.#','##.##','.###.','..#..','##...','.##..'],mushroom:['.###.','##.##','#####','..#..','.###.'],redcap:['.###.','#.#.#','#####','.#.#.','.#.#.'],
+  peanut:['.##.','#..#','.##.','#..#','.##.'],candy:['#.###.#','#######','#.###.#'],lolli:['.###.','#.#.#','##.##','.###.','..#..','..#..'],cap:['.#.#.#.','#######','#.....#','.#####.'],
+  roundstone:['.###.','#####','.###.'],stripestone:['.###.','#...#','#####','.###.'],heartstone:['##.##','#####','.###.','..#..'],marble:['.###.','#..##','#.###','#####','.###.'],
+  ring:['..#..','.#.#.','.###.','#...#','#...#','.###.'],diamond:['.###.','#####','.###.','..#..'],starbit:['..#..','..#..','#####','.###.','.#.#.'],
+  button2:['.###.','#...#','##.##','#...#','.###.'],heartbutton:['##.##','#.#.#','#####','.###.','..#..'],note:['#####','#...#','#.#.#','#####'],key:['.##....','#..####','.##.#.#'],
+  sock:['.###','.###','.###','####','###.'],dice:['#####','#.#.#','##.##','#.#.#','#####'],bone:['##...##','.#####.','##...##'],
+  snail:['..###..','.#...#.','.#.#.#.','.#..##.','#######'],ladybug:['.#.#.','#####','##.##','#####','.###.'],worm:['#.....','##..##','.####.'],
+  snow:['#.#.#','.###.','##.##','.###.','#.#.#'],melon:['#######','##.#.##','.#####.','..###..','...#...'],conch:['..#..','.##..','#.##.','##.##','.####'],
+  chestnut:['..#..','.###.','#####','#####','.###.']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
+// the 주운 것 tab, in groups; every engine FIND belongs to exactly one (the seasonal ones go last)
+const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunflower','rose','mushroom','redcap']],
+  ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover']],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap']],
+  ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit']],
+  ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone']],['작은 친구',['snail','ladybug','worm']],
+  ['계절',['petal','shell','melon','conch','maple','chestnut','pinecone','snow']]];
+// names that need a space to wrap nicely on the card
+const FIND_SHORT={clover:'네잎 클로버',sock:'양말 한짝',shell:'조개 껍데기',dandelion:'민들레 씨앗',lolli:'막대 사탕',ladybug:'무당 벌레'};
 const EXCL=parse(['#','#','#','.','#']);
 // 을/를, 이/가 … by whether the word ends in a final consonant
 const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?a:b};
@@ -2389,8 +2409,9 @@ function renderScreenIn(tab,el){
   }
   if(tab==='finds'){
     const F=g.finds||{},got=E.FINDS.filter(f=>F[f[0]]).length;
+    const card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}"><canvas></canvas><span>${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
     el.innerHTML=`<h2>주운 것 <small>${got} / ${E.FINDS.length}</small></h2><p class="dim">아이가 가끔 뭔가 주워 와요. 화면 왼쪽에 놓여 있으면 눌러서 받아요.</p>
-      <div class="pxgrid">${E.FINDS.map(([k,ko])=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}"><canvas></canvas><span>${F[k]?({clover:'클로버',acornS:'작은도토리',shell:'조개'}[k]||ko):'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`).join('')}</div>`;
+      ${FIND_GROUPS.map(([t,ks])=>`<h3>${t} <small>${ks.filter(k=>F[k]).length} / ${ks.length}</small></h3><div class="pxgrid fgrid">${ks.map(card).join('')}</div>`).join('')}`;
     el.querySelectorAll('[data-find]').forEach(b=>{const k=b.dataset.find,seen=!!F[k];sprCanvas(b.querySelector('canvas'),FIND_SPR[k],{on:seen?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!seen,cell:TH,frame:[11,10],gap:0})});
   }
   if(tab==='card'){
