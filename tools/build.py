@@ -13,7 +13,7 @@ Outputs
   docs/index.html   phone beta: real time, no dev lab, no ads, installable (PWA)
   docs/lab.html     the full prototype with the dev lab (time speed, test buttons)
   docs/manifest.webmanifest, docs/sw.js, docs/icon-*.png, docs/.nojekyll
-  docs/privacy.html  the privacy policy (copied from src/privacy.html)
+  docs/privacy.html  the privacy policy (copied from src/privacy.html), terms.html, licenses.html (from licenses/)
   .out/artifact.html  the prototype fragment with the engine inlined, for publishing as a claude.ai artifact
   app/www/index.html  the native app page (Capacitor): the phone build without the web-only install bits
 """
@@ -188,10 +188,33 @@ self.addEventListener('activate',e=>{{e.waitUntil(caches.keys().then(ks=>Promise
 self.addEventListener('fetch',e=>{{if(e.request.method!=='GET')return;
   e.respondWith(fetch(e.request).then(r=>{{const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r}}).catch(()=>caches.match(e.request)))}});
 """)
-    # the privacy policy the stores link to: https://aiden-mklee.github.io/mangopet/privacy.html
-    shutil.copy(os.path.join(ROOT, 'src', 'privacy.html'), os.path.join(DOCS, 'privacy.html'))
+    # the policy pages the stores and the settings link to (https://aiden-mklee.github.io/mangopet/privacy.html ...),
+    # in the app too so they open without a network; licenses.html is made from licenses/ (fonts and Capacitor)
+    lic = licenses_page()
+    for out in (DOCS, os.path.join(ROOT, 'app', 'www')):
+        for n in ('privacy.html', 'terms.html'):
+            shutil.copy(os.path.join(ROOT, 'src', n), os.path.join(out, n))
+        open(os.path.join(out, 'licenses.html'), 'w', encoding='utf-8').write(lic)
     open(os.path.join(DOCS, '.nojekyll'), 'w').close()
     print('built docs/ ·', ver)
+
+
+LICENSES = [('Galmuri11', '글꼴 · 화면 속 한글', 'Galmuri-OFL.md'), ('Silkscreen', '글꼴 · 영문 픽셀 글씨', 'Silkscreen-OFL.txt'),
+            ('Capacitor와 공식 플러그인', '앱 껍데기 (core, local-notifications, share, haptics, splash-screen, filesystem)', 'Capacitor-MIT.txt')]
+
+
+def licenses_page():
+    """The open-source notices page, in the same look as the policy pages."""
+    import html
+    head = open(os.path.join(ROOT, 'src', 'privacy.html'), encoding='utf-8').read().split('<main>')[0]
+    head = head.replace('망고펫 개인정보 처리방침', '망고펫 오픈소스 라이선스')
+    body = ['<main>\n<p><a href="javascript:history.back()">← 돌아가기</a></p>\n<h1>오픈소스 라이선스</h1>',
+            '<p class="muted">망고펫이 쓰는 글꼴과 소프트웨어, 그리고 그 라이선스 전문입니다. 그림과 게임은 직접 만들었습니다.</p>']
+    for name, what, f in LICENSES:
+        text = open(os.path.join(ROOT, 'licenses', f), encoding='utf-8').read().replace('&copy;', '©')
+        body.append(f'<h2>{html.escape(name)}</h2><p class="muted">{html.escape(what)}</p>'
+                    f'<pre style="white-space:pre-wrap;font-size:12px;line-height:1.5">{html.escape(text)}</pre>')
+    return head + '\n'.join(body) + '\n</main></body></html>\n'
 
 
 if __name__ == '__main__':
