@@ -42,7 +42,7 @@
 - 성장 힌트: `growthHint`(하루 한 번, `E.lineOdds`, `g.hintDay`).
 - 나를 알아보기: 엔진 `g.unseen`(깨어 있는 동안 아무것도 안 해 준 분), 화면 `moodOnOpen`·`ui.greet`·`ui.sulk`·`backView`.
 - 앱 안 알림: 말하는 창 `talk(제목, 한 줄, 큰 소식?)`(큰 소식은 `talkQ`에 줄 서고 `talkNext`로 넘김, 선택·취소 버튼이 먼저 넘김). `banner(text)`는 가벼운 말로 `talk`를 부른다.
-- 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`.
+- 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`(탭 순서 도감·주운 것·앨범). 액정의 도감 아이콘은 "무엇을 볼까요?"(`ui.bookAsk`)로 도감(`drawDexLCD`)·주운 것(`drawFindsLCD`, `FIND_ORDER`) 중 골라 ◀ ▶로 넘긴다.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
 
 ## 지켜온 원칙 (사용자가 정한 것)

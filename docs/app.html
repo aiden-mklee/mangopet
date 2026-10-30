@@ -1279,7 +1279,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · cb0c78',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 248586',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1391,7 +1391,9 @@ const EVOLVE_MS=2600;
 function say(t,ms=1100){ui.msg={t,until:now()+ms}}
 function act(a){
   ui.armed=false;ui.doing=null;if(ui.sulk&&['meal','snack','play'].includes(a)){ui.sulk=null;ui.heartUntil=now()+1500}
-  if(a==='dex'&&!ui.game){if(ui.view==='dex')ui.dexIdx=(ui.dexIdx+1)%DEX.length;else{ui.view='dex';ui.dexIdx=ui.dexIdx||0}return}
+  // the book icon: while a pet is around it asks which book (도감 / 주운 것), each then paged with ◀ ▶ on the LCD
+  if(a==='dex'&&!ui.game){if(g.phase==='alive'){ui.view='main';ui.bookAsk=true;lastCtx='';return}
+    if(ui.view==='dex')ui.dexIdx=(ui.dexIdx+1)%DEX.length;else{ui.view='dex';ui.dexIdx=ui.dexIdx||0}return}
   if(g.phase!=='alive'||ui.anim||ui.game)return;
   ui.sel=ACTS.indexOf(a);
   if(a==='stats'){if(ui.view==='stats'){ui.page=(ui.page+1)%statPages()}else{ui.view='stats';ui.page=0}return}
@@ -1673,6 +1675,7 @@ const MINI_HEART={w:3,h:3,rows:['#.#','###','.#.']},SPARK={w:3,h:3,rows:['.#.','
 function drawScene(P,widget){
   P.clear();
   if(!widget&&ui.view==='dex')return drawDexLCD(P);
+  if(!widget&&ui.view==='finds')return drawFindsLCD(P);
   const f=ui.frame;
   if(g.phase==='select'){P.spr(S.egg,Math.floor((LW-S.egg.w)/2),GND-S.egg.h+1);if(!widget)P.ctext(f%2?'TAP':'NEW?',4);return}
   if(g.phase==='egg'){const ex=Math.floor((LW-S.egg.w)/2),ey=GND-S.egg.h+1,A=ui.anim;
@@ -1744,6 +1747,14 @@ function drawDexLCD(P){
   P.spr(s,Math.floor((LW-s.w)/2)+mv,GND-s.h+1-up,{solid:!seen,flip:d.grad&&f%8>=4});if(!seen&&ui.frame%2)P.ctext('?',GND-s.h-6);
   if(d.grad)P.spr(S.hF,LW-9,2);
 }
+// 주운 것 on the LCD, in the book's group order: twice the size, a silhouette until found, how many in the corner
+const FIND_ORDER=E.FIND_GROUPS.flatMap(x=>x[1]);
+function drawFindsLCD(P){const i=ui.findIdx||0,k=FIND_ORDER[i],n=(g.finds||{})[k]||0,s=FIND_SPR[k];
+  P.ctext(`${i+1}/${FIND_ORDER.length}`,2);P.text('<',1,18);P.text('>',LW-4,18);
+  const x0=Math.floor((LW-s.w*2)/2),y0=GND-s.h*2+1-(n&&ui.frame%2);
+  for(let r=0;r<s.h;r++){const row=s.rows[r],L=row.indexOf('#'),R=row.lastIndexOf('#');
+    for(let c=0;c<s.w;c++)if(row[c]==='#'||(!n&&c>L&&c<R))P.rect(x0+c*2,y0+r*2,2,2,1)}
+  if(!n&&ui.frame%2)P.ctext('?',y0-7);if(n>1)P.text('X'+n,LW-1-(String(n).length+1)*4,9)}
 function hearts(P,n,y){for(let i=0;i<4;i++)P.spr(i<n?S.hF:S.hE,12+i*6,y)}
 const statPages=()=>g.stage==='adult'?3:2;
 function drawStats(P){
@@ -2644,13 +2655,13 @@ const pxIcon=(cv,rows,col)=>{const P=new Pix(rows[0].length,rows.length);P.spr({
 function buildDevBtns(){
   pxIcon($('zoomBtn').querySelector('canvas'),['.###....','#...#...','#...#...','#...#...','.###....','....##..','.....##.','......##'],COL.ink);
   pxIcon($('flipBtn').querySelector('canvas'),['..#..#..','.######.','##....##','#..##..#','#..##..#','##....##','.######.','..#..#..'],COL.ink);
-  $('zoomBtn').onclick=()=>openZoom(ui.zoomTab||'dex');
+  $('zoomBtn').onclick=()=>openZoom(ui.view==='finds'?'finds':ui.view==='dex'?'dex':ui.zoomTab||'dex');
   $('flipBtn').onclick=()=>flip(!ui.flipped);
   // tapping the keyring opens the keyring list
   $('keyring').onclick=()=>openZoom('charm');
   $('zoom').addEventListener('click',e=>{if(e.target.id==='zoom')closeZoom()});
 }
-const ZTABS={book:[['dex','도감'],['album','앨범'],['finds','주운 것']],deco:[['pet','아이'],['case','케이스'],['color','색'],['bg','배경'],['charm','키링'],['eng','각인']],intro:[],card:[]};
+const ZTABS={book:[['dex','도감'],['finds','주운 것'],['album','앨범']],deco:[['pet','아이'],['case','케이스'],['color','색'],['bg','배경'],['charm','키링'],['eng','각인']],intro:[],card:[]};
 // old tab names still asked for here and there
 const TAB_ALIAS={lcd:'color',btn:'color',heir:'pet',wear:'pet'};
 function openZoom(tab,sel){tab=TAB_ALIAS[tab]||tab;
@@ -2943,6 +2954,8 @@ function renderCtx(){
     <button class="pxopt" data-next="heir"><b>${nm_}의 알 받기</b><small>무늬 ${g.lastAcc} 60% · ${gen}대째</small></button>
     <button class="pxopt" data-next="fresh"><b>새로운 알 받기</b><small>처음부터 랜덤 · 1대째</small></button>
     <button class="pxopt" data-card><b>졸업 카드 보기</b><small>저장하거나 친구에게 보내요</small></button></div>`}
+  else if(g.phase==='alive'&&ui.bookAsk){key+='book';const F=g.finds||{};
+    html=`<div class="pxpick"><p>무엇을 볼까요?</p><button class="pxopt" data-book="dex"><b>도감 <small style="display:inline">· ${dexSeen()} / ${DEX.length}</small></b></button><button class="pxopt" data-book="finds"><b>주운 것 <small style="display:inline">· ${E.FINDS.filter(f=>F[f[0]]).length} / ${E.FINDS.length}</small></b></button></div>`}
   else if(g.phase==='alive'&&ui.arcade){key+='arcade';const R=g.records||{};
     const AR=[['run','달리기',`${R.run||0}M`],['catch','쿠키 받기',`${R.catch||0}개`],['shoot','슈팅',`${R.shoot||0}마리`],['brick','벽돌깨기',`${R.brick||0}개`],['simon','따라 하기',`${R.simon||0}칸`]];
     html=`<div class="pxpick"><p>오락실</p><button class="pxopt" data-game="any"><b>아무거나</b></button>${AR.map(([k,n,r])=>`<button class="pxopt" data-game="${k}"><b>${n} <small style="display:inline">· 최고 ${r}</small></b></button>`).join('')}</div>`}
@@ -2951,14 +2964,14 @@ function renderCtx(){
   else if(g.phase==='alive'){key+=ui.restartAsk;html=ui.restartAsk?`<p class="q">${restartMsg()}</p>
     <button class="big pri" data-ad="restart"><strong>${noAds()?'다시 키우기':'광고 보고 다시 키우기'}</strong></button><button class="big" data-restart-cancel><strong>그대로 키울래요</strong></button>`
     :''}
-  if(g.phase==='alive'&&(ui.restartAsk||ui.gradAsk||ui.arcade))ui.menuOpen=true;
-  if(g.phase==='alive'&&!ui.restartAsk&&!ui.gradAsk&&!ui.arcade)ui.menuOpen=false;
+  if(g.phase==='alive'&&(ui.restartAsk||ui.gradAsk||ui.arcade||ui.bookAsk))ui.menuOpen=true;
+  if(g.phase==='alive'&&!ui.restartAsk&&!ui.gradAsk&&!ui.arcade&&!ui.bookAsk)ui.menuOpen=false;
   const el=$('menuPanel');el.hidden=!ui.menuOpen||!html;$('ctx').hidden=true;
   if(!el.hidden&&key+html!==lastCtx){lastCtx=key+html;el.innerHTML=({dead:'<p class="q">무지개다리를 건넜어요</p>',away:'<p class="q">집을 나갔어요</p>'}[g.phase]||'')+html;ui.menuIdx=0}
   if(!el.hidden){const bs=[...el.querySelectorAll('button:not([disabled])')];if(ui.menuIdx>=bs.length)ui.menuIdx=0;el.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b===bs.at(ui.menuIdx)))}
 }
 function openMenu(){if(g.intro==='case'||g.intro==='life')return;if(['select','dead','away','graduated'].includes(g.phase)){ui.menuOpen=true;lastCtx='';ui.menuIdx=0}}
-function closeMenu(){ui.menuOpen=false;ui.restartAsk=false;ui.gradAsk=false;ui.arcade=false;lastCtx=''}
+function closeMenu(){ui.menuOpen=false;ui.restartAsk=false;ui.gradAsk=false;ui.arcade=false;ui.bookAsk=false;lastCtx=''}
 function renderPanel(){
   document.querySelectorAll('#speeds button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===g.speed));
   document.querySelectorAll('#notifSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===(g.notifMode||'normal')));
@@ -3008,8 +3021,9 @@ function render(){
   else{lastHint='';tb.hidden=true}
   {  $('hint').textContent=ui.game?(ui.game.phase==='end'||ui.game.phase==='crash'?'선택이나 취소를 누르면 돌아가요':GAMES[ui.game.id].hint+'  ·  취소로 나가기'):ui.view==='stats'?'◀ ▶ 넘기기  ·  취소로 돌아가기':
     ui.view==='dex'?(()=>{const k=DEX[ui.dexIdx||0],seen=g.dex[k]&&g.dex[k].seen;return `${seen?SP[k].ko:'???'}  ·  ◀ ▶ 넘기기  ·  선택: 크게 보기`})():
+    ui.view==='finds'?(()=>{const k=FIND_ORDER[ui.findIdx||0];return `${(g.finds||{})[k]?FIND_KO[k]:'???'}  ·  ◀ ▶ 넘기기  ·  선택: 크게 보기`})():
     '';}
-  $('zoomBtn').hidden=ui.view!=='dex'||ui.flipped;
+  $('zoomBtn').hidden=(ui.view!=='dex'&&ui.view!=='finds')||ui.flipped;
   renderCtx();
 }
 
@@ -3132,10 +3146,11 @@ function nav(dx,dy){
   if(ui.game){gameInput('dir',dx,dy);return}
   if(ui.view==='stats'){if(dx)ui.page=(ui.page+(dx>0?1:statPages()-1))%statPages();return}
   if(ui.view==='dex'){if(dx)ui.dexIdx=((ui.dexIdx||0)+dx+DEX.length)%DEX.length;return}
+  if(ui.view==='finds'){if(dx)ui.findIdx=((ui.findIdx||0)+dx+FIND_ORDER.length)%FIND_ORDER.length;return}
   if(dx){ui.sel=(ui.sel+dx+ACTS.length)%ACTS.length;return}
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
-const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
+const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='finds'){openZoom('finds');return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
 const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
@@ -3153,7 +3168,7 @@ $('lcd').addEventListener('click',e=>{
   if(gy<6.5||gy>=SH-6.5){const k=(gy<6.5?TOPI:BOTI)[Math.min(3,Math.floor(x/12))];if(k==='call')return showNeeds();if(ui.view!=='main'&&k!==ui.view)ui.view='main';ui.sel=ACTS.indexOf(k);if(g.tapRun)act(k);return}
   if(ui.game)return gameInput('tap',x<LW/2?-1:1,0,x,gy-7);
   if(ui.view==='stats'){ui.view='main';return}
-  if(ui.view==='dex'){nav(x<LW/2?-1:1,0);return}
+  if(ui.view==='dex'||ui.view==='finds'){nav(x<LW/2?-1:1,0);return}
   if(g.phase==='egg')return crackEgg();
   if(['select','dead','away','graduated'].includes(g.phase))return openMenu();
   if(g.phase!=='alive')return;if(g.found&&x<FIND_X+FIND_ROOM-1)return pickUp();if(g.guest&&S[g.guest.s]&&x>=Math.max(LW-1-S[g.guest.s].w,ui.petX+petSprite().w+2)){ui.guestHeart=now()+1200;return}const s=petSprite();if(x>=ui.petX-2&&x<=ui.petX+s.w+2)petTap();
@@ -3184,6 +3199,7 @@ function menuClick(e){
   if(b.dataset.restart!==undefined){ui.restartAsk=true;return}
   if(b.dataset.restartCancel!==undefined){closeMenu();return}
   if(b.dataset.game){closeMenu();startGame(b.dataset.game);return}
+  if(b.dataset.book){closeMenu();ui.view=b.dataset.book;return}
   if(b.dataset.gradCancel!==undefined){closeMenu();return}
   if(b.dataset.gradGo!==undefined){ui.gradAsk=false;ui.view='main';graduate(E.fullTerm(g));lastCtx='';save();return}
   if(b.dataset.ad){const kind=b.dataset.ad;showAd(()=>{
