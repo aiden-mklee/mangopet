@@ -47,7 +47,8 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
   ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['chestnut','밤',0,[9,10,11]]];
 const SEASON_W=10;
-// the groups of the collection; filling one gives its keyring charm, and every everyday find (not the seasonal ones) the loupe
+// the groups of the collection; filling one gives its keyring charm. Ten kinds give the loupe, every everyday find (not the
+// seasonal ones) the shining jewel
 const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunflower','rose','mushroom','redcap'],'mushroom'],
   ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover'],'feather'],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap'],'acorn'],
   ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit'],'ring'],
@@ -262,7 +263,8 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
   ev.push({type:'find',id,first});
   if(first){for(const [,ids,charm] of FIND_GROUPS)if(ids.includes(id)&&ids.every(k=>g.finds[k]))unlockCharm(g,charm,ev);
-    if(FINDS.every(f=>f[3]||g.finds[f[0]]))unlockCharm(g,'loupe',ev)}
+    if(Object.keys(g.finds).length>=10)unlockCharm(g,'loupe',ev);
+    if(FINDS.every(f=>f[3]||g.finds[f[0]]))unlockCharm(g,'jewel',ev)}
   return id}
 function visit(g){g.unseen=0;if(g.t-(g.lastVisit??-999)<45)return;g.lastVisit=g.t;g.checks=(g.checks||0)+1;const h=localHour(g);if(h>=5&&h<12)g.morning++;else if(h>=20||h<5)g.night++}
 function meal(g){if(g.hunger>=4)return 'full';g.meals=(g.meals||0)+1;g.hunger=Math.min(4,g.hunger+2);g.weight++;queuePoop(g);return 'ok'}

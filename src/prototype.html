@@ -168,6 +168,13 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 .charm canvas{display:block;width:38px;height:38px;image-rendering:pixelated;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
 @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
 @media (prefers-reduced-motion: reduce){.charm{animation:none}}
+.cwrap{position:relative;display:inline-block;line-height:0}
+.cshine{position:absolute;inset:0;pointer-events:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  background:linear-gradient(115deg,transparent 45%,rgba(255,255,255,.85) 45% 49%,transparent 49% 51%,rgba(255,255,255,.6) 51% 53%,transparent 53%) 0 0/300% 100% no-repeat;animation:cshine 4s steps(14) infinite}
+@keyframes cshine{0%{background-position:100% 0}35%,100%{background-position:0 0}}
+.ctw{position:absolute;width:3px;height:3px;background:#fff;box-shadow:0 -3px #fff,0 3px #fff,-3px 0 #fff,3px 0 #fff;opacity:0;pointer-events:none;animation:ctw 3.2s steps(1) infinite}
+@keyframes ctw{0%,72%,100%{opacity:0}74%,88%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.cshine,.ctw{animation:none}}
 .menupanel{justify-content:center;gap:6px}
 .menupanel .q,.menupanel .pxpick>p{margin:0 0 4px;font-size:12px}
 .menupanel .pxpick{display:contents}
@@ -1987,7 +1994,7 @@ const CHARMS=[
   {id:'cookie',ko:'쿠키',cond:'간식을 30번 주면',col:'#C98A4B',rows:['..####..','.###.##.','########','#.######','#####.##','##.#####','.######.','..####..']},
   {id:'poop',ko:'똥',cond:'똥을 50번 치우면',col:'#9A6A3A',rows:['...#....','..##....','..####..','.######.','.######.','########','########','........']},
   {id:'tag',ko:'이름표',cond:'2대째를 키우면',col:'#B8C4A0',rows:['..####..','########','#......#','#.####.#','#......#','#.##...#','#......#','########']},
-  // one for each filled group of 주운 것, and the loupe for all the everyday ones
+  // one for each filled group of 주운 것, the loupe for ten kinds and the shining jewel (shine: a light sweeps over it) for all the everyday ones
   {id:'mushroom',ko:'버섯',cond:'주운 것 꽃·버섯을 다 모으면',col:'#E85A5A',col2:'#F2EEE6',rows:['..####..','.#o##o#.','########','#o####o#','########','..oooo..','..oooo..','.oooooo.']},
   {id:'feather',ko:'깃털',cond:'주운 것 잎·깃털을 다 모으면',col:'#7FB8E8',rows:['......##','.....###','....###.','...###..','..###...','.###....','.#......','#.......']},
   {id:'acorn',ko:'도토리',cond:'주운 것 열매·간식을 다 모으면',col:'#C98A4B',col2:'#7A5230',rows:['...o....','.oooooo.','oooooooo','.######.','.######.','..####..','...##...','........']},
@@ -1995,16 +2002,21 @@ const CHARMS=[
   {id:'key',ko:'열쇠',cond:'주운 것 물건을 다 모으면',col:'#F2C94C',rows:['.####...','##..##..','##..##..','.####...','..##....','..####..','..##....','..###...']},
   {id:'ladybug',ko:'무당벌레',cond:'주운 것 작은 친구를 다 모으면',col:'#E85A5A',col2:'#3E434D',rows:['...oo...','..oooo..','.##oo##.','#o#o##o#','###o####','#o#o##o#','.##o###.','..####..']},
   {id:'maple',ko:'단풍',cond:'주운 것 계절을 다 모으면',col:'#E8833A',rows:['...##...','.#.##.#.','########','.######.','########','..####..','...##...','...##...']},
-  {id:'loupe',ko:'돋보기',cond:'계절 것 말고 주운 것을 다 모으면',col:'#F2C94C',col2:'#BFE3EE',rows:['.####...','#oooo#..','#oooo#..','#oooo#..','#oooo#..','.####...','.....##.','......##']}];
+  {id:'loupe',ko:'돋보기',cond:'주운 것 10종을 모으면',col:'#F2C94C',col2:'#BFE3EE',rows:['.####...','#oooo#..','#oooo#..','#oooo#..','#oooo#..','.####...','.....##.','......##']},
+  {id:'jewel',ko:'반짝 보석',cond:'계절 것 말고 주운 것을 다 모으면',shine:1,col:'#F06AA8',col2:'#FFE3F0',rows:['..######..','.##o###o#.','##oo###o##','##########','.########.','..######..','...####...','....##....']}];
 function drawCharms(){const box=$('charms');if(!box)return;box.innerHTML='';const n=(g.equip||[]).length;$('keyring').hidden=false;
   if(n){const ln=document.createElement('i');ln.className='chainline';ln.style.height=(14+(n-1)*42)+'px';box.appendChild(ln)}
   (g.equip||[]).forEach((id,i)=>{const c=CHARMS.find(x=>x.id===id);if(!c)return;const w=document.createElement('div');w.className='charm';
     w.style.top=(10+i*42)+'px';const cv=document.createElement('canvas');w.appendChild(cv);box.appendChild(w);
-    w.style.left=-charmCanvas(cv,c,Math.max(2,Math.round(2.4*(window.devicePixelRatio||1))))/2+'px'});
+    w.style.left=-charmCanvas(cv,c,Math.max(2,Math.round(2.4*(window.devicePixelRatio||1))))/2+'px';charmShine(cv,c)});
 }
 const light=hex=>[1,3,5].reduce((t,i)=>t+parseInt(hex.slice(i,i+2),16),0)>600;
 const darken=(hex,a)=>'#'+[1,3,5].map(i=>Math.round(parseInt(hex.slice(i,i+2),16)*(1-a)).toString(16).padStart(2,'0')).join('');
 // a charm in its colour with a dark outline, so light charms read on light shells; locked ones are a faint silhouette
+// a shining charm gets a slow light sweep clipped to its own pixels, and a twinkle now and then beside it
+function charmShine(cv,c,locked){if(!c.shine||locked)return;const w=document.createElement('span');w.className='cwrap';cv.replaceWith(w);w.append(cv);
+  const m=`url(${cv.toDataURL()})`,o=document.createElement('i');o.className='cshine';o.style.webkitMaskImage=o.style.maskImage=m;w.append(o);
+  w.insertAdjacentHTML('beforeend','<i class="ctw" style="right:-3px;top:2px"></i><i class="ctw" style="left:-2px;bottom:6px;animation-delay:-1.6s"></i>')}
 function charmCanvas(cv,c,k,locked=false,unit=3.8){
   // rows: '#' the charm colour, 'o' a second colour (col2, e.g. a penguin's white belly), 'k' ink (eyes, whiskers).
   // Most charms are 8 wide; a wider one (the cat with its whiskers) keeps the same pixel size, the canvas just grows.
@@ -2503,7 +2515,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-btnc]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.btnColor=b.dataset.btnc==='case'?null:b.dataset.btnc;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-btnst]').forEach(b=>b.onclick=()=>{g.btnStyle=b.dataset.btnst;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-charm]').forEach(b=>b.onclick=()=>{const id=b.dataset.charm;g.equip=g.equip||[];if(g.equip.includes(id))g.equip=g.equip.filter(x=>x!==id);else if(g.equip.length<3)g.equip.push(id);else{banner('키링은 3개까지 달 수 있어요');return}drawCharms();save();renderScreen(tab,el)});
-    el.querySelectorAll('[data-cc]').forEach(cv=>{const c=CHARMS.find(x=>x.id===cv.dataset.cc);charmCanvas(cv,c,6,cv.hasAttribute('data-lock'),4.8)});
+    el.querySelectorAll('[data-cc]').forEach(cv=>{const c=CHARMS.find(x=>x.id===cv.dataset.cc),lk=cv.hasAttribute('data-lock');charmCanvas(cv,c,6,lk,4.8);charmShine(cv,c,lk)});
   }
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
