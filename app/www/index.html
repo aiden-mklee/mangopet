@@ -230,6 +230,7 @@ body.decomode #sceneTop{display:none!important}
 .talkbox{position:absolute;left:50%;transform:translateX(-50%);z-index:30;width:min(360px,calc(100% - 32px));cursor:pointer}
 .talkbox .tl{margin:0;font-size:15px;line-height:1.45}
 .talkbox .ts{margin:3px 0 0;font-size:12px;line-height:1.5;color:#5a5e66}
+.talkbox .tsl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .talkbox .tv{font-size:9px;opacity:.6;margin-left:4px}
 .talkbox .tp{position:absolute;right:11px;bottom:7px;font-size:10px;color:#9aa0a8}
 body.talking #sceneTop{visibility:hidden}
@@ -1244,7 +1245,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 856bb4',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 2c0cca',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1274,10 +1275,11 @@ function onEvent(e){
   else if(e.type==='evolve'){ui.anim={type:'evolve',start:performance.now(),dur:1600};sfx('evolve');
     // growing up in between has no notice of its own (it waits for the digest), so say it on screen
     const w=ui.catching?'그사이 ':'';diaryNote('grew',e.stage);
-    if(e.stage==='child')talk(`🌱 ${nameSubj()}${w}쑥 자랐어요!`,'이제 꼬마예요',true);
-    else if(e.stage==='teen')talk(`🌿 ${nameSubj()}${w}또 자랐어요!`,'이제 청소년이에요. 곧 어른이 돼요',true);
+    // the new look is right there on the screen, so in-between growth is only a passing word
+    if(e.stage==='child')talk(`🌱 ${nameSubj()}${w}쑥 자랐어요!`);
+    else if(e.stage==='teen')talk(`🌿 ${nameSubj()}${w}또 자랐어요!`);
     else if(e.stage==='adult'&&SP[g.species])talk(`✨ ${nameSubj()}${w}어른이 됐어요!`,`${SP[g.species].ko}${roOf(SP[g.species].ko)} 자랐어요. 이제 졸업할 수 있어요`,true)}
-  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];diaryNote('finds',ko);if(e.first)talk(`🎁 ${nameSubj()}${ko}${josa(ko,'을','를')} 주워 왔어요!`,'주운 것에 새로 넣었어요',true);else talk(`🎁 ${ko}${josa(ko,'을','를')} 주워 왔어요! (${n}번째)`)}
+  else if(e.type==='find'){const ko=FIND_KO[e.id],n=g.finds[e.id];diaryNote('finds',ko)}   // no words: the item going into the collection is enough (도감 창 › 주운 것)
   else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);(ui.newCharms=ui.newCharms||[]).push(c.ko);drawCharms();
     // charms often come in twos and threes (growing up, graduating): told once, after the news they came with
     clearTimeout(ui.charmT);ui.charmT=setTimeout(()=>{const l=ui.newCharms;ui.newCharms=[];if(!l.length)return;
@@ -1325,12 +1327,18 @@ function talkShow(){const b=$('talkBox'),it=talkQ[0]||talkLight,on=!!it&&!ui.dec
   if(st&&!st.hidden&&st.offsetParent){b.style.top=st.offsetTop+'px';b.style.height=st.offsetHeight+'px'}
   else{b.style.top=(ad&&ad.offsetParent?ad.offsetTop+ad.offsetHeight:0)+12+'px';b.style.height=''}
   const n=talkSeen+talkQ.length;
+  // three or more at once fold into one page that lists them; 선택 opens them one by one, 취소 lets them all go
+  if(talkFolded()){const l=talkQ.map(x=>x.t).join(' · ');b.innerHTML=`<p class="tl">📬 소식이 ${talkQ.length}개 있어요<span class="tv">▼</span></p><p class="ts tsl">${l}</p>`;return}
   const v=talkQ.length?'<span class="tv">▼</span>':'';
   b.innerHTML=`<p class="tl">${it.t}${it.s?'':v}</p>${it.s?`<p class="ts">${it.s}${v}</p>`:''}${talkQ.length&&n>1?`<span class="tp">${talkSeen+1}/${n}</span>`:''}`}
 // 선택 or a tap: the next page of news (false when there is none, so the button does its usual job)
+const talkFolded=()=>talkQ.length>=3&&talkSeen===0&&!ui.talkOpen;
 function talkNext(){if(ui.deco)return false;   // hidden while decorating: the buttons belong to decorating then
-  if(talkQ.length){talkQ.shift();talkSeen=talkQ.length?talkSeen+1:0;talkShow();return true}
+  if(talkFolded()){ui.talkOpen=true;talkShow();return true}
+  if(talkQ.length){talkQ.shift();talkSeen=talkQ.length?talkSeen+1:0;if(!talkQ.length)ui.talkOpen=false;talkShow();return true}
   if(talkLight){talkLight=null;talkShow()}return false}
+// 취소: all the waiting news goes at once
+function talkCancel(){if(ui.deco)return false;if(talkQ.length){talkQ.length=0;talkSeen=0;ui.talkOpen=false;talkShow();return true}if(talkLight){talkLight=null;talkShow()}return false}
 $('talkBox').onclick=e=>{e.stopPropagation();talkNext()};
 function banner(text){talk(text)}
 // a notice's text as a title and a smaller line: "알이 깨어났어요! 이제 …" splits after the first "!"
@@ -2372,7 +2380,7 @@ function visitCode(){const sp=g.stage==='adult'?g.species:g.stage;return VISIT_T
 function readVisit(code){try{const m=String(code).trim().match(/MGVISIT1:([A-Za-z0-9+/]+)/);if(!m)return null;const d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
   if(!S[d.s]||!(SP[d.s]||STAGE_KO[d.s]))return null;return {s:d.s,n:cleanName(d.n),a:E.PATTERNS.includes(d.a)?d.a:'',h:HATS.some(h=>h.id===d.h)?d.h:''}}catch(e){return null}}
 function welcomeGuest(v){if(g.phase!=='alive')return false;g.guest={...v,until:g.t+1440};const who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');diaryNote('guest',who);save();
-  talk(`🐾 ${who}${josa(who,'이','가')} 놀러 왔어요!`,'하루 동안 같이 놀다 갈 거예요',true);return true}
+  talk(`🐾 ${who}${josa(who,'이','가')} 놀러 왔어요!`);return true}
 function guestSprite(){const v=g.guest,b=S[v.s];let o=v.a?patterned(b,b,v.a):b;const h=v.h&&HATS.find(x=>x.id===v.h);return h?hatted(o,h):o}
 async function sendVisit(){const code=visitCode(),who=g.name||'우리 아이',text=`${who}${josa(who,'이','가')} 놀러 가고 싶대요! 망고펫 설정 › 친구 아이 맞이하기에 이 코드를 넣어 주세요.\n${code}\n웹: ${VISIT_URL}${encodeURIComponent(code)}`;
   try{if(AppShare){await AppShare.Share.share({title:'망고펫 놀러 가기',text});return 'shared'}if(navigator.share){await navigator.share({title:'망고펫 놀러 가기',text});return 'shared'}}catch(e){if(e&&e.name==='AbortError')return 'cancel'}
@@ -2973,7 +2981,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkNext())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
