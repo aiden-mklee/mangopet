@@ -42,6 +42,8 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
 const SEASON_W=10;
 const FIND_P=.12;
+// how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
+const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
 const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
 function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
@@ -222,7 +224,7 @@ function step(g,ev,opts={}){
   }
   // a find: at the top of each awake, lit hour, decide whether one comes this hour and at which minute; it lands then
   // if the pet is still awake with the light on and nothing is lying there yet
-  if(m===0){g.findAt=null;if(!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
+  if(m===0){g.findAt=null;if(appDay(g)>=FINDS_FROM&&!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
   if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){const w=findWeights(g);let r=rand(g)*w.reduce((a,b)=>a+b,0);g.found=FINDS[w.findIndex(x=>(r-=x)<0)][0]}}
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
@@ -287,7 +289,7 @@ function comeBack(g,ahead){
 }
 
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,NOTIF,DAY,ADULT_AT,FULL_TERM,
-  LIFE,setLife,localHour,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
+  LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;

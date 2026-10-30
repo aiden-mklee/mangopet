@@ -180,7 +180,7 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 1007906553
+       "seed": 2903413563
       }
      },
      {
@@ -203,7 +203,7 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 2583707578
+       "seed": 184247292
       }
      },
      {
@@ -215,7 +215,7 @@
        "con": "tough",
        "hunger": 4,
        "happy": 3,
-       "weight": 23,
+       "weight": 24,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -226,7 +226,7 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 2200060396
+       "seed": 304553386
       }
      },
      {
@@ -234,11 +234,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 4,
-       "happy": 3,
-       "weight": 31,
+       "happy": 4,
+       "weight": 30,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -249,7 +249,7 @@
        "night": 3,
        "checks": 13,
        "acc": null,
-       "seed": 552741874
+       "seed": 2192484096
       }
      },
      {
@@ -257,11 +257,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 4,
-       "happy": 4,
-       "weight": 38,
+       "happy": 3,
+       "weight": 37,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -272,7 +272,7 @@
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 481224377
+       "seed": 2120966599
       }
      },
      {
@@ -280,11 +280,11 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "sun_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 4,
        "happy": 3,
-       "weight": 45,
+       "weight": 44,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -295,7 +295,7 @@
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 345765683
+       "seed": 2617343575
       }
      }
     ],
@@ -337,22 +337,22 @@
      ],
      [
       3630,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       3990,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
       4800,
-      "✨ 햇곰으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 달곰으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       5070,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -382,7 +382,7 @@
      ],
      [
       7950,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -407,12 +407,12 @@
      ],
      [
       10560,
-      "🎓 햇곰이 졸업했어요! 도감에 ★★",
+      "🎓 달곰이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_bear": {
+     "moon_bear": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -420,7 +420,7 @@
     },
     "hist": [
      {
-      "sp": "sun_bear",
+      "sp": "moon_bear",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -609,7 +609,7 @@
        "night": 0,
        "checks": 2,
        "acc": "줄무늬",
-       "seed": 4039202515
+       "seed": 3471308042
       }
      },
      {
@@ -621,7 +621,7 @@
        "con": "sleepy",
        "hunger": 4,
        "happy": 3,
-       "weight": 14,
+       "weight": 15,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -632,7 +632,7 @@
        "night": 1,
        "checks": 4,
        "acc": "줄무늬",
-       "seed": 624259377
+       "seed": 1951871914
       }
      },
      {
@@ -643,8 +643,8 @@
        "species": null,
        "con": "sleepy",
        "hunger": 4,
-       "happy": 3,
-       "weight": 25,
+       "happy": 4,
+       "weight": 24,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -655,7 +655,7 @@
        "night": 2,
        "checks": 8,
        "acc": "줄무늬",
-       "seed": 3271908151
+       "seed": 2008236811
       }
      },
      {
@@ -663,7 +663,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_cat",
+       "species": "star",
        "con": "sleepy",
        "hunger": 4,
        "happy": 3,
@@ -678,7 +678,7 @@
        "night": 3,
        "checks": 13,
        "acc": "줄무늬",
-       "seed": 4024049915
+       "seed": 1560648432
       }
      },
      {
@@ -686,11 +686,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_cat",
+       "species": "star",
        "con": "sleepy",
        "hunger": 4,
        "happy": 3,
-       "weight": 38,
+       "weight": 40,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -701,7 +701,7 @@
        "night": 5,
        "checks": 20,
        "acc": "줄무늬",
-       "seed": 225459595
+       "seed": 1425189738
       }
      },
      {
@@ -709,11 +709,11 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "sun_cat",
+       "species": "star",
        "con": "sleepy",
        "hunger": 4,
        "happy": 3,
-       "weight": 47,
+       "weight": 48,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -751,7 +751,7 @@
      ],
      [
       2190,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 4개 치워 줘",
       "sent"
      ],
      [
@@ -770,18 +770,13 @@
       "sent"
      ],
      [
-      3960,
-      "🤒 몸이 뜨거워…",
-      "sent"
-     ],
-     [
       3990,
-      "🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 햇냥으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 반짝이로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -791,7 +786,7 @@
      ],
      [
       5430,
-      "💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -806,7 +801,7 @@
      ],
      [
       6870,
-      "💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -815,8 +810,13 @@
       "sent"
      ],
      [
+      7860,
+      "🤒 몸이 뜨거워…",
+      "sent"
+     ],
+     [
       7950,
-      "💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -830,23 +830,28 @@
       "sent"
      ],
      [
+      9300,
+      "🤒 몸이 뜨거워…",
+      "sent"
+     ],
+     [
       9390,
-      "💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       9750,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
       10560,
-      "🎓 햇냥이 졸업했어요! 도감에 ★★",
+      "🎓 반짝이가 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_cat": {
+     "star": {
       "seen": true,
       "grad": 1,
       "best": 2,
@@ -855,7 +860,7 @@
     },
     "hist": [
      {
-      "sp": "sun_cat",
+      "sp": "star",
       "name": null,
       "acc": "줄무늬",
       "mode": "classic",
@@ -980,7 +985,7 @@
        "night": 0,
        "checks": 1,
        "acc": null,
-       "seed": 3471308056
+       "seed": 2903413583
       }
      },
      {
@@ -1003,7 +1008,7 @@
        "night": 1,
        "checks": 2,
        "acc": null,
-       "seed": 2015813125
+       "seed": 2711589992
       }
      },
      {
@@ -1015,7 +1020,7 @@
        "con": "blocked",
        "hunger": 4,
        "happy": 3,
-       "weight": 22,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1026,7 +1031,7 @@
        "night": 2,
        "checks": 4,
        "acc": null,
-       "seed": 432435800
+       "seed": 3527672953
       }
      },
      {
@@ -1034,11 +1039,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "chub_frog",
+       "species": "wild_frog",
        "con": "blocked",
        "hunger": 4,
-       "happy": 3,
-       "weight": 31,
+       "happy": 4,
+       "weight": 30,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1049,7 +1054,7 @@
        "night": 3,
        "checks": 7,
        "acc": null,
-       "seed": 1248518761
+       "seed": 680624288
       }
      },
      {
@@ -1057,11 +1062,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "chub_frog",
+       "species": "wild_frog",
        "con": "blocked",
        "hunger": 4,
        "happy": 3,
-       "weight": 34,
+       "weight": 33,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1080,11 +1085,11 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "chub_frog",
+       "species": "wild_frog",
        "con": "blocked",
        "hunger": 4,
        "happy": 3,
-       "weight": 37,
+       "weight": 36,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1095,7 +1100,7 @@
        "night": 7,
        "checks": 14,
        "acc": null,
-       "seed": 3504944053
+       "seed": 1673378240
       }
      }
     ],
@@ -1127,7 +1132,7 @@
      ],
      [
       2550,
-      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -1137,17 +1142,17 @@
      ],
      [
       3630,
-      "💩 똥 쌌어",
+      "🌤 오늘도 힘내!",
       "sent"
      ],
      [
       3990,
-      "😣 배가 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
       "sent"
      ],
      [
       4800,
-      "✨ 통개굴로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 들개굴로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -1157,7 +1162,7 @@
      ],
      [
       5430,
-      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "😣 배가 아파 · 🍙 배고파",
       "sent"
      ],
      [
@@ -1172,7 +1177,7 @@
      ],
      [
       6870,
-      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "😣 배가 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -1187,7 +1192,7 @@
      ],
      [
       8310,
-      "😣 배가 아파 · 🍙 배고파 · 🥱 심심해",
+      "😣 배가 아파 · 🍙 배고파",
       "sent"
      ],
      [
@@ -1207,12 +1212,12 @@
      ],
      [
       10560,
-      "🎓 통개굴이 졸업했어요! 도감에 ★★",
+      "🎓 들개굴이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "chub_frog": {
+     "wild_frog": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -1220,7 +1225,7 @@
     },
     "hist": [
      {
-      "sp": "chub_frog",
+      "sp": "wild_frog",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -1280,7 +1285,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 4103143747
+       "seed": 1703683461
       }
      },
      {
@@ -1303,7 +1308,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2015813146
+       "seed": 3911320156
       }
      },
      {
@@ -1326,7 +1331,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279
+       "seed": 120306136
       }
      },
      {
@@ -1349,7 +1354,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279
+       "seed": 120306136
       }
      },
      {
@@ -1372,7 +1377,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279
+       "seed": 120306136
       }
      },
      {
@@ -1395,7 +1400,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279
+       "seed": 120306136
       }
      }
     ],
@@ -1485,7 +1490,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1007906555
+       "seed": 440012082
       }
      },
      {
@@ -1508,7 +1513,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484447
+       "seed": 2143695501
       }
      },
      {
@@ -1531,7 +1536,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484447
+       "seed": 2143695501
       }
      },
      {
@@ -1554,7 +1559,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484447
+       "seed": 2143695501
       }
      },
      {
@@ -1577,7 +1582,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484447
+       "seed": 2143695501
       }
      },
      {
@@ -1600,7 +1605,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484447
+       "seed": 2143695501
       }
      }
     ],
@@ -1914,7 +1919,7 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2839472464
+       "seed": 2271577991
       }
      },
      {
@@ -1937,7 +1942,7 @@
        "night": 1,
        "checks": 6,
        "acc": null,
-       "seed": 3087660952
+       "seed": 752141863
       }
      },
      {
@@ -1949,7 +1954,7 @@
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 28,
+       "weight": 29,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1960,7 +1965,7 @@
        "night": 2,
        "checks": 12,
        "acc": null,
-       "seed": 2008236903
+       "seed": 3335849440
       }
      },
      {
@@ -1968,11 +1973,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 4,
-       "happy": 4,
-       "weight": 37,
+       "happy": 3,
+       "weight": 38,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1983,7 +1988,7 @@
        "night": 3,
        "checks": 19,
        "acc": null,
-       "seed": 3392214337
+       "seed": 424859578
       }
      },
      {
@@ -1991,22 +1996,22 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 52,
+       "weight": 55,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 0,
+       "careMiss": 1,
        "morning": 5,
        "night": 5,
        "checks": 30,
        "acc": null,
-       "seed": 793354160
+       "seed": 3952532510
       }
      },
      {
@@ -2014,22 +2019,22 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 70,
+       "weight": 69,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 0,
+       "careMiss": 2,
        "morning": 7,
        "night": 7,
        "checks": 42,
        "acc": null,
-       "seed": 593954269
+       "seed": 1985508003
       }
      }
     ],
@@ -2081,17 +2086,17 @@
      ],
      [
       4800,
-      "✨ 햇펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 통펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       5070,
-      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       5430,
-      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2101,7 +2106,7 @@
      ],
      [
       6510,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2116,37 +2121,37 @@
      ],
      [
       7950,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       8310,
-      "💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       9120,
-      "☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘 · 🤒 몸이 아파",
       "sent"
      ],
      [
       9390,
-      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
-      "sent"
-     ],
-     [
-      9750,
       "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
+      9750,
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
       10560,
-      "🎓 햇펭이 졸업했어요! 도감에 ★★",
+      "🎓 통펭이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_penguin": {
+     "chub_penguin": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -2154,7 +2159,7 @@
     },
     "hist": [
      {
-      "sp": "sun_penguin",
+      "sp": "chub_penguin",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -2355,7 +2360,7 @@
        "species": null,
        "con": "frail",
        "hunger": 3,
-       "happy": 4,
+       "happy": 3,
        "weight": 13,
        "poops": 0,
        "sick": false,
@@ -2367,7 +2372,7 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 1320036248
+       "seed": 2647648785
       }
      },
      {
@@ -2378,8 +2383,8 @@
        "species": null,
        "con": "frail",
        "hunger": 3,
-       "happy": 2,
-       "weight": 24,
+       "happy": 3,
+       "weight": 23,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2390,7 +2395,7 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 936389066
+       "seed": 2831896076
       }
      },
      {
@@ -2398,10 +2403,10 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
        "hunger": 3,
-       "happy": 2,
+       "happy": 3,
        "weight": 30,
        "poops": 1,
        "sick": false,
@@ -2413,7 +2418,7 @@
        "night": 3,
        "checks": 12,
        "acc": null,
-       "seed": 3584037840
+       "seed": 1184577554
       }
      },
      {
@@ -2421,10 +2426,10 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
        "hunger": 4,
-       "happy": 2,
+       "happy": 4,
        "weight": 37,
        "poops": 0,
        "sick": false,
@@ -2436,7 +2441,7 @@
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 1049118860
+       "seed": 1113060057
       }
      },
      {
@@ -2444,11 +2449,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
-       "hunger": 3,
-       "happy": 4,
-       "weight": 42,
+       "hunger": 4,
+       "happy": 2,
+       "weight": 45,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2459,7 +2464,7 @@
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 4008897319
+       "seed": 4072838516
       }
      }
     ],
@@ -2471,7 +2476,7 @@
      ],
      [
       1410,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2496,12 +2501,12 @@
      ],
      [
       3210,
-      "💩 똥 쌌어",
+      "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 쌌어",
       "sent"
      ],
      [
       3390,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2511,7 +2516,7 @@
      ],
      [
       4290,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2521,7 +2526,7 @@
      ],
      [
       4745,
-      "✨ 달토로 자랐어요! 이제 졸업할 수 있어요",
+      "✨ 들토로 자랐어요! 이제 졸업할 수 있어요",
       "sent"
      ],
      [
@@ -2536,7 +2541,7 @@
      ],
      [
       5730,
-      "💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2566,7 +2571,7 @@
      ],
      [
       7710,
-      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -2576,7 +2581,7 @@
      ],
      [
       8610,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2611,12 +2616,12 @@
      ],
      [
       10590,
-      "🎓 달토가 졸업했어요! 도감에 ★★",
+      "🎓 들토가 졸업했어요! 도감에 ★★",
       "하루 한도"
      ]
     ],
     "dex": {
-     "moon_rabbit": {
+     "wild_rabbit": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -2624,7 +2629,7 @@
     },
     "hist": [
      {
-      "sp": "moon_rabbit",
+      "sp": "wild_rabbit",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -2813,7 +2818,7 @@
        "night": 0,
        "checks": 1,
        "acc": null,
-       "seed": 4103143722
+       "seed": 3535249249
       }
      },
      {
@@ -2823,9 +2828,9 @@
        "stage": "child",
        "species": null,
        "con": "poopy",
-       "hunger": 4,
-       "happy": 3,
-       "weight": 13,
+       "hunger": 3,
+       "happy": 2,
+       "weight": 14,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2836,7 +2841,7 @@
        "night": 0,
        "checks": 3,
        "acc": null,
-       "seed": 3151602067
+       "seed": 816082978
       }
      },
      {
@@ -2859,7 +2864,7 @@
        "night": 0,
        "checks": 6,
        "acc": null,
-       "seed": 2704013688
+       "seed": 1000330269
       }
      },
      {
@@ -2867,7 +2872,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "wild_chick",
        "con": "poopy",
        "hunger": 4,
        "happy": 3,
@@ -2882,7 +2887,7 @@
        "night": 0,
        "checks": 9,
        "acc": null,
-       "seed": 1688530836
+       "seed": 1816413230
       }
      },
      {
@@ -2890,7 +2895,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "wild_chick",
        "con": "poopy",
        "hunger": 4,
        "happy": 3,
@@ -2905,7 +2910,7 @@
        "night": 0,
        "checks": 15,
        "acc": null,
-       "seed": 2248849009
+       "seed": 2376731403
       }
      },
      {
@@ -2913,11 +2918,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "wild_chick",
        "con": "poopy",
        "hunger": 3,
-       "happy": 3,
-       "weight": 42,
+       "happy": 4,
+       "weight": 41,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2928,7 +2933,7 @@
        "night": 0,
        "checks": 21,
        "acc": null,
-       "seed": 3377061655
+       "seed": 4136779719
       }
      }
     ],
@@ -2950,7 +2955,7 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · 💩 똥 2개 치워 줘",
+      "🌿 또 자랐어요! 곧 어른이 돼요 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -2965,7 +2970,7 @@
      ],
      [
       3360,
-      "💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2975,12 +2980,12 @@
      ],
      [
       3990,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 햇삐약으로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 2개 치워 줘",
+      "✨ 들삐약으로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3010,7 +3015,7 @@
      ],
      [
       7680,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3020,7 +3025,7 @@
      ],
      [
       8310,
-      "💩 똥 쌌어",
+      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3030,7 +3035,7 @@
      ],
      [
       9390,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3040,12 +3045,12 @@
      ],
      [
       10830,
-      "🎓 햇삐약이 졸업했어요! 도감에 ★★",
+      "🎓 들삐약이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_chick": {
+     "wild_chick": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -3053,7 +3058,7 @@
     },
     "hist": [
      {
-      "sp": "sun_chick",
+      "sp": "wild_chick",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -3210,7 +3215,7 @@
        "night": 0,
        "checks": 1,
        "acc": "줄무늬",
-       "seed": 1639742245
+       "seed": 1071847772
       }
      },
      {
@@ -3233,7 +3238,7 @@
        "night": 1,
        "checks": 3,
        "acc": "줄무늬",
-       "seed": 2519766403
+       "seed": 184247314
       }
      },
      {
@@ -3251,12 +3256,12 @@
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 3,
        "checks": 6,
        "acc": "줄무늬",
-       "seed": 872447881
+       "seed": 1000330275
       }
      },
      {
@@ -3266,20 +3271,20 @@
        "stage": "adult",
        "species": "moon_rabbit",
        "con": "frail",
-       "hunger": 3,
-       "happy": 2,
+       "hunger": 2,
+       "happy": 1,
        "weight": 30,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 5,
        "checks": 9,
        "acc": "줄무늬",
-       "seed": 1688530842
+       "seed": 1184577566
       }
      },
      {
@@ -3290,19 +3295,19 @@
        "species": "moon_rabbit",
        "con": "frail",
        "hunger": 4,
-       "happy": 4,
+       "happy": 3,
        "weight": 35,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 9,
        "checks": 15,
        "acc": "줄무늬",
-       "seed": 1617013345
+       "seed": 1113060069
       }
      },
      {
@@ -3314,18 +3319,18 @@
        "con": "frail",
        "hunger": 4,
        "happy": 3,
-       "weight": 41,
+       "weight": 42,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 13,
        "checks": 21,
        "acc": "줄무늬",
-       "seed": 281824508
+       "seed": 4072838528
       }
      }
     ],
@@ -3357,7 +3362,7 @@
      ],
      [
       2190,
-      "🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "🍙 배고파 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3367,7 +3372,7 @@
      ],
      [
       2730,
-      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3377,17 +3382,17 @@
      ],
      [
       3630,
-      "🍙 배고파 · 💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       3990,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4170,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3417,7 +3422,7 @@
      ],
      [
       6510,
-      "🥱 심심해 · 💩 똥 쌌어",
+      "🍙 배고파 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3457,7 +3462,7 @@
      ],
      [
       9390,
-      "🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3467,7 +3472,7 @@
      ],
      [
       9930,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3674,7 +3679,7 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 3471308044
+       "seed": 2903413571
       }
      },
      {
@@ -3697,7 +3702,7 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 1320036246
+       "seed": 816082970
       }
      },
      {
@@ -3720,7 +3725,7 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 2767954877
+       "seed": 1568224734
       }
      },
      {
@@ -3731,7 +3736,7 @@
        "species": "chub_cat",
        "con": "sleepy",
        "hunger": 3,
-       "happy": 2,
+       "happy": 3,
        "weight": 30,
        "poops": 0,
        "sick": false,
@@ -3743,7 +3748,7 @@
        "night": 3,
        "checks": 12,
        "acc": null,
-       "seed": 1752472025
+       "seed": 3584037838
       }
      },
      {
@@ -3754,8 +3759,8 @@
        "species": "chub_cat",
        "con": "sleepy",
        "hunger": 4,
-       "happy": 3,
-       "weight": 39,
+       "happy": 4,
+       "weight": 37,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -3777,8 +3782,8 @@
        "species": "chub_cat",
        "con": "sleepy",
        "hunger": 4,
-       "happy": 3,
-       "weight": 46,
+       "happy": 4,
+       "weight": 45,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -3789,7 +3794,7 @@
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 2241272701
+       "seed": 977601361
       }
      }
     ],
@@ -4008,7 +4013,7 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2839472370
+       "seed": 2271577897
       }
      },
      {
@@ -4020,7 +4025,7 @@
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 14,
+       "weight": 15,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4031,7 +4036,7 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 1256095045
+       "seed": 752141769
       }
      },
      {
@@ -4043,7 +4048,7 @@
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 24,
+       "weight": 25,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4054,7 +4059,7 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 3207966952
+       "seed": 3967685016
       }
      },
      {
@@ -4062,11 +4067,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 4,
-       "happy": 3,
-       "weight": 31,
+       "happy": 4,
+       "weight": 30,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4077,7 +4082,7 @@
        "night": 3,
        "checks": 13,
        "acc": null,
-       "seed": 296977090
+       "seed": 1056695154
       }
      },
      {
@@ -4085,12 +4090,12 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 2,
        "happy": 2,
-       "weight": 33,
-       "poops": 2,
+       "weight": 31,
+       "poops": 1,
        "sick": false,
        "tummy": false,
        "sleeping": false,
@@ -4100,7 +4105,7 @@
        "night": 3,
        "checks": 14,
        "acc": null,
-       "seed": 105153499
+       "seed": 1496707233
       }
      },
      {
@@ -4108,12 +4113,12 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "sun_penguin",
+       "species": "chub_penguin",
        "con": "greedy",
        "hunger": 2,
        "happy": 2,
-       "weight": 33,
-       "poops": 2,
+       "weight": 31,
+       "poops": 1,
        "sick": false,
        "tummy": false,
        "sleeping": false,
@@ -4123,7 +4128,7 @@
        "night": 3,
        "checks": 14,
        "acc": null,
-       "seed": 105153499
+       "seed": 1496707233
       }
      }
     ],
@@ -4135,7 +4140,7 @@
      ],
      [
       750,
-      "🌱 조금 자랐어요! · 💩 똥 2개 치워 줘",
+      "🌱 조금 자랐어요! · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -4150,7 +4155,7 @@
      ],
      [
       2190,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 4개 치워 줘",
       "sent"
      ],
      [
@@ -4165,17 +4170,17 @@
      ],
      [
       3630,
-      "🍙 배고파 · 💩 똥 3개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       3990,
-      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 햇펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 통펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -4185,12 +4190,12 @@
      ],
      [
       5280,
-      "🎓 햇펭이 졸업했어요! 도감에 ★",
+      "🎓 통펭이 졸업했어요! 도감에 ★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_penguin": {
+     "chub_penguin": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -4198,7 +4203,7 @@
     },
     "hist": [
      {
-      "sp": "sun_penguin",
+      "sp": "chub_penguin",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -4213,7 +4218,7 @@
   "forecast": [
    {
     "t": 4170,
-    "text": "🥱 슬슬 졸려 · 💩 똥 쌌어",
+    "text": "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
     "kind": "digest",
     "who": null
    },

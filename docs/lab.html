@@ -677,6 +677,8 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
 const SEASON_W=10;
 const FIND_P=.12;
+// how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
+const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
 const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
 function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
@@ -857,7 +859,7 @@ function step(g,ev,opts={}){
   }
   // a find: at the top of each awake, lit hour, decide whether one comes this hour and at which minute; it lands then
   // if the pet is still awake with the light on and nothing is lying there yet
-  if(m===0){g.findAt=null;if(!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
+  if(m===0){g.findAt=null;if(appDay(g)>=FINDS_FROM&&!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
   if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){const w=findWeights(g);let r=rand(g)*w.reduce((a,b)=>a+b,0);g.found=FINDS[w.findIndex(x=>(r-=x)<0)][0]}}
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
@@ -922,7 +924,7 @@ function comeBack(g,ahead){
 }
 
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,NOTIF,DAY,ADULT_AT,FULL_TERM,
-  LIFE,setLife,localHour,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
+  LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
@@ -1227,7 +1229,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 065c6a',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 0e2ac0',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2373,7 +2375,7 @@ const DIARY_KEYS=['meals','snacks','plays','pets'],diaryDay=()=>Math.floor((g.t-
 const diaryNew=()=>({day:diaryDay(),base:Object.fromEntries(DIARY_KEYS.map(k=>[k,g[k]||0])),finds:[],grew:null,guest:null});
 // notes go into the open diary whatever its day: what happened while the app was closed is told on the next opening
 function diaryNote(k,v){if(g.phase!=='alive'||!g.diary)return;if(k==='finds'){if(!g.diary.finds.includes(v))g.diary.finds.push(v)}else g.diary[k]=v}
-function diaryOpen(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const d=diaryDay(),D=g.diary;
+function diaryOpen(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done')||!opened('diary'))return;const d=diaryDay(),D=g.diary;
   if(!D||D.day>=d||D.born!==undefined&&D.born!==g.born){if(!D||D.born!==g.born)g.diary={...diaryNew(),born:g.born};return}
   const n=k=>Math.max(0,(g[k]||0)-(D.base[k]||0)),c=[];
   if(D.grew)c.push('쑥 자랐');if(D.guest)c.push(`${D.guest}${josa(D.guest,'과','와')} 놀았`);
@@ -2385,7 +2387,7 @@ function diaryOpen(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;co
 // Growth hint: once a day, opening the app while the pet is a child or teen, a passing word says which way it leans
 // when one line clearly leads (E.lineOdds: the same odds that pick the adult). No numbers, and it never decides anything
 const HINT={sun:'☀️ 아침마다 와 줘서 햇살 기운이 생기는 중',moon:'🌙 밤에 자주 놀아 줘서 달빛 기운이 생기는 중',chub:'🍪 간식을 좋아해서 통통해지는 중',wild:'🌿 혼자 있는 시간이 많아서 야생 기운이 생기는 중'};
-function growthHint(){if(talkQ.length||g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
+function growthHint(){if(talkQ.length||!opened('hint')||g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
   const w=E.lineOdds(g),[a,b]=Object.entries(w).sort((x,y)=>y[1]-x[1]);if(a[1]<.4||a[1]-b[1]<.1)return;g.hintDay=day;save();talk(HINT[a[0]])}
 // the first opening on a special day says it once
 function festGreet(){const f=fest();if(!f||g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const key=f.day+':'+f.k;if(g.festSeen===key)return;g.festSeen=key;save();
@@ -2436,6 +2438,14 @@ const BALL=parse(['.##.','#..#','#..#','.##.']),NOTE=parse(['.##','.#.','.#.','#
   FLY=[parse(['#.#','.#.','#.#']),parse(['.#.','.#.','.#.'])],GUEST=[parse(['.##..','####.','.###.','..#..']),parse(['#..#.','.##..','.###.','..#..'])];
 const tri=v=>1-Math.abs(v%2-1);
 const BOOK=[parse(['.###.###.','#...#...#','#.#.#.#.#','#########']),parse(['.###.##..','#...##...','#.#.#.#..','#########'])];
+// things that open as the player keeps coming back (by E.appDay, the app's own day count, not the pet's)
+const OPENS={diary:2,doA:2,friend:3,hint:3,doB:3,doC:4};
+const opened=k=>ui.unlockAll||E.appDay(g)>=OPENS[k];
+const DOING_FROM={stretch:'doA',nap:'doA',sing:'doA',ball:'doB',butterfly:'doB',window:'doB',dig:'doC',bird:'doC',read:'doC',rope:'doC'};
+// on the day something new opens, the first opening says so once (g.toldOpen)
+const OPEN_NEWS=[[E.FINDS_FROM,'finds','✨ 이제 가끔 뭔가 주워 와요','왼쪽 바닥에 놓이면 눌러서 받아요'],[OPENS.friend,'friend','✨ 친구와 놀 수 있어요','설정 › 친구에서 코드를 주고받아요']];
+function openNews(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const d=E.appDay(g);g.toldOpen=g.toldOpen||[];
+  for(const [day,k,t,s] of OPEN_NEWS)if(d>=day&&!g.toldOpen.includes(k)){g.toldOpen.push(k);if(d<day+3)talk(t,s,true)}save()}
 const DOING={
   stretch:{h:[8,11],over(P,c){const o=c.f%2;P.spr(SPARK,c.x-4,c.y+(o?1:3));P.spr(SPARK,c.x+c.s.w+1,c.y+(o?3:1))}},
   ball:{h:[11,17],over(P,c){const lo=c.x+c.s.w+2,hi=LW-5;if(hi<lo)return;const bx=Math.round(lo+tri(c.t/1600)*(hi-lo));P.spr(BALL,bx,GND-3);if(bx>lo+1)P.px(bx-2,GND-1)}},
@@ -2462,11 +2472,11 @@ function backView(sp){let o=BACKS.get(sp);if(o)return o;const W=sp.w+2,H=sp.h+2,
   while(st.length){const [x,y]=st.pop();if(x<0||y<0||x>=W||y>=H||out[y][x]||on(x,y))continue;out[y][x]=true;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}
   o={...sp,rows:sp.rows.map((r,y)=>[...r].map((ch,x)=>out[y+1][x+1]?'.':'#').join(''))};BACKS.set(sp,o);return o}
 function moodOnOpen(){ui.greet=ui.sulk=null;if(g.phase!=='alive'||g.sleeping||!g.lights||g.stage==='egg'||ui.game||(g.intro&&g.intro!=='done'))return;const u=g.unseen||0;
-  diaryOpen();festGreet();setTimeout(growthHint,2500);
+  diaryOpen();openNews();festGreet();setTimeout(growthHint,2500);
   if(u>=SULK_AT){ui.sulk={pats:0,huff:0};ui.doing=null}else if(u>=GREET_IN[0]&&u<GREET_IN[1])ui.greet={start:now(),x0:ui.petX}}
 function sulkPat(){if(!ui.sulk)return;if(++ui.sulk.pats>=2)ui.sulk=null;else ui.sulk.huff=now()+1500}
 function doingOk(){return !ui.sulk&&!ui.greet&&g.phase==='alive'&&!g.sleeping&&g.lights&&!g.sick&&!ui.anim&&!ui.game&&ui.view==='main'&&!needList().length}
-function doingStart(){ui.doingBlock=Math.floor(g.t/30);if(!doingOk())return;const h=E.localHour(g),list=Object.keys(DOING).filter(k=>h>=DOING[k].h[0]&&h<DOING[k].h[1]);
+function doingStart(){ui.doingBlock=Math.floor(g.t/30);if(!doingOk())return;const h=E.localHour(g),list=Object.keys(DOING).filter(k=>h>=DOING[k].h[0]&&h<DOING[k].h[1]&&opened(DOING_FROM[k]));
   if(!list.length)return;const n=(ui.doingBlock*2654435761+(g.seed>>>0))>>>0;ui.doing={k:list[n%list.length],until:now()+45000}}
 // a round body with two eyes, so blush and forehead marks find a face like on a real pet
 const PAT_BLOB={w:12,h:12,rows:['...######...','.##########.','.##########.','############','############','############','###.####.###','############','############','############','.##########.','...######...']};
@@ -2695,7 +2705,7 @@ function renderScreenIn(tab,el){
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
     // settings: a short menu of big buttons; each opens its page (◀ or 취소 goes back to the menu)
-    const SET_PAGES=[['pet','아이·생활'],['notif','알림·소리'],['deco','꾸미기'],['friend','친구'],['data','기록'],['info','정보']];
+    const SET_PAGES=[['pet','아이·생활'],['notif','알림·소리'],['deco','꾸미기'],['friend','친구'],['data','기록'],['info','정보']].filter(([k])=>k!=='friend'||opened('friend'));
     const pages={pet:`${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
       <h3>생활 시간</h3>${opt('life',g.life||'day',Object.entries(E.LIFE).map(([k,v])=>[k,v.ko]))}<p class="dim">${E.LIFE[g.lifeNext||g.life||'day'].d}${g.lifeNext?' · 다음에 자고 일어날 때부터':''}</p>
       <h3>내 생일</h3><div class="pxrow"><select class="pxsel" data-bm aria-label="생일 월"><option value="">월</option>${[...Array(12)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(0,2)===i+1?' selected':''}>${i+1}월</option>`).join('')}</select><select class="pxsel" data-bd aria-label="생일 일"><option value="">일</option>${[...Array(31)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(3)===i+1?' selected':''}>${i+1}일</option>`).join('')}</select></div><p class="dim">그날 아이가 축하해 줘요. 이 기기에만 저장돼요.</p>
