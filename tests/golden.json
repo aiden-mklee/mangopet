@@ -416,6 +416,7 @@
     "hist": [
      {
       "sp": "sun_bear",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -844,6 +845,7 @@
     "hist": [
      {
       "sp": "sun_cat",
+      "name": null,
       "mode": "classic",
       "result": "졸업 ★★",
       "days": 7
@@ -1202,6 +1204,7 @@
     "hist": [
      {
       "sp": "chub_frog",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -1609,6 +1612,7 @@
     "hist": [
      {
       "sp": "child",
+      "name": null,
       "mode": "classic",
       "result": "무지개다리",
       "days": 0
@@ -2127,6 +2131,7 @@
     "hist": [
      {
       "sp": "sun_penguin",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -2590,6 +2595,7 @@
     "hist": [
      {
       "sp": "moon_rabbit",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -3012,6 +3018,7 @@
     "hist": [
      {
       "sp": "sun_chick",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -3437,6 +3444,7 @@
     "hist": [
      {
       "sp": "moon_rabbit",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -3824,6 +3832,7 @@
     "hist": [
      {
       "sp": "chub_cat",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★★",
       "days": 7
@@ -4141,6 +4150,7 @@
     "hist": [
      {
       "sp": "sun_penguin",
+      "name": null,
       "mode": "relaxed",
       "result": "졸업 ★",
       "days": 3

@@ -87,7 +87,7 @@ function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
-    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
+    sick:false,doses:0,tummy:false,tummyMin:0,rub:0,lights:true,lightMin:0,wakeDark:false,upEarly:false,sleeping:false,slept:false,name:null,nameAsked:false,unseen:0,snackPoop:0,napUntil:0,hungerT:0,happyT:0,poopT:-1,poopQ:0,
     careMiss:0,callStart:null,missed:false,starveMin:0,sickMin:0,morning:0,night:0,snacks:0,meals:0,awayUntil:0,revived:false,lastPet:-999,born:g.t,plays:0,pets:0,checks:0});
   const H=g.pendingHeir;g.pendingHeir=null;g.gen=H?H.gen:1;g.parentName=H?H.from:null;
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
@@ -119,7 +119,7 @@ function decideAdult(g){
   const w=lineOdds(g);let r=rand(g),line='sun';for(const k in w){if((r-=w[k])<0){line=k;break}}
   return line+'_'+ANIMAL_OF[g.con];
 }
-function record(g,result){g.hist.unshift({sp:g.species||g.stage,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
+function record(g,result){g.hist.unshift({sp:g.species||g.stage,name:g.name||null,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
 function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
   record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full});
@@ -158,8 +158,8 @@ function notify(g,icon,text,kind,ev){
   if(held==='조용한 시간'&&kind==='life'){(g.news=g.news||[]).push(`${icon} ${text}`);return}
   if(!held)g.notifCount++;
   g.log.unshift({t:g.t,text:icon?`${icon} ${text}`:text,held});g.log.length=Math.min(g.log.length,60);
-  // who: the pet's own name once it is grown, used as the notification title
-  ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held,who:g.phase==='alive'&&g.stage==='adult'&&SP[g.species]?SP[g.species].ko:null});
+  // who: the notification title: the name the player gave, else the species once it is grown
+  ev.push({type:'notice',t:g.t,icon,text,kind,sent:!held,held,who:g.phase==='alive'&&g.name?g.name:g.phase==='alive'&&g.stage==='adult'&&SP[g.species]?SP[g.species].ko:null});
 }
 
 /* ---------- one minute ---------- */
