@@ -1244,7 +1244,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 039476',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 507449',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1415,11 +1415,11 @@ const GAMES={
       // hearts left, top left; the one just lost blinks out
       const lost=G.items.some(I=>I.lost&&t-I.lost<600);for(let i=0;i<3;i++){const on=i<G.lives||(lost&&i===G.lives&&ui.frame%2);if(on)P.spr(MINI_HEART,1+i*4,1)}},
     end(G,P,s,y){P.spr(S[(g.stage==='adult'?g.species:g.stage)+'@sad']||s,Math.floor((LW-s.w)/2),y);P.ctext(G.got+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}},
-  // shooter: the pet fires on its own; ◀ ▶ (or a tap on either half) moves it; a row of invaders sways and steps down,
+  // shooter: a little fighter fires on its own; ◀ ▶ (or a tap on either half) moves it; a row of invaders sways and steps down,
   // faster each wave; the game ends when one reaches the pet. Kills are the score, with a best record
   shoot:{hint:'◀ ▶로 움직여요. 저절로 쏴요. 내려오면 끝!',start:G=>Object.assign(G,{px:Math.floor(LW/2)-4,inv:[],shots:[],kills:0,wave:0,last:now(),nextShot:now()+300}),
-    input(G,k,d){if(k!=='a'&&d){const s=tinyPet();G.px=Math.max(0,Math.min(LW-s.w,G.px+d*4))}},
-    tick(G,t){const s=tinyPet(),dt=Math.min(.1,(t-G.last)/1000);G.last=t;
+    input(G,k,d){if(k!=='a'&&d){const s=JET;G.px=Math.max(0,Math.min(LW-s.w,G.px+d*4))}},
+    tick(G,t){const s=JET,dt=Math.min(.1,(t-G.last)/1000);G.last=t;
       if(!G.inv.some(v=>v.on)){G.wave++;G.vx=(7+G.wave*2.5)*(G.wave%2?1:-1);G.inv=[...Array(4)].map((_,i)=>({x:4+i*9,y:Math.min(11,G.wave*2-1),on:true}))/* each wave starts a little lower */}
       // the row moves together and steps down at each wall
       const on=G.inv.filter(v=>v.on),L=Math.min(...on.map(v=>v.x)),R=Math.max(...on.map(v=>v.x+5));
@@ -1429,27 +1429,27 @@ const GAMES={
       G.shots=G.shots.filter(b=>b.y>-2);
       if(G.inv.some(v=>v.on&&v.y+5>=GND-s.h+2)){g.records=g.records||{};G.best=g.records.shoot||0;G.newBest=G.kills>G.best;if(G.newBest)g.records.shoot=G.kills;
         G.wins=Math.min(5,Math.floor(G.kills/4));gameOver(G,t,true)}},
-    draw(G,P,s,y){s=tinyPet();for(const v of G.inv)if(v.on)P.spr(INV[ui.frame%2],Math.round(v.x),Math.round(v.y));
+    draw(G,P,s,y){s=JET;for(const v of G.inv)if(v.on)P.spr(INV[ui.frame%2],Math.round(v.x),Math.round(v.y));
       for(const b of G.shots){P.px(b.x,Math.round(b.y));P.px(b.x,Math.round(b.y)+1)}
       P.spr(s,G.px,GND-s.h+1);P.text(String(G.kills),LW-1-String(G.kills).length*4,1)},
     end(G,P,s,y){P.spr(s,Math.floor((LW-s.w)/2),y);P.ctext(G.kills+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}},
-  // bricks: the pet is the paddle; the ball bounces off walls, bricks and the pet; missing it ends the game.
+  // bricks: a bar paddle at the bottom; the ball bounces off walls, bricks and the bar; missing it ends the game.
   // A cleared wall comes back a little faster. Bricks are the score, with a best record
-  brick:{hint:'◀ ▶로 공을 받아쳐요. 놓치면 끝!',start:G=>Object.assign(G,{px:Math.floor(LW/2)-4,bricks:brickWall(),ball:{x:LW/2,y:17,vx:12,vy:18},hits:0,speed:1,last:now(),serve:now()+1200}),
-    input(G,k,d){if(k!=='a'&&d){const s=tinyPet();G.px=Math.max(0,Math.min(LW-s.w,G.px+d*5))}},
-    tick(G,t){const s=tinyPet(),dt=Math.min(.05,(t-G.last)/1000);G.last=t;const B=G.ball,top=GND-s.h+1;
-      // a moment to get ready: the ball sits over the pet before it goes up
+  brick:{hint:'◀ ▶로 공을 받아쳐요. 놓치면 끝!',start:G=>Object.assign(G,{px:Math.floor(LW/2)-5,bricks:brickWall(),ball:{x:LW/2,y:17,vx:12,vy:18},hits:0,speed:1,last:now(),serve:now()+1200}),
+    input(G,k,d){if(k!=='a'&&d){const s=PADDLE;G.px=Math.max(0,Math.min(LW-s.w,G.px+d*5))}},
+    tick(G,t){const s=PADDLE,dt=Math.min(.05,(t-G.last)/1000);G.last=t;const B=G.ball,top=GND-s.h+1;
+      // a moment to get ready: the ball sits on the bar before it goes up
       if(t<G.serve){B.x=G.px+Math.floor(s.w/2);B.y=top-2;B.vy=-Math.abs(B.vy);return}
       B.x+=B.vx*G.speed*dt;B.y+=B.vy*G.speed*dt;
       if(B.x<0){B.x=0;B.vx=Math.abs(B.vx)}if(B.x>LW-1){B.x=LW-1;B.vx=-Math.abs(B.vx)}if(B.y<0){B.y=0;B.vy=Math.abs(B.vy)}
       const hit=G.bricks.find(k=>k.on&&B.x>=k.x&&B.x<k.x+5&&B.y>=k.y&&B.y<k.y+2);if(hit){hit.on=false;B.vy=-B.vy;G.hits++;sfx('point');
         if(!G.bricks.some(k=>k.on)){G.bricks=brickWall();G.speed+=.18}}
-      // off the pet: the further from its middle, the steeper the bounce
+      // off the bar: the further from its middle, the steeper the bounce
       if(B.vy>0&&B.y>=top-1&&B.y<top+1&&B.x>=G.px-1&&B.x<=G.px+s.w){const off=(B.x-(G.px+s.w/2))/(s.w/2);B.vy=-Math.abs(B.vy);B.vx=Math.max(-26,Math.min(26,B.vx+off*12));if(Math.abs(B.vx)<5)B.vx=B.vx<0?-5:5}
       if(B.y>GND+1){g.records=g.records||{};G.best=g.records.brick||0;G.newBest=G.hits>G.best;if(G.newBest)g.records.brick=G.hits;
         G.wins=Math.min(5,Math.floor(G.hits/5));gameOver(G,t,true)}},
-    draw(G,P,s,y){s=tinyPet();for(const k of G.bricks)if(k.on)P.rect(k.x,k.y,5,2,1);P.px(Math.round(G.ball.x),Math.round(G.ball.y));
-      P.spr(s,G.px,GND-s.h+1);P.text(String(G.hits),LW-1-String(G.hits).length*4,1)},
+    draw(G,P,s,y){s=PADDLE;for(const k of G.bricks)if(k.on)P.rect(k.x,k.y,5,2,1);P.px(Math.round(G.ball.x),Math.round(G.ball.y));
+      P.rect(G.px,GND-s.h+1,s.w,s.h,1);P.text(String(G.hits),LW-1-String(G.hits).length*4,1)},
     end(G,P,s,y){P.spr(s,Math.floor((LW-s.w)/2),y);P.ctext(G.hits+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}},
   // will the next number be higher or lower?
   hilo:{hint:'다음 숫자가 클까 작을까? ◀ 작다 · ▶ 크다',start:G=>Object.assign(G,{round:1,phase:'pick',n:2+Math.floor(Math.random()*7),m:0,choice:0}),
@@ -1464,6 +1464,7 @@ const JUMP_AIR=900,ROCK={w:3,h:3,rows:['.#.','###','###']};
 const BIRD=[{w:5,h:3,rows:['#...#','.###.','..#..']},{w:5,h:3,rows:['.....','#####','..#..']}];
 const runSpeed=(G,t)=>Math.min(70,32+(t-G.t0)/1000*1.5);   // pixels a second, a bit faster every second
 const runMeters=G=>Math.floor(G.dist/4);
+const JET=parse(['...#...','..###..','.#####.','#######','#.###.#','..#.#..']),PADDLE={w:10,h:2};
 const INV=[parse(['#...#','.###.','##.##','#####','.#.#.']),parse(['#...#','.###.','##.##','#####','#...#'])];
 // three rows of eight bricks under the score, a gap between each
 const brickWall=()=>[...Array(3)].flatMap((_,r)=>[...Array(8)].map((_,c)=>({x:c*6,y:7+r*3,on:true})));
@@ -1477,8 +1478,6 @@ function runSprite(s,W=13){if(s.w<=W)return s;const key=W===13?s:s.rows.join('/'
   const rows=[...Array(h)].map((_,j)=>[...Array(w)].map((_,i)=>{const x0=Math.floor(i/f),x1=Math.max(x0+1,Math.floor((i+1)/f)),y0=Math.floor(j/f),y1=Math.max(y0+1,Math.floor((j+1)/f));
     let n=0,a=0;for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){a++;n+=at(x,y)}return n*2>=a?'#':'.'}).join(''));
   RUN_MINI.set(key,{w,h,rows})}return RUN_MINI.get(key)}
-// the arcade games (shooter, bricks) use the pet at 9 wide so the field has room
-const tinyPet=()=>runSprite(petSprite(),9);
 // ducking squashes the pet to 60% of its height, row by row
 const DUCK=new Map();
 function duckSprite(s){if(!DUCK.has(s)){const h=Math.ceil(s.h*.6);DUCK.set(s,{w:s.w,h,rows:[...Array(h)].map((_,i)=>s.rows[Math.floor(i*s.h/h)])})}return DUCK.get(s)}
