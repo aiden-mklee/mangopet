@@ -1245,7 +1245,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · b8a81b',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 856bb4',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2571,8 +2571,8 @@ function decoText(el){let n='',d='';const ds=el.dataset;
   else if(ds.shapeback!==undefined){n='◀ 모양';d='다른 모양을 골라요'}
   else if(ds.skin){const k=SKINS.find(x=>x.id===ds.skin);n=k.ko;d=k.pat?'무늬가 있는 색':'케이스 색'}
   else if(ds.bg){const b=BGS.find(x=>x.id===ds.bg);n=b.ko;d=b.scene?DECO_DESC[b.scene]:'은은한 단색 배경'}
-  else if(ds.ch!==undefined){n=ds.ch===' '?'빈칸':`'${ds.ch}'`;d='선택하면 한 칸 들어가요 · 취소로 한 칸 지워요'}
-  else if(ds.engdel!==undefined){n='한 칸 지우기';d='마지막 글자를 지워요'}
+  else if(ds.ch!==undefined){n=ds.ch===' '?'빈칸':`'${ds.ch}'`;d='선택하면 한 칸 들어가요'}
+  else if(ds.engdel!==undefined){n='⌫ 지우기';d='마지막 글자를 한 칸 지워요'}
   else if(ds.engclr!==undefined){n='모두 지우기';d='처음부터 새로 새겨요'}
   else if(ds.engreset!==undefined){n='처음으로';d='MANGOPET으로 돌려요'}
   else if(ds.btnc){const b=BTNS.find(x=>x.id===ds.btnc);n=b.ko;d=b.d}
@@ -2675,11 +2675,11 @@ function renderScreenIn(tab,el){
   if(tab==='eng'){const t=(g.engrave??ENG_DEFAULT).padEnd(8,' ').slice(0,8),len=(g.engrave??ENG_DEFAULT).length;
     el.innerHTML=`<div class="engslots">${[...t].map((ch,i)=>`<span class="${i<len?'on':''}${i===Math.min(len,7)&&len<8?' cur':''}">${ch===' '?'&nbsp;':ch}</span>`).join('')}</div>
       <div class="engkeys">${ENG_KEYS.map(k=>`<button class="pxbtn" data-ch="${k}">${k===' '?'␣':k}</button>`).join('')}
-      <button class="pxbtn wide" data-engdel>한 칸 지우기</button><button class="pxbtn wide" data-engclr>모두 지우기</button><button class="pxbtn wide" data-engreset>처음으로</button></div>`;
+      <button class="pxbtn wide" data-engdel>⌫ 지우기</button><button class="pxbtn wide" data-engclr>모두 지우기</button><button class="pxbtn wide" data-engreset>처음으로</button></div>`;
     const put=v=>{g.engrave=v;applySkin();save();renderScreen(tab,el)};const cur=()=>g.engrave??ENG_DEFAULT;
     // the first letter typed over the untouched default starts a new engraving; a full one says so instead of doing nothing
     el.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{if(g.engrave==null)put(b.dataset.ch);else if(cur().length<8)put(cur()+b.dataset.ch);
-      else{$('dname').textContent='8칸이 꽉 찼어요';$('ddesc').textContent='취소 버튼으로 한 칸씩 지워요'}});
+      else{$('dname').textContent='8칸이 꽉 찼어요';$('ddesc').textContent='⌫ 지우기로 한 칸씩 지워요'}});
     el.querySelector('[data-engdel]').onclick=()=>put(cur().slice(0,-1));el.querySelector('[data-engclr]').onclick=()=>put('');el.querySelector('[data-engreset]').onclick=()=>put(ENG_DEFAULT);
     return}
   if(tab==='case'||tab==='bg'||tab==='lcd'||tab==='btn'||tab==='charm'){
@@ -2974,7 +2974,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkNext())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco&&ui.deco.tab==='eng'&&!lockOf('eng','eng')&&(g.engrave??ENG_DEFAULT).length){g.engrave=(g.engrave??ENG_DEFAULT).slice(0,-1);applySkin();save();renderScreen('eng',$('decoPanel'));return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkNext())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
