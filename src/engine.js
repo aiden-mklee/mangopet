@@ -119,7 +119,7 @@ function decideAdult(g){
   const w=lineOdds(g);let r=rand(g),line='sun';for(const k in w){if((r-=w[k])<0){line=k;break}}
   return line+'_'+ANIMAL_OF[g.con];
 }
-function record(g,result){g.hist.unshift({sp:g.species||g.stage,name:g.name||null,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
+function record(g,result){g.hist.unshift({sp:g.species||g.stage,name:g.name||null,acc:g.acc||null,mode:g.mode,result,days:Math.floor(g.ageMin/DAY)})}
 function graduate(g,full,ev){unlockCharm(g,'star',ev);if(full||fullTerm(g))unlockCharm(g,'crown',ev);g.phase='graduated';g.lastAcc=g.acc||pick(g,PATTERNS);g.heirBox=[...new Set([...(g.heirBox||[]),g.lastAcc])];
   const d=g.dex[g.species]||{};d.seen=true;d.grad=(d.grad||0)+1;d.best=Math.max(gradStars(d),full?2:1);if(g.mode==='classic')d.classic=true;g.dex[g.species]=d;
   record(g,full?'졸업 ★★':'졸업 ★');notify(g,'🎓',`${SP[g.species].ko}이(가) 졸업했어요! 도감에 ${full?'★★':'★'}`,'life',ev);ev.push({type:'graduate',full});
