@@ -1181,7 +1181,7 @@ const UNLOCK={
   shape:{round:{g:2,won:1100},cat:{dex:8,won:2200},bear:{finds:10,won:3300}},
   skin:{banana:{g:1,won:1100},smoke:{full:1,won:3300},soda:'ad',lavender:'ad',peach:'ad',lemon:'ad',cherry:{g:2,won:1100},grape:'ad',ocean:'ad',
     honey:{g:1,won:1100},silver:{finds:5,won:2200},dots:{finds:8,won:2200},check:{g:5,won:2200},mintstripe:{g:3,won:2200},peachdots:{finds:8,won:2200},stars:{full:1,won:3300},cow:{dex:6,won:2200},
-    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:'ad'},
+    gold:{g:7,won:3300},chrome:{g:5,won:2200},holo:{finds:12,won:3300},glitter:{g:4,won:2200},leopard:{dex:8,won:2200},hearts:{g:2,won:1100}},
   bg:{'scene-spring':{g:1,won:1100},'scene-summer':{g:2,won:1100},'scene-autumn':{g:3,won:2200},'scene-winter':{g:4,won:2200},'scene-season':{g:5,won:2200},
     'scene-city':{dex:6,won:2200},'scene-skyline':{dex:6,won:2200},'scene-space':'ad','scene-sea':'ad','scene-fire':'ad'},
   lcd:{amber:'ad',rose:'ad',darkgreen:'ad',blackgreen:'ad'},
@@ -1223,7 +1223,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 5b07ac',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 26208f',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2373,7 +2373,7 @@ const DECO_DESC={egg:'둥근 알 모양',square:'네모난 게임기',mini:'작�
 // and leaving it (another tab, the end, cancel) puts back what was kept
 const decoKeep=()=>({shape:g.shape,skin:g.skin,bg:g.bg,btnStyle:g.btnStyle,lcd:g.lcd,btnColor:g.btnColor});
 function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);
-  if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin}
+  if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin;g.btnColor=null}
   if(el&&el.dataset.bg)g.bg=el.dataset.bg;if(el&&el.dataset.btnst)g.btnStyle=el.dataset.btnst;if(el&&el.dataset.lcd)g.lcd=el.dataset.lcd;if(el&&el.dataset.btnc)g.btnColor=el.dataset.btnc==='case'?null:el.dataset.btnc;applySkin()}
 function openDeco(tab){if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
   if(ui.deco)decoPreview(null);
@@ -2503,7 +2503,7 @@ function renderScreenIn(tab,el){
     // a shape opens its colours (a locked shape too, to try them on); a colour keeps that shape and colour unless either is locked
     el.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{ui.deco.shape=b.dataset.shape;ui.padKey=null;renderScreen(tab,el)});
     el.querySelectorAll('[data-shapeback]').forEach(b=>b.onclick=()=>{const sh=ui.deco.shape;ui.deco.shape=null;decoPreview(null);renderScreen(tab,el);const t=el.querySelector(`[data-shape="${sh}"]`);if(t){ui.padKey=padKey(t);padShow()}});
-    el.querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.shape=b.dataset.forshape;g.skin=b.dataset.skin;decoKept();applySkin();save();renderScreen(tab,el)});
+    el.querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.shape=b.dataset.forshape;g.skin=b.dataset.skin;g.btnColor=null;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.bg=b.dataset.bg;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-lcd]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.lcd=b.dataset.lcd;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-btnc]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.btnColor=b.dataset.btnc==='case'?null:b.dataset.btnc;decoKept();applySkin();save();renderScreen(tab,el)});
@@ -2532,7 +2532,7 @@ function renderScreenIn(tab,el){
       <p class="dim">망고펫 ${VERSION}${ADS?' · 가격은 예시예요':''}</p>`;
     el.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set,v=b.dataset.v;if(k==='life'){E.setLife(g,v);save();renderScreen(tab,el);return}g[k]=k==='adFree'?v==='true':v;applySkin();lastCtx='';save();renderScreen(tab,el)});
     el.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{g.shape=b.dataset.shape;g.skin=skinFor(g.shape,g.skin);applySkin();save();renderScreen(tab,el)});
-    el.querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>{g.skin=b.dataset.skin;applySkin();save();renderScreen(tab,el)});
+    el.querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>{g.skin=b.dataset.skin;g.btnColor=null;applySkin();save();renderScreen(tab,el)});
     const dk=el.querySelector('[data-deco]');if(dk)dk.onclick=()=>openZoom('case');
     const np=el.querySelector('[data-nperm]');if(np)np.onclick=()=>askNotifPermission(true);
     const sd=el.querySelector('[data-sound]');if(sd)sd.onclick=()=>{g.sound=!g.sound;save();sfx('hatch');renderScreen(tab,el)};
