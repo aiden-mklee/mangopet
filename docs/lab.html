@@ -227,10 +227,10 @@ body.talking #sceneTop{visibility:hidden}
 body.decomode .devbtns{visibility:hidden}
 .decopanel{padding:6px}
 .decopanel h2,.decopanel>p.dim{display:none}.decopanel p.dsubp{display:block;margin:2px}
-.decopanel h3.dsub{margin:6px 2px 3px;font-size:11px;font-weight:normal;opacity:.65}.decopanel h3.dsub:first-child{margin-top:0}
+.decopanel h3.dsub{margin:6px 2px 4px;font-size:12px;font-weight:normal;border-bottom:1px solid var(--ink);padding-bottom:1px}.decopanel h3.dsub:first-child{margin-top:0}
 .decopanel .pxcards{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
 .decopanel .pxcardbig{min-height:0;padding:5px 2px 4px;gap:3px;border-width:2px}
-.decopanel .pxcardbig span{font-size:10px;line-height:1.2;text-align:center}
+.decopanel .pxcardbig span{font-size:12px;line-height:1.15;text-align:center;word-break:keep-all;letter-spacing:-.02em}
 .decopanel .pxcardbig small{display:none}
 .decopanel .pv-bg{height:30px}
 .decopanel .pv-bg span{width:12px;height:16px}
@@ -1229,7 +1229,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · fd88a1',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 91c151',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
