@@ -1045,7 +1045,7 @@ function act(a){
   const t=now();
   if(a==='meal'){if(E.meal(g)==='full'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'meal',start:t,dur:2000};sfx('eat');introDid('meal')}
   if(a==='snack'){run(E.snack);sfx('eat');ui.anim={type:'snack',start:t,dur:2000}}
-  if(a==='play'){ui.arcade=true;lastCtx=''}   // 오락실: pick a game (with its best) in the menu
+  if(a==='play'){if(playedAll()){ui.arcade=true;lastCtx=''}else startGame()}   // 오락실 menu once every game has been tried
   if(a==='med'){if(E.med(g)==='no'){ui.anim={type:'no',start:t,dur:1000};return}ui.anim={type:'med',start:t,dur:1200}}
   if(a==='clean'){if(!g.poops){ui.anim={type:'no',start:t,dur:800};return}
     ui.anim={type:'clean',start:t,dur:1300,prev:run(E.clean)};ui.sparkFrom=t+1300;ui.sparkUntil=t+4100;introDid('clean')}
@@ -1165,8 +1165,12 @@ function catchOver(G,t){g.records=g.records||{};G.best=g.records.catch||0;G.newB
   G.wins=Math.min(5,Math.floor(G.got/3));gameOver(G,t,true)}
 const catchSpeed=(G,t)=>Math.min(60,16+(t-G.t0)/1000*1.4);   // falling pixels a second, faster every second
 const POOP_S={w:5,h:4,rows:['..#..','.###.','#####','#####']};
-function startGame(pick){const ids=Object.keys(GAMES).filter(k=>k!==ui.lastGame),id=pick&&GAMES[pick]?pick:ids[Math.floor(Math.random()*ids.length)];
-  ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
+// Until every game has been tried once, 놀이 just starts one you haven't played; after that it opens the 오락실 menu.
+// older saves count a game as tried if it already has a record
+const played=()=>g.played||(g.played=Object.fromEntries(Object.keys(g.records||{}).filter(k=>GAMES[k]).map(k=>[k,true])));
+const playedAll=()=>Object.keys(GAMES).every(k=>played()[k]);
+function startGame(pick){const left=Object.keys(GAMES).filter(k=>!played()[k]),pool=left.length?left:Object.keys(GAMES).filter(k=>k!==ui.lastGame),id=pick&&GAMES[pick]?pick:pool[Math.floor(Math.random()*pool.length)];
+  played()[id]=true;ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
 function endGame(G){G.wins=Math.min(5,G.wins);gameOver(G,now(),false)}
 // The result stays until a button is pressed, so a thumb still on the d-pad doesn't skip past it.
 // A crash first freezes the scene for a beat; then button presses are ignored for a moment before the result
@@ -2453,11 +2457,15 @@ function renderScreenIn(tab,el){
       if(!ok){ui.backupMsg='코드가 맞지 않아요. 처음부터 끝까지 다 붙여 넣었는지 봐 주세요';renderScreen(tab,el)}};
   }
 }
+// classic (can die) opens after the first graduation, so a first-timer can't lose a pet before learning the ropes
+const classicOpen=()=>Object.values(g.dex||{}).some(d=>d.grad);
 function renderCtx(){
   let html='',key=g.phase;
   if(g.phase==='select'){html=`<p class="q">어떻게 키울까요?</p>
     <button class="big pri" data-new="relaxed"><strong>느긋 모드</strong><small>방치하면 가출해요</small></button>
-    <button class="big" data-new="classic"><strong>클래식 모드</strong><small>방치하면 죽을 수 있어요</small></button>`}
+    ${classicOpen()?`<button class="big" data-new="classic"><strong>클래식 모드</strong><small>방치하면 죽을 수 있어요</small></button>`
+      :`<button class="big" disabled><strong>클래식 모드</strong><small>한 번 졸업하면 열려요</small></button>`}`;
+    if(classicOpen()&&!g.toldClassic){g.toldClassic=true;talk('🏆 클래식 모드가 열렸어요','더 어렵지만, 반짝이는 아이를 만날 수도 있어요',true)}}
   else if(g.phase==='dead'){key+=g.revived;html=(g.revived?'':`<button class="big pri" data-ad="revive"><strong>${noAds()?'살리기':'광고 보고 살리기'} (1회)</strong><small>딱 한 번만 돼요.</small></button>`)+
     `<button class="big" data-new="pick"><strong>새 알 받기</strong></button>`}
   else if(g.phase==='away'){const left=Math.max(0,g.awayUntil-g.t);key+=left>0;
@@ -2469,7 +2477,7 @@ function renderCtx(){
     <button class="pxopt" data-card><b>졸업 카드 보기</b><small>저장하거나 친구에게 보내요</small></button></div>`}
   else if(g.phase==='alive'&&ui.arcade){key+='arcade';const R=g.records||{};
     const AR=[['run','달리기',`${R.run||0}M`],['catch','쿠키 받기',`${R.catch||0}개`],['shoot','슈팅',`${R.shoot||0}마리`],['brick','벽돌깨기',`${R.brick||0}개`]];
-    html=`<div class="pxpick"><p>오락실</p>${AR.map(([k,n,r])=>`<button class="pxopt" data-game="${k}"><b>${n} <small style="display:inline">· 최고 ${r}</small></b></button>`).join('')}</div>`}
+    html=`<div class="pxpick"><p>오락실</p><button class="pxopt" data-game="any"><b>아무거나</b></button>${AR.map(([k,n,r])=>`<button class="pxopt" data-game="${k}"><b>${n} <small style="display:inline">· 최고 ${r}</small></b></button>`).join('')}</div>`}
   else if(g.phase==='alive'&&ui.gradAsk){key+='grad';const full=E.fullTerm(g);html=`<p class="q">지금 졸업할까요?</p>
     <button class="big pri" data-grad-go><strong>졸업하기 ${full?'★★':'★'}</strong><small>${full?'오늘 졸업해도 ★★예요':'7일째까지 키우면 ★★'}</small></button><button class="big" data-grad-cancel><strong>더 키울래요</strong></button>`}
   else if(g.phase==='alive'){key+=ui.restartAsk;html=ui.restartAsk?`<p class="q">${restartMsg()}</p>
