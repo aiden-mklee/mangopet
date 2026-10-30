@@ -672,6 +672,9 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['leaf','나뭇잎',8],['ginkgo','은행잎',6],['sprout','새싹',6],['feather','깃털',6],['curl','말린 잎',6],
   ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1]];
 const FIND_P=.12;
+// what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
+const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
+function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
 const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 
@@ -845,7 +848,7 @@ function step(g,ev,opts={}){
   // a find: at the top of each awake, lit hour, decide whether one comes this hour and at which minute; it lands then
   // if the pet is still awake with the light on and nothing is lying there yet
   if(m===0){g.findAt=null;if(!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
-  if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){let r=rand(g)*FINDS.reduce((a,f)=>a+f[2],0);g.found=FINDS.find(f=>(r-=f[2])<0)[0]}}
+  if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){const w=findWeights(g);let r=rand(g)*w.reduce((a,b)=>a+b,0);g.found=FINDS[w.findIndex(x=>(r-=x)<0)][0]}}
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
     let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
@@ -1213,7 +1216,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · f07092',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 54f04f',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
