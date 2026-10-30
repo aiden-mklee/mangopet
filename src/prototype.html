@@ -1165,18 +1165,11 @@ function catchOver(G,t){g.records=g.records||{};G.best=g.records.catch||0;G.newB
   G.wins=Math.min(5,Math.floor(G.got/3));gameOver(G,t,true)}
 const catchSpeed=(G,t)=>Math.min(60,16+(t-G.t0)/1000*1.4);   // falling pixels a second, faster every second
 const POOP_S={w:5,h:4,rows:['..#..','.###.','#####','#####']};
-// Until every game has been played to the end once, 놀이 just starts the next unfinished one from a shuffled queue
-// (g.playQ): a game you quit goes to the back, a finished one leaves it. After that it opens the 오락실 menu.
-// older saves count a game as tried if it already has a record
+// Until every game has been played to the end once, 놀이 just starts a random unfinished one (never the one just
+// played, so quitting doesn't loop one game); after that it opens the 오락실 menu. Older saves count a game with a record.
 const played=()=>g.played||(g.played=Object.fromEntries(Object.keys(g.records||{}).filter(k=>GAMES[k]).map(k=>[k,true])));
 const playedAll=()=>Object.keys(GAMES).every(k=>played()[k]);
-const anyOf=a=>a[Math.floor(Math.random()*a.length)];
-function nextGame(){const P=played(),other=Object.keys(GAMES).filter(k=>k!==ui.lastGame);
-  const q=(g.playQ||[]).filter(k=>GAMES[k]&&!P[k]),add=Object.keys(GAMES).filter(k=>!P[k]&&!q.includes(k));
-  while(add.length)q.push(add.splice(Math.floor(Math.random()*add.length),1)[0]);
-  g.playQ=q;if(!q.length||(q.length===1&&q[0]===ui.lastGame))return anyOf(other);   // only the game just quit is left: something else first
-  q.push(q.shift());return q.at(-1)}
-function startGame(pick){const id=pick&&GAMES[pick]?pick:playedAll()?anyOf(Object.keys(GAMES).filter(k=>k!==ui.lastGame)):nextGame();
+function startGame(pick){const other=Object.keys(GAMES).filter(k=>k!==ui.lastGame),left=other.filter(k=>!played()[k]),pool=left.length?left:other,id=pick&&GAMES[pick]?pick:pool[Math.floor(Math.random()*pool.length)];
   ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
 function endGame(G){G.wins=Math.min(5,G.wins);gameOver(G,now(),false)}
 // The result stays until a button is pressed, so a thumb still on the d-pad doesn't skip past it.
