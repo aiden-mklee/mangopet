@@ -83,7 +83,7 @@ const nm=g=>NOTIF[g.notifMode]||NOTIF.normal;
 
 /* ---------- state ---------- */
 function fresh(seed){return{notifMode:'normal',life:'day',t:8*60,speed:60,phase:'select',mode:'relaxed',skin:'classic',adFree:false,showCon:false,
-  notifDay:0,notifCount:0,log:[],dex:{},hist:[],finds:{},found:null,seed:seed>>>0,savedAt:0}}
+  notifDay:0,notifCount:0,log:[],dex:{},hist:[],finds:{},found:null,findAt:null,seed:seed>>>0,savedAt:0}}
 
 function newPet(g,mode){
   Object.assign(g,{phase:'egg',mode,eggLeft:5,cracks:0,ageMin:0,stage:'egg',species:null,con:null,hunger:1,happy:3,weight:5,poops:0,
@@ -209,8 +209,10 @@ function step(g,ev,opts={}){
     if(g.poopT>0&&--g.poopT===0){g.poopT=-1;doPoop(g,ev);if(g.poopQ>0){g.poopQ--;g.poopT=Math.max(10,Math.round(poopDelay(g)/2))}}
     if(g.tummy&&++g.tummyMin>=180&&!g.sick){g.tummy=false;makeSick(g,ev)}
   }
-  // a find: rolled at half past each awake, lit hour while nothing is lying there yet
-  if(m===30&&!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P){let r=rand(g)*FINDS.reduce((a,f)=>a+f[2],0);g.found=FINDS.find(f=>(r-=f[2])<0)[0]}
+  // a find: at the top of each awake, lit hour, decide whether one comes this hour and at which minute; it lands then
+  // if the pet is still awake with the light on and nothing is lying there yet
+  if(m===0){g.findAt=null;if(!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
+  if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){let r=rand(g)*FINDS.reduce((a,f)=>a+f[2],0);g.found=FINDS.find(f=>(r-=f[2])<0)[0]}}
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
     let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
