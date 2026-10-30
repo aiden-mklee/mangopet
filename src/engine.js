@@ -37,11 +37,14 @@ const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
 // next to the pet; a tap picks it up into the collection (g.finds, kept across pets). Gem and clover are rare.
 const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],
   ['leaf','나뭇잎',8],['ginkgo','은행잎',6],['sprout','새싹',6],['feather','깃털',6],['curl','말린 잎',6],
-  ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1]];
+  ['pebble','조약돌',8],['button','단추',6],['letter','편지',4],['gem','보석',1],['clover','네잎클로버',1],
+  // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
+  ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]]];
+const SEASON_W=10;
 const FIND_P=.12;
 // what each line likes to bring once grown up (twice as likely): sun flowers, moon little shiny things, chub acorns, wild leaves
 const FIND_LIKES={sun:['tulip','daisy','potflower','sprout'],moon:['pebble','button','letter','gem'],chub:['acorn','acornS'],wild:['leaf','ginkgo','curl','feather']};
-function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
+function findWeights(g){const l=g.stage==='adult'&&g.species?FIND_LIKES[g.species.split('_')[0]]||[]:[];return FINDS.map(f=>f[3]?(f[3].includes(g.month)?SEASON_W:0):f[2]*(l.includes(f[0])?(f[0]==='gem'?1.5:2):1))}
 const NOTIF={few:{ko:'적게',d:'아침·밤 하루 2번',cap:2,slots:[[8,0],[21,30]]},normal:{ko:'보통',d:'하루 4번 묶어서',cap:4,slots:[[8,0],[12,30],[18,30],[21,30]]},live:{ko:'제때',d:'필요할 때마다 (최대 8개)',cap:8,slots:[]}};
 const DAY=1440,ADULT_AT=3*DAY,FULL_TERM=7*DAY;
 
