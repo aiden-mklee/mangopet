@@ -245,6 +245,7 @@ body.decomode .devbtns{visibility:hidden}
 .pxalbum{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .pxacard{border:2px solid var(--ink);padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .pxacard canvas{width:100%;max-width:96px;image-rendering:pixelated}.pxacard b{font-weight:normal;font-size:15px}.pxacard small{font-size:11px;opacity:.78}
+.pxmenu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}.pxmenu .pxbtn{padding:11px 4px;font-size:14px;text-align:center;white-space:nowrap}
 .pxname{display:block;width:100%;box-sizing:border-box;margin:6px 0 10px;padding:8px 10px;font:20px/1.3 'Galmuri11',var(--font-ui);color:var(--ink);background:color-mix(in srgb,var(--lcd) 70%,#fff);border:2px solid var(--ink);border-radius:4px;outline:none}
 .pxname::placeholder{color:color-mix(in srgb,var(--ink) 40%,transparent)}
 .pv-back{width:46px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px}
@@ -1226,7 +1227,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 2c0cca',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 4bb3e6',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2500,7 +2501,7 @@ function openZoom(tab,sel){
 // the first-run sheets only close by finishing or skipping them (force)
 function closeZoom(force){if(!force&&String(ui.zoomOn).startsWith('intro'))return;$('zoom').hidden=true;ui.zoomOn=null;ui.padKey=null;padShow();if(document.body.classList.contains('sheeted')){document.body.classList.remove('sheeted');dispatchEvent(new Event('resize'))}}
 function flip(on){
-  ui.flipped=on;$('setPanel').hidden=!on;ui.padKey=null;if(on){if(ui.deco)closeDeco();renderScreen('set',$('setPanel'))}else padShow();
+  ui.flipped=on;$('setPanel').hidden=!on;ui.padKey=null;ui.setPage=null;if(on){if(ui.deco)closeDeco();renderScreen('set',$('setPanel'))}else padShow();
   $('flipBtn').querySelector('span').textContent=on?'설정 닫기':'설정';
   // hide without collapsing, so the device stays put
   $('hint').style.visibility=$('ctx').style.visibility=on?'hidden':'';
@@ -2700,33 +2701,39 @@ function renderScreenIn(tab,el){
   }
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
-    el.innerHTML=`<h2>설정</h2>
-      ${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
+    // settings: a short menu of big buttons; each opens its page (◀ or 취소 goes back to the menu)
+    const SET_PAGES=[['pet','아이·생활'],['notif','알림·소리'],['deco','꾸미기'],['friend','친구'],['data','기록'],['info','정보']];
+    const pages={pet:`${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
       <h3>생활 시간</h3>${opt('life',g.life||'day',Object.entries(E.LIFE).map(([k,v])=>[k,v.ko]))}<p class="dim">${E.LIFE[g.lifeNext||g.life||'day'].d}${g.lifeNext?' · 다음에 자고 일어날 때부터':''}</p>
-      <h3>알림 빈도</h3>${opt('notifMode',g.notifMode||'normal',Object.entries(NOTIF).map(([k,v])=>[k,v.ko]))}<p class="dim">${nm().d}</p>
-      <h3>케이스</h3><div class="pxrow">${SHAPES.filter(c=>!lockOf('shape',c.id)).map(c=>`<button class="pxbtn" data-shape="${c.id}" aria-pressed="${(g.shape||'egg')===c.id}">${c.ko}</button>`).join('')}</div>
-      <div class="pxrow">${shapeOf(g.shape).skins.map(id=>SKINS.find(k=>k.id===id)).filter(k=>!lockOf('skin',k.id)).map(k=>`<button class="pxbtn" data-skin="${k.id}" aria-pressed="${(g.skin||'classic')===k.id}"><span class="pxsw" style="background:${k.skin}"></span>${k.ko}</button>`).join('')}</div>
-      <div class="pxrow"><button class="pxbtn" data-deco>꾸미기 · 케이스 배경 버튼 키링</button></div>
-      ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
-      <h3>소리</h3><div class="pxrow"><button class="pxbtn" data-sound aria-pressed="${!!g.sound}">${g.sound?'효과음 켜짐 ✓':'효과음 켜기'}</button>${Haptics?`<button class="pxbtn" data-buzz aria-pressed="${g.buzz!==false}">${g.buzz!==false?'진동 켜짐 ✓':'진동 켜기'}</button>`:''}</div>
-      <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>
-      ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
       <h3>내 생일</h3><div class="pxrow"><select class="pxsel" data-bm aria-label="생일 월"><option value="">월</option>${[...Array(12)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(0,2)===i+1?' selected':''}>${i+1}월</option>`).join('')}</select><select class="pxsel" data-bd aria-label="생일 일"><option value="">일</option>${[...Array(31)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(3)===i+1?' selected':''}>${i+1}일</option>`).join('')}</select></div><p class="dim">그날 아이가 축하해 줘요. 이 기기에만 저장돼요.</p>
-      <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>
-      <h3>친구와 놀기</h3><p class="dim">서버 없이 코드로 놀러 가요. 받은 친구 화면에 하루 동안 같이 있어요.</p>
+      <h3>키우기</h3><div class="pxrow"><button class="pxbtn" data-restart-go ${g.phase==='alive'?'':'disabled'}>처음부터 다시 키우기</button></div>`,
+      notif:`<h3>알림 빈도</h3>${opt('notifMode',g.notifMode||'normal',Object.entries(NOTIF).map(([k,v])=>[k,v.ko]))}<p class="dim">${nm().d}</p>
+      ${Native?`<h3>앱 알림</h3><div class="pxrow"><button class="pxbtn" data-nperm>알림 허용하기</button></div>`:''}
+      <h3>소리</h3><div class="pxrow"><button class="pxbtn" data-sound aria-pressed="${!!g.sound}">${g.sound?'효과음 켜짐 ✓':'효과음 켜기'}</button>${Haptics?`<button class="pxbtn" data-buzz aria-pressed="${g.buzz!==false}">${g.buzz!==false?'진동 켜짐 ✓':'진동 켜기'}</button>`:''}</div>
+      <h3>조작</h3><div class="pxrow"><button class="pxbtn" data-taprun aria-pressed="${!!g.tapRun}">${g.tapRun?'아이콘 한 번 탭으로 실행 ✓':'아이콘 한 번 탭으로 실행'}</button></div><p class="dim">끄면 아이콘을 눌러 고르고 선택 버튼으로 실행해요</p>`,
+      deco:`<h3>케이스</h3><div class="pxrow">${SHAPES.filter(c=>!lockOf('shape',c.id)).map(c=>`<button class="pxbtn" data-shape="${c.id}" aria-pressed="${(g.shape||'egg')===c.id}">${c.ko}</button>`).join('')}</div>
+      <div class="pxrow">${shapeOf(g.shape).skins.map(id=>SKINS.find(k=>k.id===id)).filter(k=>!lockOf('skin',k.id)).map(k=>`<button class="pxbtn" data-skin="${k.id}" aria-pressed="${(g.skin||'classic')===k.id}"><span class="pxsw" style="background:${k.skin}"></span>${k.ko}</button>`).join('')}</div>
+      <div class="pxrow"><button class="pxbtn" data-deco>꾸미기 · 케이스 배경 버튼 키링</button></div>`,
+      friend:`<h3>친구와 놀기</h3><p class="dim">서버 없이 코드로 놀러 가요. 받은 친구 화면에 하루 동안 같이 있어요.</p>
       <div class="pxrow"><button class="pxbtn" data-visit-send ${g.phase==='alive'&&g.stage!=='egg'?'':'disabled'}>우리 아이 놀러 보내기</button><button class="pxbtn" data-visit-in aria-pressed="${!!ui.visitIn}">친구 아이 맞이하기</button></div>
       ${ui.visitCode?`<textarea class="pxcode" readonly>${ui.visitCode}</textarea>`:''}
       ${ui.visitIn?`<textarea class="pxcode" data-visit-text placeholder="친구에게 받은 코드를 붙여 넣어요"></textarea><div class="pxrow"><button class="pxbtn" data-visit-go>맞이하기</button></div>`:''}
-      ${ui.visitMsg?`<p class="dim">${ui.visitMsg}</p>`:g.guest?`<p class="dim">지금 ${g.guest.n||'친구네 아이'}${josa(g.guest.n||'아이','이','가')} 놀러 와 있어요</p>`:''}
-      <h3>기록 옮기기</h3><p class="dim">폰을 바꾸거나 웹에서 앱으로 옮길 때 써요.</p>
+      ${ui.visitMsg?`<p class="dim">${ui.visitMsg}</p>`:g.guest?`<p class="dim">지금 ${g.guest.n||'친구네 아이'}${josa(g.guest.n||'아이','이','가')} 놀러 와 있어요</p>`:''}`,
+      data:`<h3>기록 옮기기</h3><p class="dim">폰을 바꾸거나 웹에서 앱으로 옮길 때 써요.</p>
       <div class="pxrow"><button class="pxbtn" data-backup="out" aria-pressed="${ui.backup==='out'}">내보내기</button><button class="pxbtn" data-backup="in" aria-pressed="${ui.backup==='in'}">가져오기</button></div>
       ${ui.backup==='out'?`<textarea class="pxcode" readonly>${backupCode()}</textarea><p class="dim">${ui.backupMsg||'코드를 길게 눌러 복사해요'}</p>`:''}
       ${ui.backup==='in'?`<textarea class="pxcode" data-backup-text placeholder="내보낸 코드를 붙여 넣어요"></textarea><div class="pxrow"><button class="pxbtn" data-backup-go>이 기록으로 바꾸기</button></div><p class="dim">${ui.backupMsg||'지금 이 폰의 기록은 이 코드로 바뀌어요'}</p>`:''}
       <h3>기록 지우기</h3>${ui.wipeAsk?`<p class="dim">펫, 도감, 주운 것, 키링, 꾸밈이 이 기기에서 모두 지워지고 되돌릴 수 없어요.</p>
-        <div class="pxrow"><button class="pxbtn" data-wipe-go>정말 지우기</button><button class="pxbtn" data-wipe-no>그만두기</button></div>`:'<div class="pxrow"><button class="pxbtn" data-wipe>모든 기록 지우기</button></div>'}
-      <h3>정보</h3><div class="pxrow"><a class="pxbtn" href="privacy.html">개인정보 처리방침</a><a class="pxbtn" href="terms.html">이용약관</a><a class="pxbtn" href="licenses.html">오픈소스 라이선스</a></div>
+        <div class="pxrow"><button class="pxbtn" data-wipe-go>정말 지우기</button><button class="pxbtn" data-wipe-no>그만두기</button></div>`:'<div class="pxrow"><button class="pxbtn" data-wipe>모든 기록 지우기</button></div>'}`,
+      info:`<h3>정보</h3><div class="pxrow"><a class="pxbtn" href="privacy.html">개인정보 처리방침</a><a class="pxbtn" href="terms.html">이용약관</a><a class="pxbtn" href="licenses.html">오픈소스 라이선스</a></div>
       ${FEEDBACK_URL?`<h3>의견 보내기</h3><div class="pxrow"><a class="pxbtn" href="${FEEDBACK_URL}" target="_blank" rel="noopener">불편한 점·아이디어 보내기</a></div>`:''}
-      <p class="dim">망고펫 ${VERSION}${ADS?' · 가격은 예시예요':''}</p>`;
+      ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
+      <p class="dim">망고펫 ${VERSION}${ADS?' · 가격은 예시예요':''}</p>`};
+    const pg=ui.setPage&&pages[ui.setPage]?ui.setPage:null;
+    el.innerHTML=pg?`<div class="pxrow"><button class="pxbtn" data-setback>◀ 설정</button></div><h2>${SET_PAGES.find(x=>x[0]===pg)[1]}</h2>${pages[pg]}`
+      :`<h2>설정</h2><div class="pxmenu">${SET_PAGES.map(([k,l])=>`<button class="pxbtn" data-setpage="${k}">${l}</button>`).join('')}</div>${g.name&&g.phase==='alive'?`<p class="dim">${g.name} · DAY ${petDay()}</p>`:''}`;
+    el.querySelectorAll('[data-setpage]').forEach(b=>b.onclick=()=>{ui.setPage=b.dataset.setpage;ui.padKey=null;el.scrollTop=0;renderScreen(tab,el)});
+    const sb=el.querySelector('[data-setback]');if(sb)sb.onclick=()=>{const k=ui.setPage;ui.setPage=null;renderScreen(tab,el);const t=el.querySelector(`[data-setpage="${k}"]`);if(t){ui.padKey=padKey(t);padShow()}};
     el.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set,v=b.dataset.v;if(k==='life'){E.setLife(g,v);save();renderScreen(tab,el);return}g[k]=k==='adFree'?v==='true':v;applySkin();lastCtx='';save();renderScreen(tab,el)});
     el.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{g.shape=b.dataset.shape;g.skin=skinFor(g.shape,g.skin);applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-skin]').forEach(b=>b.onclick=()=>{g.skin=b.dataset.skin;g.btnColor=null;applySkin();save();renderScreen(tab,el)});
@@ -2962,7 +2969,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
