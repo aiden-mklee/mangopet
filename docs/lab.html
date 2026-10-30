@@ -1229,7 +1229,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 511268',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 41c0ee',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1466,18 +1466,19 @@ function catchOver(G,t){g.records=g.records||{};G.best=g.records.catch||0;G.newB
   G.wins=Math.min(5,Math.floor(G.got/3));gameOver(G,t,true)}
 const catchSpeed=(G,t)=>Math.min(60,16+(t-G.t0)/1000*1.4);   // falling pixels a second, faster every second
 const POOP_S={w:5,h:4,rows:['..#..','.###.','#####','#####']};
-// Until every game has been tried once, 놀이 just starts one you haven't played; after that it opens the 오락실 menu.
+// Until every game has been played to the end once, 놀이 just starts one not finished yet (never the one just played,
+// so quitting doesn't bring the same game back); after that it opens the 오락실 menu.
 // older saves count a game as tried if it already has a record
 const played=()=>g.played||(g.played=Object.fromEntries(Object.keys(g.records||{}).filter(k=>GAMES[k]).map(k=>[k,true])));
 const playedAll=()=>Object.keys(GAMES).every(k=>played()[k]);
-function startGame(pick){const left=Object.keys(GAMES).filter(k=>!played()[k]),pool=left.length?left:Object.keys(GAMES).filter(k=>k!==ui.lastGame),id=pick&&GAMES[pick]?pick:pool[Math.floor(Math.random()*pool.length)];
-  played()[id]=true;ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
+function startGame(pick){const other=Object.keys(GAMES).filter(k=>k!==ui.lastGame),left=other.filter(k=>!played()[k]),pool=left.length?left:other,id=pick&&GAMES[pick]?pick:pool[Math.floor(Math.random()*pool.length)];
+  ui.lastGame=id;ui.game=GAMES[id].start({id,wins:0,until:0})}
 function endGame(G){G.wins=Math.min(5,G.wins);gameOver(G,now(),false)}
 // The result stays until a button is pressed, so a thumb still on the d-pad doesn't skip past it.
 // A crash first freezes the scene for a beat; then button presses are ignored for a moment before the result
 // listens, and it closes by itself after a while if nothing is pressed.
 function gameOver(G,t,crash){if(crash)sfx('over');G.phase=crash?'crash':'end';G.at=t;G.until=t+(crash?650:0)+700;G.autoClose=t+(crash?650:0)+9000}
-function finishGame(){const G=ui.game;if(!G)return;E.playDone(g,G.wins);check();ui.game=null;save();scheduleSoon()}
+function finishGame(){const G=ui.game;if(!G)return;played()[G.id]=true;E.playDone(g,G.wins);check();ui.game=null;save();scheduleSoon()}
 function gameInput(k,d=0,dy=0){const G=ui.game;if(!G)return;
   if(G.phase==='crash')return;
   if(G.phase==='end'){if(k!=='dir'&&now()>=G.until)finishGame();return}   // the d-pad never closes it
