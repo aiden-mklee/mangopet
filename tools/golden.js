@@ -9,8 +9,12 @@ const fs=require('fs'),path=require('path');
 const E=require('../src/engine.js');
 const FILE=path.join(__dirname,'..','tests','golden.json');
 
-// visits at fixed times; at each visit the player does what the pet needs (deterministic, like tools/sim.js)
-const visits=(times,days=8)=>[...Array(days)].flatMap((_,d)=>times.map(([h,m])=>[d*1440+h*60+m,'care']));
+// visits at fixed wall-clock times; at each visit the player does what the pet needs (deterministic, like tools/sim.js).
+// A run starts at 7:00 and runCase counts script times from there, so the clock time is turned into minutes since the
+// start here (it used to be left as is, which put every visit 7 hours late: the office visits fell at 15:00, 19:30,
+// 1:30 and 4:15, and the snacker's 15:00/16:00 treats at 22:00/23:00, when the pet sleeps and they were skipped)
+const START=7*60;
+const visits=(times,days=8)=>[...Array(days)].flatMap((_,d)=>times.map(([h,m])=>[d*1440+h*60+m-START,'care']));
 const OFFICE=[[8,0],[12,30],[18,30],[21,15]];
 const CASES=[
   {name:'office-relaxed',seed:1,mode:'relaxed',script:visits(OFFICE)},
@@ -20,13 +24,13 @@ const CASES=[
   {name:'neglect-classic',seed:3,mode:'classic',script:[]},
   {name:'snacker',seed:99,mode:'relaxed',script:[...visits(OFFICE),...visits([[15,0],[16,0]]).map(([t])=>[t,'snack']),...visits([[16,1]]).map(([t])=>[t,'play:4'])]},
   // a night worker on the 'night' rhythm (asleep 9:00-19:00), visiting at their own morning, noon, evening, bedtime
-  {name:'night-worker',seed:11,mode:'relaxed',life:'night',script:visits([[19,0],[23,30],[5,30],[8,30]]).map(([t,a])=>[t-7*60,a])},
+  {name:'night-worker',seed:11,mode:'relaxed',life:'night',script:visits([[19,0],[23,30],[5,30],[8,30]])},
   // an early riser: wakes the pet at 6:30 by turning the light on (no 8:00 wake-up call); the 19:00 visit puts it to bed early
-  {name:'early-riser',seed:17,mode:'relaxed',script:[...visits([[6,30]]).map(([t])=>[t-7*60,'light']),...visits([[6,31],[12,30],[19,0]]).map(([t])=>[t-7*60,'care'])]},
+  {name:'early-riser',seed:17,mode:'relaxed',script:[...visits([[6,30]]).map(([t])=>[t,'light']),...visits([[6,31],[12,30],[19,0]])]},
   // a late sleeper: never turns the light on in the morning, so the pet gets up alone at noon (leans moon)
-  {name:'late-sleeper',seed:23,mode:'relaxed',script:visits([[13,0],[18,30],[21,40]]).map(([t])=>[t-7*60,'care'])},
+  {name:'late-sleeper',seed:23,mode:'relaxed',script:visits([[13,0],[18,30],[21,40]])},
   // a careful player who checks just before each digest: the 12:30 slot still sends a lunch hello
-  {name:'attentive',seed:9,mode:'relaxed',script:visits([[8,5],[12,20],[18,25],[21,0]]).map(([t])=>[t-7*60,'care'])},
+  {name:'attentive',seed:9,mode:'relaxed',script:visits([[8,5],[12,20],[18,25],[21,0]])},
   {name:'early-graduation',seed:5,mode:'relaxed',script:[...visits(OFFICE,4),[3*1440+9*60,'graduate']]},
 ];
 const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
@@ -55,8 +59,8 @@ function act(g,a,ev){
   if(name==='snack')E.snack(g);else if(name==='play')E.playDone(g,+arg);
 }
 function runCase(c){
-  const g=E.fresh(c.seed);g.t=7*60;if(c.life)g.life=c.life;E.newPet(g,c.mode);
-  const ev=[],out=[],script=c.script.map(([at,a])=>[at+7*60,a]).sort((x,y)=>x[0]-y[0]);let si=0;
+  const g=E.fresh(c.seed);g.t=START;if(c.life)g.life=c.life;E.newPet(g,c.mode);
+  const ev=[],out=[],script=c.script.map(([at,a])=>[at+START,a]).sort((x,y)=>x[0]-y[0]);let si=0;
   const end=8*1440;
   for(let m=1;m<=end;m++){
     E.step(g,ev,{autoHatch:true});
