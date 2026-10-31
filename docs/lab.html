@@ -1260,7 +1260,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 8a1194',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='베타 0.1 · 4c3175',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1483,11 +1483,11 @@ const GAMES={
   // longer and shown a little faster; a wrong arrow ends it. The longest order copied is the score
   simon:{hint:'불 켜진 순서대로 방향키를 눌러요. 틀리면 끝!',start:G=>Object.assign(G,{seq:[anyOf(DIRS4)],mode:'show',i:0,at:now()+900,lit:null,litUntil:0,n:0}),
     input(G,k,d,dy,x,y){if(G.mode!=='input')return;const t=now(),dir=k==='tap'&&x!=null?nearest(SIMON_AT,x,y,4,3):dirOf(d,dy);if(!dir)return;
-      G.lit=dir;G.litUntil=t+250;
+      G.lit=dir;G.litUntil=t+200;
       if(dir!==G.seq[G.i]){scoreOver(G,t,'simon',G.n,2);return}
-      if(++G.i===G.seq.length){G.n=G.seq.length;sfx('point');G.seq.push(anyOf(DIRS4));G.mode='show';G.i=0;G.at=t+900}},
-    tick(G,t){if(G.mode!=='show'||t<G.at)return;const step=Math.max(320,640-G.seq.length*25);
-      if(G.i<G.seq.length){G.lit=G.seq[G.i++];G.litUntil=t+step*.65;G.at=t+step}else{G.mode='input';G.i=0}},
+      if(++G.i===G.seq.length){G.n=G.seq.length;sfx('point');G.seq.push(anyOf(DIRS4));G.mode='show';G.i=0;G.at=t+700}},
+    tick(G,t){if(G.mode!=='show'||t<G.at)return;const step=Math.max(220,520-G.seq.length*30);   // each light, ms: 490 at first, the floor by 10 long
+      if(G.i<G.seq.length){G.lit=G.seq[G.i++];G.litUntil=t+step*.6;G.at=t+step}else{G.mode='input';G.i=0}},
     draw(G,P,s,y){const lit=now()<G.litUntil?G.lit:null;s=runSprite(G.phase==='crash'?sadPet(s):s,18);P.spr(s,1,GND-s.h+1);
       for(const [k,[x,y]] of Object.entries(SIMON_AT))simonTile(P,x,y,k,lit===k);
       P.text(String(G.n),LW-1-String(G.n).length*4,1);if(G.mode==='input')P.text(`${G.i}/${G.seq.length}`,1,1)},
