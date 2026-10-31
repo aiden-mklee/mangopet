@@ -1282,7 +1282,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 34765e',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 8a1194',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1485,7 +1485,7 @@ const GAMES={
     end(G,P,s,y){P.spr(s,Math.floor((LW-s.w)/2),y);P.ctext(G.kills+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}},
   // bricks: a bar paddle at the bottom; the ball bounces off walls, bricks and the bar; missing it ends the game.
   // A cleared wall comes back a little faster. Bricks are the score, with a best record
-  brick:{hint:'◀ ▶로 공을 받아쳐요. 놓치면 끝!',start:G=>Object.assign(G,{px:Math.floor(LW/2)-5,bricks:brickWall(),ball:{x:LW/2,y:17,vx:12,vy:18},hits:0,speed:1,last:now(),serve:now()+1200}),
+  brick:{hint:'◀ ▶로 공을 받아쳐요. 놓치면 끝!',start:G=>Object.assign(G,{px:Math.floor(LW/2)-6,bricks:brickWall(),ball:{x:LW/2,y:17,vx:10,vy:15},hits:0,speed:1,last:now(),serve:now()+1200}),
     input(G,k,d){if(k!=='a'&&d){const s=PADDLE;G.px=Math.max(0,Math.min(LW-s.w,G.px+d*5))}},
     tick(G,t){const s=PADDLE,dt=Math.min(.05,(t-G.last)/1000);G.last=t;const B=G.ball,top=GND-s.h+1;
       // a moment to get ready: the ball sits on the bar before it goes up
@@ -1493,9 +1493,9 @@ const GAMES={
       B.x+=B.vx*G.speed*dt;B.y+=B.vy*G.speed*dt;
       if(B.x<0){B.x=0;B.vx=Math.abs(B.vx)}if(B.x>LW-1){B.x=LW-1;B.vx=-Math.abs(B.vx)}if(B.y<0){B.y=0;B.vy=Math.abs(B.vy)}
       const hit=G.bricks.find(k=>k.on&&B.x>=k.x&&B.x<k.x+5&&B.y>=k.y&&B.y<k.y+2);if(hit){hit.on=false;B.vy=-B.vy;G.hits++;sfx('point');
-        if(!G.bricks.some(k=>k.on)){G.bricks=brickWall();G.speed+=.18}}
+        if(!G.bricks.some(k=>k.on)){G.bricks=brickWall();G.speed+=.15}}
       // off the bar: the further from its middle, the steeper the bounce
-      if(B.vy>0&&B.y>=top-1&&B.y<top+1&&B.x>=G.px-1&&B.x<=G.px+s.w){const off=(B.x-(G.px+s.w/2))/(s.w/2);B.vy=-Math.abs(B.vy);B.vx=Math.max(-26,Math.min(26,B.vx+off*12));if(Math.abs(B.vx)<5)B.vx=B.vx<0?-5:5}
+      if(B.vy>0&&B.y>=top-1&&B.y<top+1&&B.x>=G.px-1&&B.x<=G.px+s.w){const off=(B.x-(G.px+s.w/2))/(s.w/2);B.vy=-Math.abs(B.vy);B.vx=Math.max(-22,Math.min(22,B.vx+off*10));if(Math.abs(B.vx)<5)B.vx=B.vx<0?-5:5}
       if(B.y>GND+1){g.records=g.records||{};G.best=g.records.brick||0;G.newBest=G.hits>G.best;if(G.newBest)g.records.brick=G.hits;
         G.wins=Math.min(5,Math.floor(G.hits/5));gameOver(G,t,true)}},
     draw(G,P,s,y){s=PADDLE;for(const k of G.bricks)if(k.on)P.rect(k.x,k.y,5,2,1);P.px(Math.round(G.ball.x),Math.round(G.ball.y));
@@ -1510,7 +1510,7 @@ const GAMES={
       if(++G.i===G.seq.length){G.n=G.seq.length;sfx('point');G.seq.push(anyOf(DIRS4));G.mode='show';G.i=0;G.at=t+900}},
     tick(G,t){if(G.mode!=='show'||t<G.at)return;const step=Math.max(320,640-G.seq.length*25);
       if(G.i<G.seq.length){G.lit=G.seq[G.i++];G.litUntil=t+step*.65;G.at=t+step}else{G.mode='input';G.i=0}},
-    draw(G,P,s,y){const lit=now()<G.litUntil?G.lit:null;s=runSprite(G.phase==='crash'?sadPet(s):s,20);P.spr(s,1,GND-s.h+1);
+    draw(G,P,s,y){const lit=now()<G.litUntil?G.lit:null;s=runSprite(G.phase==='crash'?sadPet(s):s,18);P.spr(s,1,GND-s.h+1);
       for(const [k,[x,y]] of Object.entries(SIMON_AT))simonTile(P,x,y,k,lit===k);
       P.text(String(G.n),LW-1-String(G.n).length*4,1);if(G.mode==='input')P.text(`${G.i}/${G.seq.length}`,1,1)},
     end:scoreEnd},
@@ -1561,7 +1561,8 @@ const sadPet=s=>S[(g.stage==='adult'?g.species:g.stage)+'@sad']||s;
 function scoreOver(G,t,key,n,per){g.records=g.records||{};G.best=g.records[key]||0;G.newBest=n>G.best;if(G.newBest)g.records[key]=n;
   G.score=n;G.wins=Math.min(5,Math.floor(n/per));gameOver(G,t,true)}
 function scoreEnd(G,P,s,y){P.spr(s,Math.floor((LW-s.w)/2),y);P.ctext(G.score+'',2);P.ctext(G.newBest?'NEW!':'HI '+G.best,9)}
-const SIMON_AT={u:[32,2],l:[23,10],r:[39,10],d:[32,18]};
+// a symmetric cross around x=34: left 21-29, up/down 30-38, right 39-47, so a two-digit score (x 40+) stays clear of the up tile
+const SIMON_AT={u:[30,4],l:[21,12],r:[39,12],d:[30,20]};
 const ARROW={u:parse(['..#..','.###.','#####','..#..','..#..']),d:parse(['..#..','..#..','#####','.###.','..#..']),l:parse(['..#..','.##..','#####','.##..','..#..']),r:parse(['..#..','..##.','#####','..##.','..#..'])};
 function simonTile(P,x,y,k,lit){if(lit){P.rect(x,y,9,7,1);P.spr(ARROW[k],x+2,y+1,{v:0});return}
   P.rect(x,y,9,1,1);P.rect(x,y+6,9,1,1);P.rect(x,y,1,7,1);P.rect(x+8,y,1,7,1);P.spr(ARROW[k],x+2,y+1)}
@@ -1576,10 +1577,10 @@ const JUMP_AIR=900,ROCK={w:3,h:3,rows:['.#.','###','###']};
 const BIRD=[{w:5,h:3,rows:['#...#','.###.','..#..']},{w:5,h:3,rows:['.....','#####','..#..']}];
 const runSpeed=(G,t)=>Math.min(70,32+(t-G.t0)/1000*1.5);   // pixels a second, a bit faster every second
 const runMeters=G=>Math.floor(G.dist/4);
-const JET=parse(['...#...','..###..','.#####.','#######','#.###.#','..#.#..']),PADDLE={w:10,h:2};
+const JET=parse(['...#...','..###..','.#####.','#######','#.###.#','..#.#..']),PADDLE={w:12,h:2};
 const INV=[parse(['#...#','.###.','##.##','#####','.#.#.']),parse(['#...#','.###.','##.##','#####','#...#'])];
-// three rows of eight bricks under the score, a gap between each
-const brickWall=()=>[...Array(3)].flatMap((_,r)=>[...Array(8)].map((_,c)=>({x:c*6,y:7+r*3,on:true})));
+// two rows of eight bricks under the score, a gap between each (three left too little room to react on a 32-high screen)
+const brickWall=()=>[...Array(2)].flatMap((_,r)=>[...Array(8)].map((_,c)=>({x:c*6,y:7+r*3,on:true})));
 // in the run the pet is drawn smaller (at most 13 wide), so there is room to see what is coming
 const RUN_MINI=new Map();
 const RUN_S={};
