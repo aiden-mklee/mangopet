@@ -35,6 +35,8 @@ body{padding:0!important;margin:0!important;min-height:100dvh}
 .phone{position:static!important;border:0!important;border-radius:0!important;min-height:100dvh;justify-content:center;max-width:none!important;
   padding-top:calc(env(safe-area-inset-top,0px) + 14px)!important;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px)!important}
 body.sheeted .phone{justify-content:flex-start!important}
+/* the talk box floats over the page, so it keeps clear of the notch / Dynamic Island by itself, level with the content */
+.talkbox{top:calc(env(safe-area-inset-top,0px) + 14px)!important}
 .betanote{max-width:340px;margin:0;color:color-mix(in srgb,var(--adink,#000) 45%,transparent);font-size:11px;text-align:center;line-height:1.6}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
@@ -242,7 +244,7 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .decobox .ddesc::after{content:" ▼";font-size:9px;opacity:.6}
 body.decomode #sceneTop{display:none!important}
 /* the game's talk box: the same dialog as decorating, laid over the clock's place (it never moves the device) */
-.talkbox{position:absolute;left:50%;transform:translateX(-50%);z-index:30;width:min(360px,calc(100% - 32px));cursor:pointer}
+.talkbox{position:absolute;left:50%;transform:translateX(-50%);z-index:30;width:min(360px,calc(100% - 32px));cursor:pointer;height:auto;min-height:76px;max-height:112px}
 .talkbox .tl{margin:0;font-size:15px;line-height:1.45}
 .talkbox .ts{margin:3px 0 0;font-size:12px;line-height:1.5;color:#5a5e66}
 .talkbox .tsl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -1280,7 +1282,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 248586',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='베타 0.1 · 34765e',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
