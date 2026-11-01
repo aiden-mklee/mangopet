@@ -2172,7 +2172,14 @@ function patPoints(s,id){
         if(r0>l0+len&&ok(Rc)){[...Lc,...Rc].forEach(c=>pts.push([row,c]));return pts}}}
     return pts}
   if(id==='왕점'){
-    // one big round spot on the upper side of the body, like a puppy's patch
+    // a puppy's eye patch: a round light patch around the left eye, with the eye itself inked in it ([r,c,1] = fill).
+    // (a spot in the middle of the forehead read as a hole or a third eye.) The outline and the mouth are left alone
+    const eb=blobs.filter(b=>b.length<=12).map(b=>({b,top:Math.min(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length})).filter(e=>e.c<W/2).sort((a,b)=>a.top-b.top)[0];
+    if(eb){const own=new Set(eb.b.map(([r,c])=>r*W+c)),ey=eb.b.reduce((a,p)=>a+p[0],0)/eb.b.length;
+      const near=(r,c,set,skip)=>{for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const k=(r+dr)*W+c+dc;if(set.has(k)&&!(skip&&skip.has(k)))return true}return false};
+      const cut=[];for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(on(r,c)&&Math.hypot(r-ey,c-eb.c)<=2.6&&!near(r,c,out)&&!near(r,c,hole,own))cut.push([r,c]);
+      if(cut.length>=6){cut.forEach(p=>pts.push(p));eb.b.forEach(([r,c])=>pts.push([r,c,1]));return pts}}
+    // no eyes to go by (the heirloom box's blob has them, so this is rare): one round spot on the upper body
     for(const st of[['.##.','####','####','.##.'],['.##.','####','.##.'],['##','##']]){const sh=st.length;
       const cand=[];for(let r=top;r<=bot-sh+1;r++)for(let c=1;c<W-4;c++)
         if(fits(st,r,c)&&st.every((row,i)=>[...row].every((ch,j)=>ch!=='#'||!nearHole(r+i,c+j,1))))cand.push([r,c]);
@@ -2181,7 +2188,7 @@ function patPoints(s,id){
   return pts}
 const PAT_CACHE=new Map();
 function patterned(s,base,id){const key=id+'|'+base.rows.join('/')+'|'+s.rows.join('/');let o=PAT_CACHE.get(key);
-  if(!o){const rows=s.rows.map(r=>r.split(''));patPoints(base,id).forEach(([r,c])=>{if(rows[r]&&rows[r][c]==='#')rows[r][c]='.'});
+  if(!o){const rows=s.rows.map(r=>r.split(''));patPoints(base,id).forEach(([r,c,f])=>{if(!rows[r]||c>=rows[r].length)return;if(f)rows[r][c]='#';else if(rows[r][c]==='#')rows[r][c]='.'});
     o={w:s.w,h:s.h,rows:rows.map(r=>r.join(''))};PAT_CACHE.set(key,o)}return o}
 // hats and bows sit on top of the head: found from the first lit pixel in the sprite's middle column, so any pet fits.
 // '#' draws, 'o' cuts the body under it (the beanie's brim). The sprite grows upward (and sideways if needed)
@@ -2399,7 +2406,7 @@ function buildDevBtns(){
   $('keyring').onclick=()=>openZoom('charm');
   $('zoom').addEventListener('click',e=>{if(e.target.id==='zoom')closeZoom()});
 }
-const ZTABS={book:[['dex','도감'],['finds','주운 것'],['album','앨범']],deco:[['pet','아이'],['case','케이스'],['color','색'],['bg','배경'],['charm','키링'],['eng','각인']],intro:[],card:[]};
+const ZTABS={book:[['dex','도감'],['finds','주운 것'],['album','앨범']],deco:[['pet','모자·무늬'],['case','케이스'],['color','색'],['bg','배경'],['charm','키링'],['eng','각인']],intro:[],card:[]};
 // old tab names still asked for here and there
 const TAB_ALIAS={lcd:'color',btn:'color',heir:'pet',wear:'pet'};
 function openZoom(tab,sel){tab=TAB_ALIAS[tab]||tab;
@@ -2456,7 +2463,7 @@ const DECO_DESC={egg:'둥근 알 모양',square:'네모난 게임기',mini:'작�
 // and leaving it (another tab, the end, cancel) puts back what was kept
 const decoKeep=()=>({shape:g.shape,skin:g.skin,bg:g.bg,btnStyle:g.btnStyle,lcd:g.lcd,btnColor:g.btnColor,hat:g.hat,accOff:g.accOff});
 // what each 꾸미기 page has on now, for the home buttons
-function decoNow(k){const K=ui.deco?ui.deco.keep:g;if(k==='pet'){const h=HATS.find(x=>x.id===K.hat);return h?h.ko:'모자 안 씀'}
+function decoNow(k){const K=ui.deco?ui.deco.keep:g;if(k==='pet'){const h=HATS.find(x=>x.id===K.hat);return (h?h.ko:'모자 안 씀')+(g.acc&&!K.accOff?' · '+g.acc:'')}
   if(k==='case')return `${shapeOf(K.shape).ko} · ${(SKINS.find(x=>x.id===(K.skin||'classic'))||SKINS[0]).ko}`;
   if(k==='color'){const l=LCDS.find(x=>x.id===(K.lcd||'green'));return l?l.ko+' 액정':''}
   if(k==='bg'){const b=BGS.find(x=>x.id===(K.bg||'beige'));return b?b.ko:''}
@@ -2514,9 +2521,10 @@ function decoText(el){let n='',d='';const ds=el.dataset;
   else if(ds.lcd){const l=LCDS.find(x=>x.id===ds.lcd);n=l.ko;d=l.d}
   else if(ds.btnst){n=el.querySelector('span:not(.pv-btn span)')?.textContent||el.textContent;d=el.querySelector('small')?.textContent||''}
   else if(ds.charmlock){n='???';d=''}
+  else if(ds.heir){n=ds.heirlock!==undefined?'???':ds.heir;d=ds.heirlock!==undefined?'':g.acc===ds.heir?'지금 아이의 무늬예요':'모은 가보 무늬예요 · 졸업할 때 알로 물려줄 수 있어요'}
   else if(ds.charm){const c=CHARMS.find(x=>x.id===ds.charm),i=(g.equip||[]).indexOf(c.id);n=c.ko;d=i>=0?`${i+1}번에 달려 있어요 · 선택: 순서 바꾸기·빼기`:(g.equip||[]).length<3?'선택하면 달아요':'선택하면 하나와 바꿔 달아요'}
   const k=ui.deco.keep,inUse=(ds.hat!==undefined&&(ds.hat||null)===(k.hat||null))||(ds.patshow&&(ds.patshow==='0')===!!k.accOff)||(ds.shape&&ds.shape===(k.shape||'egg'))||(ds.skin&&ds.forshape===(k.shape||'egg')&&ds.skin===(k.skin||'classic'))||(ds.bg&&ds.bg===(k.bg||'beige'))||(ds.btnst&&ds.btnst===(k.btnStyle||'flat'))||(ds.lcd&&ds.lcd===(k.lcd||'green'))||(ds.btnc&&ds.btnc===(k.btnColor||'case'));
-  if(ds.lock)d=ds.charmlock?ds.lock:ds.lock+' · 미리 볼 수 있어요';
+  if(ds.lock)d=ds.charmlock||ds.heirlock!==undefined?ds.lock:ds.lock+' · 미리 볼 수 있어요';
   else if(el.classList.contains('trying'))d+=' · 미리보는 중';
   else if(ds.shape)d+=inUse?' · 쓰는 중':'';
   else if(ds.hat!==undefined||ds.patshow||ds.skin||ds.bg||ds.btnst||ds.lcd||ds.btnc)d+=inUse?' · 쓰는 중 ✓':' · 선택하면 바꿔요';
@@ -2630,7 +2638,10 @@ function renderScreenIn(tab,el){
     // the pet: a hat (or none), and the heirloom pattern shown or hidden; the hats are drawn on the pet itself
     if(tab==='pet'){const box=g.heirBox||[],K=ui.deco?ui.deco.keep:g;
       h=`<h2>아이</h2><h3 class="dsub">소품</h3><div class="pxcards">${card('data-hat=""',!K.hat,'<canvas data-hc=""></canvas>','안 쓰기')}${HATS.map(x=>card(`data-hat="${x.id}"${lockAttr('hat',x.id)}`,K.hat===x.id,`<canvas data-hc="${x.id}"></canvas>`,x.s||x.ko)).join('')}</div>
-        <h3 class="dsub">가보 무늬 · ${box.length}/${ACC.length} 모음${g.gen>1?` · ${g.gen}대째`:''}</h3>${g.acc?`<div class="pxcards">${card('data-patshow="1"',!K.accOff,'<canvas data-pc="1"></canvas>','보이기')}${card('data-patshow="0"',!!K.accOff,'<canvas data-pc="0"></canvas>','숨기기')}</div>`:'<p class="dim dsubp">졸업한 아이의 알을 받으면 무늬를 물려받을 수 있어요</p>'}`}
+        ${g.acc?`<h3 class="dsub">지금 무늬 · ${g.acc}${g.gen>1?` · ${g.gen}대째`:''}</h3><div class="pxcards">${card('data-patshow="1"',!K.accOff,'<canvas data-pc="1"></canvas>','보이기')}${card('data-patshow="0"',!!K.accOff,'<canvas data-pc="0"></canvas>','숨기기')}</div>`:''}
+        <h3 class="dsub">가보 무늬 모음 · ${box.length} / ${ACC.length}</h3><div class="pxcards">${ACC.map(([n])=>box.includes(n)
+          ?card(`data-heir="${n}"`,g.acc===n,`<canvas data-hb="${n}"></canvas>`,n)
+          :card(`data-heir="${n}" data-heirlock data-lock="졸업할 때마다 무늬가 하나씩 모여요"`,false,`<canvas data-hb="${n}" data-lock></canvas>`,'???')).join('')}</div>`}
     // keyring: one list. A charm not on the ring goes on (or, with three on, asks which to swap); one on the ring opens a
     // small menu: move it (▲ ▼, the ring on the device follows), take it off, or leave it
     if(tab==='charm'){const eq=g.equip||[];
@@ -2641,6 +2652,9 @@ function renderScreenIn(tab,el){
     if(tab==='pet'){const base=g.phase==='alive'&&g.stage!=='egg'?petSprite():S[g.species]||S.teen,pat=g.acc?patterned(base,base,g.acc):base;
       el.querySelectorAll('[data-hc]').forEach(cv=>{const hh=HATS.find(x=>x.id===cv.dataset.hc);sprCanvas(cv,hh?hatted(pat,hh):pat,{on:COL.ink,bg:COL.lcd,cell:TH,frame:[33,31],gap:0})});
       el.querySelectorAll('[data-pc]').forEach(cv=>sprCanvas(cv,cv.dataset.pc==='1'?pat:base,{on:COL.ink,bg:COL.lcd,cell:TH,frame:[27,24],gap:0}));
+      // the collection: each pattern on the round blob, the ones not found yet as a faint plain blob
+      el.querySelectorAll('[data-hb]').forEach(cv=>{const got=!cv.hasAttribute('data-lock'),a=ACC.find(x=>x[0]===cv.dataset.hb);
+        sprCanvas(cv,got?{w:PAT_BLOB.w,h:PAT_BLOB.h,rows:a[1]}:PAT_BLOB,{on:got?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,cell:TH,frame:[16,14],gap:0})});
       el.querySelectorAll('[data-hat]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.hat=b.dataset.hat||null;decoKept();save();renderScreen(tab,el)});
       el.querySelectorAll('[data-patshow]').forEach(b=>b.onclick=()=>{g.accOff=b.dataset.patshow==='0';decoKept();save();renderScreen(tab,el)})}
     el.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{ui.deco.shape=b.dataset.shape;ui.padKey=null;renderScreen(tab,el)});
