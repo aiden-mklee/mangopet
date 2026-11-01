@@ -248,7 +248,7 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .dpop{position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);background:var(--lcd);border:3px solid var(--ink);box-shadow:0 0 0 4px var(--lcd);padding:8px;display:flex;flex-direction:column;gap:5px;z-index:5}
 .dpop p{margin:0 0 2px;font-size:13px;line-height:1.3}.dpop .pxbtn{font-size:13px;padding:5px}
 .pxcardbig.trying::after{content:"미리보기";position:absolute;left:2px;top:2px;font-size:9px;line-height:1;padding:2px 3px;background:var(--ink);color:var(--lcd)}
-.engtools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}.engtools span{text-align:center;border:2px solid currentColor;font-size:13px;padding:2px 0;cursor:pointer}
+.engtools{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:3px}.engtools .full{grid-column:1/-1}.engtools span{text-align:center;border:2px solid currentColor;font-size:13px;padding:2px 0;cursor:pointer}
 .engtools span.cur{background:var(--ink);color:var(--lcd)}
 .engslots span.sel{outline:2px dashed currentColor;outline-offset:-2px}
 .engkeys .wide2{grid-column:span 4}
@@ -1294,30 +1294,32 @@ const engOn=()=>ui.deco&&ui.deco.tab==='eng'&&!ui.deco.pop&&!lockOf('eng','eng')
 // the case can't print is dropped, eight at most
 function engKeyboard(){let f=$('engField');if(!f){f=document.createElement('input');f.id='engField';f.autocapitalize='characters';f.autocomplete='off';f.spellcheck=false;
     f.setAttribute('enterkeyhint','done');f.style.cssText='position:fixed;left:50%;top:30%;width:2px;height:2px;opacity:.01;font-size:16px;border:0;padding:0';document.body.append(f);
-    f.oninput=()=>{const v=[...f.value.toUpperCase()].filter(c=>ENG_KEYS.includes(c)).join('').slice(0,8);f.value=v;g.engrave=v;ui.engPos=v.length>=8?9:v.length;ui.engSel=Math.max(0,v.length-1);applySkin();if(engOn())renderScreen('eng',$('decoPanel'))};
+    f.oninput=()=>{const v=[...f.value.toUpperCase()].filter(c=>ENG_KEYS.includes(c)).join('').slice(0,8);f.value=v;g.engrave=v;ui.engPos=Math.min(7,v.length);ui.engErase=null;applySkin();if(engOn())renderScreen('eng',$('decoPanel'))};
     f.onkeydown=e=>{if(e.key==='Enter')f.blur()};f.onblur=()=>f.remove()}
   f.value='';f.focus()}   // starts empty: what's typed becomes the engraving (closing without typing keeps the old one)
 function engSave(){const v=engChars().join('').trimEnd();g.engrave=v&&v!==ENG_DEFAULT?v:null;ui.engStart=g.engrave;applySkin();save()}
-function engNav(dx,dy){const pos=ui.engPos||0,n=ENG_BOARD.length;
-  if(ui.engMode!=='key'){if(dx){ui.engPos=(pos+dx+10)%10;if(ui.engPos<8)ui.engSel=ui.engPos}else if(dy>0&&pos<8)return engChoose()}   // 0-7 the slots, 8 ⌫, 9 저장
-  else if(dx)ui.engKey=((ui.engKey||0)+dx+n)%n;
-  else if(dy){const k=(ui.engKey||0)+dy*8;if(k>=0)ui.engKey=Math.min(n-1,k)}   // the top row stays put: only 취소 goes back up
+// where ⌫ starts: a slot picked by hand, else the last letter (so after typing a shorter word, ⌫ clears what's left)
+function engEraseAt(){if(ui.engErase!=null)return ui.engErase;const a=engChars();for(let i=7;i>=0;i--)if(a[i]!==' ')return i;return -1}
+const ENG_ROWS=['slots','kb','tools','keys'];
+function engNav(dx,dy){const row=ui.engRow||'slots',n=ENG_KEYS.length,col=ui.engCol||0;
+  if(dx){if(row==='slots')ui.engCol=(col+dx+8)%8;else if(row==='tools')ui.engTool=ui.engTool?0:1;
+    else if(row==='keys'){ui.engKey=((ui.engKey||0)+dx+n)%n;ui.engCol=ui.engKey%8}}
+  else if(dy>0){if(row==='slots')ui.engRow='kb';else if(row==='kb'){ui.engRow='tools';ui.engTool=col<4?0:1}
+    else if(row==='tools'){ui.engRow='keys';ui.engKey=Math.min(n-1,ui.engTool?Math.max(col,4):Math.min(col,3))}
+    else ui.engKey=Math.min(n-1,(ui.engKey||0)+8)}
+  else if(dy<0){if(row==='keys'){if(ui.engKey>=8)ui.engKey-=8;else{ui.engRow='tools';ui.engTool=ui.engKey<4?0:1}}
+    else if(row==='tools')ui.engRow='kb';else if(row==='kb')ui.engRow='slots'}
   renderScreen('eng',$('decoPanel'))}
-function engChoose(){const pos=ui.engPos||0;
-  if(ui.engMode!=='key'){
-    // ⌫: empties the slot it works from and steps back one, so each press erases one more towards the start
-    if(pos===8){const i=Math.max(0,Math.min(7,ui.engSel??0));engSet(i,' ');ui.engSel=Math.max(0,i-1);renderScreen('eng',$('decoPanel'));return}
-    if(pos===9){if(engNorm(g.engrave)!==engNorm(ui.engStart)){engSave();openDeco('home');$('dname').textContent='각인을 새겼어요';return}openDeco('home');return}
-    ui.engMode='key';ui.engKey=pos}   // start on the letter right under the slot
-  else{const k=ENG_BOARD[ui.engKey||0];
-    // typing stays on the board and the slot cursor moves on; a full name or 끝 goes up to 저장
-    if(k==='끝'){const a=engChars();for(let i=pos;i<8;i++)a[i]=' ';g.engrave=a.join('');applySkin();ui.engSel=Math.max(0,pos-1);ui.engPos=9;ui.engMode='slot'}
-    else{engSet(pos,k);ui.engSel=pos;ui.engPos=pos+1;if(ui.engPos>=8){ui.engPos=9;ui.engMode='slot'}}}
+function engChoose(){const row=ui.engRow||'slots',tgt=ui.engPos||0;
+  if(row==='slots'){ui.engPos=ui.engErase=ui.engCol||0;ui.engRow='keys';ui.engKey=ui.engPos}   // write from here: down to the letter under it
+  else if(row==='kb'){engKeyboard();return}
+  else if(row==='tools'&&!ui.engTool){const i=engEraseAt();if(i>=0){engSet(i,' ');if(ui.engErase!=null)ui.engErase=Math.max(0,i-1);ui.engPos=i}}
+  else if(row==='tools'){if(engNorm(g.engrave)!==engNorm(ui.engStart)){engSave();openDeco('home');$('dname').textContent='각인을 새겼어요';return}openDeco('home');return}
+  else{engSet(tgt,ENG_KEYS[ui.engKey||0]);ui.engPos=Math.min(7,tgt+1);ui.engErase=null}   // typed: ⌫ goes back to erasing from the end
   renderScreen('eng',$('decoPanel'))}
-function engCancel(){if(ui.engMode==='key'){ui.engMode='slot';renderScreen('eng',$('decoPanel'))}else decoLeave(()=>openDeco('home'))}
+function engCancel(){if((ui.engRow||'slots')!=='slots'){ui.engRow='slots';ui.engCol=ui.engPos||0;renderScreen('eng',$('decoPanel'))}else decoLeave(()=>openDeco('home'))}
 const lockAttr=(kind,id)=>{const l=lockOf(kind,id);return l?` data-lock="${l}"`:''};
 const ENG_KEYS=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789','♥','★','!','?','.','-',':','&','(',')',' ','+'],ENG_DEFAULT='MANGOPET';
-const ENG_BOARD=[...ENG_KEYS,'끝'];   // the board: the letters, then ending the name there
 const BTNS=[{id:'case',s:'기본',ko:'케이스에 맞춤',d:'케이스마다 어울리는 색'},{id:'charcoal',ko:'차콜',c:'#2c2e33',d:'단단한 검정'},{id:'cream',ko:'크림',c:'#e6dfcb',d:'부드러운 크림'},
   {id:'red',ko:'빨강',c:'#d8443c',d:'오락실 빨강'},{id:'blue',ko:'파랑',c:'#3a64c8',d:'시원한 파랑'},{id:'yellow',ko:'노랑',c:'#f0be3c',d:'망고 노랑'},
   {id:'mint',ko:'민트',c:'#4fbf9c',d:'산뜻한 민트'},{id:'pink',ko:'분홍',c:'#ec8aa6',d:'딸기우유 분홍'},{id:'purple',ko:'보라',c:'#7c62c8',d:'게임기 보라'}];
@@ -1343,7 +1345,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · d1e4b3',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · ce1e7b',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2833,7 +2835,7 @@ function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);ui.deco.tryLock
 function openDeco(tab='home'){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
   if(ui.deco){decoPreview(null);ui.deco.pop=null}
   if(!ui.deco){ui.deco={keep:decoKeep()};document.body.classList.add('decomode');talkShow();$('decoBox').hidden=$('decoPanel').hidden=false}
-  ui.deco.tab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng'){ui.engPos=0;ui.engMode='slot';ui.engStart=g.engrave;ui.engSel=Math.max(0,engChars().join('').trimEnd().length-1)}$('decoPanel').classList.toggle('engmode',tab==='eng');
+  ui.deco.tab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng'){ui.engPos=0;ui.engCol=0;ui.engRow='slots';ui.engErase=null;ui.engStart=g.engrave}$('decoPanel').classList.toggle('engmode',tab==='eng');
   $('decoBox').innerHTML=`<div class="dhead"><p class="dname" id="dname"></p><button class="pxbtn dclose" data-dclose>닫기</button></div><p class="ddesc" id="ddesc"></p>`;
   $('decoBox').querySelector('[data-dclose]').onclick=()=>{popClose();decoLeave(closeDeco)};
   renderScreen(tab,$('decoPanel'));$('decoPanel').scrollTop=0;dispatchEvent(new Event('resize'))}
@@ -2934,24 +2936,28 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6,false,4.8));
   }
   if(tab==='eng'&&lockOf('eng','eng')){el.innerHTML=`<div class="englock"><i class="pxlock"></i><p>첫 졸업을 하면<br>내 각인을 새길 수 있어요</p></div>`;return}
-  // engraving, for the buttons: ◀ ▶ walk the eight slots and 저장; 선택 on a slot drops into the letter board, 선택 there puts
-  // the letter in and goes back up to the next slot. ⌫ empties the slot, 끝 empties it and the rest and goes to 저장. Nothing
-  // is kept until 저장 (leaving asks). Fingers tap a slot and a letter, or type with the phone keyboard
-  if(tab==='eng'){const ch=engChars(),pos=ui.engPos||0,key=ui.engMode==='key',kb=el.querySelector('.engkeys'),st=kb?kb.scrollTop:0;el.classList.add('engmode');
-    el.innerHTML=`<div class="engbig"><div class="engslots${key?' picking':''}">${ch.map((c,i)=>`<span data-engslot="${i}" class="${i===pos?'cur':pos>7&&i===ui.engSel?'sel':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
-      <div class="engarr">${ch.map((_,i)=>`<span>${i===pos?'▼':''}</span>`).join('')}</div>
-      <div class="engtools"><span class="${pos===8?'cur':''}" data-engbs>⌫ 지우기</span><span class="${pos===9?'cur':''}" data-engsave>저장</span></div></div>
-      <div class="engkeys"><button class="pxbtn full" data-engkb>휴대폰 키보드로 쓰기</button>${ENG_BOARD.map((k,i)=>`<button class="pxbtn${key&&i===ui.engKey?' kcur':''}${i>=ENG_KEYS.length?' wide2':''}" data-ek="${i}">${k===' '?'␣':k}</button>`).join('')}</div>`;
+  // engraving: four rows the d-pad walks top to bottom (▲ ▼ between rows, ◀ ▶ along one): the eight slots, the phone
+  // keyboard, ⌫ 지우기 · 저장, then the letters. 선택 on a slot makes it the one to write and drops to the letter under it;
+  // each letter goes into that slot and moves it on. ⌫ erases from a slot picked by hand, otherwise from the last letter.
+  // Nothing is kept until 저장 (leaving asks). Fingers tap the same things
+  if(tab==='eng'){const ch=engChars(),row=ui.engRow||'slots',tgt=ui.engPos||0,kb=el.querySelector('.engkeys'),st=kb?kb.scrollTop:0;el.classList.add('engmode');
+    const cur=(r,i)=>row===r&&(r==='kb'||i===(r==='slots'?ui.engCol:r==='tools'?ui.engTool:ui.engKey));
+    el.innerHTML=`<div class="engbig"><div class="engslots">${ch.map((c,i)=>`<span data-engslot="${i}" class="${cur('slots',i)?'cur':i===tgt?'sel':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
+      <div class="engarr">${ch.map((_,i)=>`<span>${i===tgt?'▲':''}</span>`).join('')}</div>
+      <div class="engtools"><span class="full${cur('kb')?' cur':''}" data-engkb>휴대폰 키보드로 쓰기</span><span class="${cur('tools',0)?'cur':''}" data-engbs>⌫ 지우기</span><span class="${cur('tools',1)?'cur':''}" data-engsave>저장</span></div></div>
+      <div class="engkeys">${ENG_KEYS.map((k,i)=>`<button class="pxbtn${cur('keys',i)?' kcur':''}" data-ek="${i}">${k===' '?'␣':k}</button>`).join('')}</div>`;
     const K=el.querySelector('.engkeys');K.scrollTop=st;
     const kc=K.querySelector('.kcur');if(kc){const top=kc.offsetTop-K.offsetTop,bot=top+kc.offsetHeight;if(top<K.scrollTop)K.scrollTop=top-2;else if(bot>K.scrollTop+K.clientHeight)K.scrollTop=bot-K.clientHeight+2}
-    const changed=engNorm(g.engrave)!==engNorm(ui.engStart);
-    $('dname').textContent=key?`${pos+1}번째 칸에 넣을 글자`:pos===9?'저장':pos===8?'⌫ 지우기':'각인 · 영문 8자';
-    $('ddesc').textContent=key?'선택: 넣기 · 끝: 여기까지 · 취소: 칸으로':pos===8?`선택할 때마다 ${(ui.engSel??0)+1}번째 칸부터 한 칸씩 지워요`:pos===9?(changed?'선택하면 케이스에 새겨요':'바꾼 게 없어요'):'◀ ▶ 칸 · 선택: 글자 고르기'+(changed?' · 저장해야 바뀌어요':'');
-    el.querySelector('[data-engkb]').onclick=engKeyboard;
-    el.querySelector('[data-engsave]').onclick=()=>{ui.engPos=9;engChoose()};
-    el.querySelector('[data-engbs]').onclick=()=>{ui.engPos=8;engChoose()};
-    el.querySelectorAll('[data-engslot]').forEach(b=>b.onclick=()=>{ui.engPos=ui.engSel=+b.dataset.engslot;ui.engMode='slot';renderScreen(tab,el)});
-    el.querySelectorAll('[data-ek]').forEach(b=>b.onclick=()=>{if((ui.engPos||0)>7)ui.engPos=0;ui.engKey=+b.dataset.ek;ui.engMode='key';engChoose()});
+    const changed=engNorm(g.engrave)!==engNorm(ui.engStart),from=engEraseAt();
+    const T={slots:['각인 · 영문 8자','선택하면 그 칸부터 써요 · ▼ 아래로'],kb:['휴대폰 키보드로 쓰기','선택하면 키보드가 떠요'],
+      tools:ui.engTool?['저장',changed?'선택하면 케이스에 새겨요':'바꾼 게 없어요']:['⌫ 지우기',from<0?'지울 글자가 없어요':`선택할 때마다 ${from+1}번째 칸부터 한 칸씩 지워요`],
+      keys:[`${tgt+1}번째 칸에 쓸 글자`,'선택: 쓰기 · 취소: 칸으로'+(changed?' · 저장해야 바뀌어요':'')]}[row];
+    $('dname').textContent=T[0];$('ddesc').textContent=T[1];
+    el.querySelector('[data-engkb]').onclick=()=>{ui.engRow='kb';engKeyboard()};
+    el.querySelector('[data-engsave]').onclick=()=>{ui.engRow='tools';ui.engTool=1;engChoose()};
+    el.querySelector('[data-engbs]').onclick=()=>{ui.engRow='tools';ui.engTool=0;engChoose()};
+    el.querySelectorAll('[data-engslot]').forEach(b=>b.onclick=()=>{ui.engRow='slots';ui.engCol=+b.dataset.engslot;engChoose()});
+    el.querySelectorAll('[data-ek]').forEach(b=>b.onclick=()=>{ui.engRow='keys';ui.engKey=+b.dataset.ek;engChoose()});
     return}
   // 꾸미기 home: six big buttons, each with what's on now
   if(tab==='home'){el.classList.remove('engmode');el.innerHTML=`<div class="dhome">${ZTABS.deco.map(([k,l])=>`<button class="pxbtn" data-go="${k}"><b>${l}</b><small>${decoNow(k)}</small></button>`).join('')}</div>`;
