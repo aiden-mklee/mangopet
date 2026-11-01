@@ -32,7 +32,7 @@
 - 상태: 전역 `g`(저장되는 게임 상태, 엔진이 읽고 쓴다)와 `ui`(화면 상태). 화면 쪽 `stepMinute()`/`advance(min)`은 엔진을 부르고 이벤트를 처리하는 얇은 감싸개다.
 - 첫 실행: `g.intro`(case → life → egg → meal → pet → clean → charm → done), `introTo`/`introDid`/`introSkip`, 시트는 `openZoom('intro-…')`.
 - 행동: `act(a)`, `petTap()`, `crackEgg()`, 메뉴는 `openMenu()`/`closeMenu()`/`menuClick`, 방향키는 `nav(dx, dy)`. 기기 위 HTML 창에서는 방향키 커서 `padMove`/`padChoose`.
-- 꾸미기 모드: `openDeco(tab)`/`closeDeco()`, 미리보기 `decoPreview`, 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
+- 꾸미기 모드: `openDeco(tab)`(인자 없으면 목록 `home`)/`closeDeco()`, 미리보기 `decoPreview`, 저장 안 하고 떠날 때 묻기 `decoLeave`, 액정 위 작은 메뉴 `decoPop`, 키링 `charmPick`/`charmMove`, 각인 초안 `engChoose`/`engSave`(`ENG_BOARD`), 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
 - 처음 며칠: 엔진 `E.appDay`(앱을 쓴 날수), 화면 `OPENS`·`opened(k)`·`openNews`. 주운 것은 엔진 `FINDS_FROM`.
 - 하는 일과 주운 것: `DOING`(시간대별 장면, `ui.doing`, `doingStart`), 엔진 `FINDS`·`E.pickUp`, 그림 `FIND_SPR`, 놓인 것 `g.found`, 모은 것 `g.finds`.
 - 이름: `g.name`(엔진 `newPet`에서 비움, 알림 제목 `who`, 키운 기록 `hist[].name`), 화면 `giveName`(부화 때 랜덤 이름)·`openZoom('name')`(바꾸기)·`nameSubj()`.

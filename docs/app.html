@@ -234,8 +234,17 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .decopanel.engmode{display:flex;flex-direction:column;overflow:hidden}
 .engbig{flex:none;margin-bottom:6px}
 .decopanel .engkeys{flex:1;min-height:0;overflow:auto;align-content:start;overscroll-behavior:contain;scroll-snap-type:y mandatory;scroll-padding-top:0}.engkeys .pxbtn{scroll-snap-align:start}
-.eqempty{display:block;width:30px;height:30px;border:2px dashed currentColor;border-radius:50%;opacity:.35;margin:2px auto}
-.pxcardbig[data-picked]{background:color-mix(in srgb,currentColor 18%,transparent)}
+.dhome{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.dhome .pxbtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 8px;min-height:52px;text-align:left}
+.dhome .pxbtn b{font-weight:normal;font-size:15px}.dhome .pxbtn small{font-size:10px;opacity:.75;line-height:1.25}
+.dpop{position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);background:var(--lcd);border:3px solid var(--ink);box-shadow:0 0 0 4px var(--lcd);padding:8px;display:flex;flex-direction:column;gap:5px;z-index:5}
+.dpop p{margin:0 0 2px;font-size:13px;line-height:1.3}.dpop .pxbtn{font-size:13px;padding:5px}
+.pxcardbig.trying::after{content:"미리보기";position:absolute;left:2px;top:2px;font-size:9px;line-height:1;padding:2px 3px;background:var(--ink);color:var(--lcd)}
+.engsave{margin:4px auto 0;width:50%;text-align:center;border:2px solid currentColor;font-size:13px;padding:2px 0;cursor:pointer}
+.engsave.cur{background:var(--ink);color:var(--lcd)}
+.engkeys .wide2{grid-column:span 4}
+.decobox#decoBox{height:84px}
+.decobox .dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.decobox .dhead .dname{margin:0}
 .engkeys .pxbtn.kcur{background:var(--ink);color:var(--lcd)}
 .engslots.picking span.cur{background:none;color:inherit;outline:2px solid currentColor;outline-offset:-2px}
 .engslots,.engarr{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;text-align:center}
@@ -1277,29 +1286,34 @@ function lockOf(kind,id){if(ui.unlockAll)return null;const r=(UNLOCK[kind]||{})[
   if(r.item&&((g.finds||{})[r.item]||0)<r.n){const k=FIND_KO[r.item];return `${k}${josa(k,'을','를')} ${r.n}개 모으면 열려요`+won}return null}
 // the engraving as eight slots (spaces fill the end); closing 꾸미기 trims them off again
 const engChars=()=>[...(g.engrave??ENG_DEFAULT).padEnd(8,' ').slice(0,8)];
-function engSet(i,c){const a=engChars();a[i]=c;g.engrave=a.join('');applySkin();save()}
-const engOn=()=>ui.deco&&ui.deco.tab==='eng'&&!lockOf('eng','eng');
+function engSet(i,c){const a=engChars();a[i]=c;g.engrave=a.join('');applySkin()}
+const engOn=()=>ui.deco&&ui.deco.tab==='eng'&&!ui.deco.pop&&!lockOf('eng','eng');
 // the phone keyboard for the engraving: a nearly invisible field takes the typing and writes a new engraving; letters are upper-cased and anything
 // the case can't print is dropped, eight at most
 function engKeyboard(){let f=$('engField');if(!f){f=document.createElement('input');f.id='engField';f.autocapitalize='characters';f.autocomplete='off';f.spellcheck=false;
     f.setAttribute('enterkeyhint','done');f.style.cssText='position:fixed;left:50%;top:30%;width:2px;height:2px;opacity:.01;font-size:16px;border:0;padding:0';document.body.append(f);
-    f.oninput=()=>{const v=[...f.value.toUpperCase()].filter(c=>ENG_KEYS.includes(c)).join('').slice(0,8);f.value=v;g.engrave=v;ui.engPos=Math.min(7,v.length);applySkin();save();if(engOn())renderScreen('eng',$('decoPanel'))};
+    f.oninput=()=>{const v=[...f.value.toUpperCase()].filter(c=>ENG_KEYS.includes(c)).join('').slice(0,8);f.value=v;g.engrave=v;ui.engPos=Math.min(8,v.length);applySkin();if(engOn())renderScreen('eng',$('decoPanel'))};
     f.onkeydown=e=>{if(e.key==='Enter')f.blur()};f.onblur=()=>f.remove()}
   f.value='';f.focus()}   // starts empty: what's typed becomes the engraving (closing without typing keeps the old one)
-// ⌫ (and 취소): clears the slot, or the one before it when it's already empty
-function engDel(){const c=engChars(),pos=ui.engPos||0;let i=pos;if(c[i]===' '&&i>0)i--;engSet(i,' ');ui.engPos=i}
-function engNav(dx,dy){const pos=ui.engPos||0,n=ENG_KEYS.length;
-  if(ui.engMode!=='key'){if(dx)ui.engPos=(pos+dx+8)%8;else if(dy>0)return engChoose()}
+function engSave(){const v=engChars().join('').trimEnd();g.engrave=v&&v!==ENG_DEFAULT?v:null;ui.engStart=g.engrave;applySkin();save()}
+function engNav(dx,dy){const pos=ui.engPos||0,n=ENG_BOARD.length;
+  if(ui.engMode!=='key'){if(dx)ui.engPos=(pos+dx+9)%9;else if(dy>0&&pos<8)return engChoose()}   // 0-7 the slots, 8 is 저장
   else if(dx)ui.engKey=((ui.engKey||0)+dx+n)%n;
-  else if(dy){const k=(ui.engKey||0)+dy*8;if(k<0){ui.engMode='slot'}else ui.engKey=Math.min(n-1,k)}   // ▲ off the top row goes back up
+  else if(dy){const k=(ui.engKey||0)+dy*8;if(k<0)ui.engMode='slot';else ui.engKey=Math.min(n-1,k)}   // ▲ off the top row goes back up
   renderScreen('eng',$('decoPanel'))}
 function engChoose(){const pos=ui.engPos||0;
-  if(ui.engMode!=='key'){ui.engMode='key';ui.engKey=Math.max(0,ENG_KEYS.indexOf(engChars()[pos]))}
-  else{engSet(pos,ENG_KEYS[ui.engKey||0]);ui.engPos=Math.min(7,pos+1);ui.engMode='slot'}
+  if(ui.engMode!=='key'){if(pos===8){if(engNorm(g.engrave)!==engNorm(ui.engStart)){engSave();openDeco('home');$('dname').textContent='각인을 새겼어요';return}openDeco('home');return}
+    ui.engMode='key';ui.engKey=Math.max(0,ENG_KEYS.indexOf(engChars()[pos]))}
+  else{const k=ENG_BOARD[ui.engKey||0];
+    if(k==='⌫ 비우기')engSet(pos,' ');
+    else if(k==='끝'){const a=engChars();for(let i=pos;i<8;i++)a[i]=' ';g.engrave=a.join('');applySkin();ui.engPos=8}
+    else{engSet(pos,k);ui.engPos=Math.min(8,pos+1)}
+    ui.engMode='slot'}
   renderScreen('eng',$('decoPanel'))}
-function engCancel(){if(ui.engMode==='key')ui.engMode='slot';else engDel();renderScreen('eng',$('decoPanel'))}
+function engCancel(){if(ui.engMode==='key'){ui.engMode='slot';renderScreen('eng',$('decoPanel'))}else decoLeave(()=>openDeco('home'))}
 const lockAttr=(kind,id)=>{const l=lockOf(kind,id);return l?` data-lock="${l}"`:''};
 const ENG_KEYS=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789','♥','★','!','?','.','-',':','&','(',')',' ','+'],ENG_DEFAULT='MANGOPET';
+const ENG_BOARD=[...ENG_KEYS,'⌫ 비우기','끝'];   // the board: the letters, then emptying a slot and ending the name there
 const BTNS=[{id:'case',s:'기본',ko:'케이스에 맞춤',d:'케이스마다 어울리는 색'},{id:'charcoal',ko:'차콜',c:'#2c2e33',d:'단단한 검정'},{id:'cream',ko:'크림',c:'#e6dfcb',d:'부드러운 크림'},
   {id:'red',ko:'빨강',c:'#d8443c',d:'오락실 빨강'},{id:'blue',ko:'파랑',c:'#3a64c8',d:'시원한 파랑'},{id:'yellow',ko:'노랑',c:'#f0be3c',d:'망고 노랑'},
   {id:'mint',ko:'민트',c:'#4fbf9c',d:'산뜻한 민트'},{id:'pink',ko:'분홍',c:'#ec8aa6',d:'딸기우유 분홍'},{id:'purple',ko:'보라',c:'#7c62c8',d:'게임기 보라'}];
@@ -1325,7 +1339,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 07c25d',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · b4f6b6',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2722,7 +2736,7 @@ function buildDevBtns(){
   $('zoomBtn').onclick=()=>openZoom(ui.view==='finds'?'finds':ui.view==='dex'?'dex':ui.zoomTab||'dex');
   pxIcon($('decoBtn').querySelector('canvas'),['......##','.....###','....###.','...###..','..###...','.##.....','###.....','##......'],COL.ink);
   $('flipBtn').onclick=()=>flip(!ui.flipped);
-  $('decoBtn').onclick=()=>openDeco(ui.decoTab||'case');
+  $('decoBtn').onclick=()=>openDeco();
   // tapping the keyring opens the keyring list
   $('keyring').onclick=()=>openZoom('charm');
   $('zoom').addEventListener('click',e=>{if(e.target.id==='zoom')closeZoom()});
@@ -2757,7 +2771,7 @@ function renderScreen(tab,el){
 // ---- d-pad cursor: on any panel drawn as HTML on the device, the arrows move a cursor to the nearest button that way,
 // select presses it and cancel closes. Tapping a button moves the cursor there too, so touch and buttons never disagree.
 // the tab rows (decorating's dialog, the book's tabs) are for fingers; the d-pad stays inside the screen's items
-function padRoots(){if(engOn())return null;if(ui.deco)return [$('decoPanel')];if(!$('zoom').hidden)return [$('zoom')];if(ui.flipped)return [$('setPanel')];return null}
+function padRoots(){if(engOn())return null;if(ui.deco&&ui.deco.pop)return [$('decoPanel').querySelector('.dpop')].filter(Boolean);if(ui.deco)return [$('decoPanel')];if(!$('zoom').hidden)return [$('zoom')];if(ui.flipped)return [$('setPanel')];return null}
 function padItems(){const r=padRoots();return r?r.flatMap(x=>[...x.querySelectorAll('button:not([disabled])')]).filter(b=>b.offsetParent&&!b.closest('#ztabs')):[]}
 const padKey=el=>[...el.attributes].filter(a=>a.name.startsWith('data-')||a.name==='id').map(a=>a.name+'='+a.value).join('&')||el.textContent;
 function padCur(){const it=padItems();return (ui.padKey!=null&&it.find(b=>padKey(b)===ui.padKey))||it.find(b=>b.getAttribute('aria-pressed')==='true'&&!b.closest('.dtabs,.ztabs,#ztabs'))||(ui.deco&&(it.find(b=>b.closest('#decoPanel'))||it.find(b=>b.dataset.dtab===ui.deco.tab)))||it[0]}
@@ -2785,28 +2799,53 @@ const DECO_DESC={egg:'둥근 알 모양',square:'네모난 게임기',mini:'작�
 // moving the cursor onto a case, background or button style tries it on the whole device; select keeps it,
 // and leaving it (another tab, the end, cancel) puts back what was kept
 const decoKeep=()=>({shape:g.shape,skin:g.skin,bg:g.bg,btnStyle:g.btnStyle,lcd:g.lcd,btnColor:g.btnColor,hat:g.hat,accOff:g.accOff});
-// 취소 in 꾸미기 steps back instead of leaving at once: something tried on → put back the saved look (cursor on it);
-// nothing tried on → close
-function decoBack(){if(JSON.stringify(decoKeep())===JSON.stringify(ui.deco.keep))return false;decoPreview(null);
-  const on=$('decoPanel').querySelector('.pxcardbig[aria-pressed="true"]');ui.padKey=on?padKey(on):null;padShow();
-  $('dname').textContent='원래대로 돌려 놨어요';$('ddesc').textContent='취소를 한 번 더 누르면 꾸미기를 닫아요';return true}
-function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);
+// what each 꾸미기 page has on now, for the home buttons
+function decoNow(k){const K=ui.deco?ui.deco.keep:g;if(k==='pet'){const h=HATS.find(x=>x.id===K.hat);return h?h.ko:'모자 안 씀'}
+  if(k==='case')return `${shapeOf(K.shape).ko} · ${(SKINS.find(x=>x.id===(K.skin||'classic'))||SKINS[0]).ko}`;
+  if(k==='color'){const l=LCDS.find(x=>x.id===(K.lcd||'green'));return l?l.ko+' 액정':''}
+  if(k==='bg'){const b=BGS.find(x=>x.id===(K.bg||'beige'));return b?b.ko:''}
+  if(k==='charm')return `${(g.equip||[]).length}개 달림`;
+  if(k==='eng')return lockOf('eng','eng')?'첫 졸업 뒤에 열려요':engNorm(g.engrave);return ''}
+const charmRedraw=()=>{g.equip=(g.equip||[]).filter(Boolean);drawCharms();save();if(ui.deco&&ui.deco.tab==='charm')renderScreen('charm',$('decoPanel'))};
+function charmPick(id){const eq=g.equip=g.equip||[],at=eq.indexOf(id),ko=CHARMS.find(c=>c.id===id).ko;
+  if(at<0){if(eq.length<3){eq.push(id);charmRedraw();return}
+    return decoPop(`${ko} · 어느 걸 뺄까요?`,[...eq.map((x,i)=>[`${i+1}. ${CHARMS.find(c=>c.id===x).ko}`,()=>{eq[i]=id;charmRedraw()}]),['그만두기',null,1]])}
+  decoPop(`${ko} · ${at+1}번`,[...(eq.length>1?[['순서 바꾸기',()=>charmMove(id)]]:[]),['빼기',()=>{eq.splice(eq.indexOf(id),1);charmRedraw()}],['그대로',null,1]])}
+// moving a charm: ▲ ▼ (or the buttons) swap it with its neighbour; 선택 or 취소 finishes
+function charmMove(id){const step=d=>{const eq=g.equip,i=eq.indexOf(id),j=i+d;if(j<0||j>=eq.length)return;[eq[i],eq[j]]=[eq[j],eq[i]];drawCharms();save();ui.deco.pop.title=`${ko} 옮기기 · ${j+1}번`;popShow()};
+  const ko=CHARMS.find(c=>c.id===id).ko,up=()=>step(-1),dn=()=>step(1);up.keep=dn.keep=true;
+  decoPop(`${ko} 옮기기 · ${g.equip.indexOf(id)+1}번`,[['▲ 위로',up],['▼ 아래로',dn],['다 옮겼어요',()=>charmRedraw(),1]],step)}
+// leaving a page (or 꾸미기) with something only tried on asks first; so does an engraving that was changed but not saved
+const engNorm=v=>((v??ENG_DEFAULT).trimEnd()||ENG_DEFAULT);
+function decoLeave(then){if(!ui.deco)return then();
+  if(ui.deco.tab==='eng'&&engNorm(g.engrave)!==engNorm(ui.engStart))return decoPop('바꾼 각인을 저장할까요?',[['저장하고 나가기',()=>{engSave();then()}],['버리고 나가기',()=>{g.engrave=ui.engStart;applySkin();then()}],['계속 쓰기',null,1]]);
+  if(JSON.stringify(decoKeep())!==JSON.stringify(ui.deco.keep))return decoPop('입어 본 걸 저장할까요?',[['저장',()=>{decoKept();save();then()}],['저장 안 함',()=>{decoPreview(null);then()}]]);
+  then()}
+// a small menu on the LCD over the page: the d-pad and fingers stay inside it; 취소 closes it. items: [label, fn, focus?]
+function decoPop(title,items,move){ui.deco.pop={title,items,move};popShow()}
+function popShow(){const P=$('decoPanel');P.querySelector('.dpop')?.remove();const pop=ui.deco&&ui.deco.pop;if(!pop){padShow();return}
+  P.insertAdjacentHTML('beforeend',`<div class="dpop"><p>${pop.title}</p>${pop.items.map(([l],i)=>`<button class="pxbtn" data-pop="${i}">${l}</button>`).join('')}</div>`);
+  P.querySelectorAll('[data-pop]').forEach(b=>b.onclick=()=>{const it=pop.items[+b.dataset.pop];if(it[1]&&it[1].keep){it[1]();return}popClose();if(it[1])it[1]()});
+  // the panel may be scrolled: sit the menu in the middle of what's showing
+  const D=P.querySelector('.dpop');D.style.top=(P.scrollTop+P.clientHeight/2)+'px';
+  const f=pop.items.findIndex(x=>x[2]);ui.padKey=padKey(P.querySelector(`[data-pop="${f<0?0:f}"]`));padShow()}
+function popClose(){if(!ui.deco||!ui.deco.pop)return;ui.deco.pop=null;$('decoPanel').querySelector('.dpop')?.remove();ui.padKey=null;if(ui.deco.tab)renderScreen(ui.deco.tab,$('decoPanel'))}
+function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);$('decoPanel').querySelectorAll('.trying').forEach(x=>x.classList.remove('trying'));if(el&&!el.closest('.dpop')&&el.matches('.pxcardbig')&&el.getAttribute('aria-pressed')!=='true'&&!el.dataset.shape&&!el.dataset.shapeback&&!el.dataset.charm&&!el.dataset.charmlock)el.classList.add('trying');
   if(el&&el.dataset.hat!==undefined)g.hat=el.dataset.hat||null;if(el&&el.dataset.patshow)g.accOff=el.dataset.patshow==='0';
   if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin;g.btnColor=null}
   if(el&&el.dataset.bg)g.bg=el.dataset.bg;if(el&&el.dataset.btnst)g.btnStyle=el.dataset.btnst;if(el&&el.dataset.lcd)g.lcd=el.dataset.lcd;if(el&&el.dataset.btnc)g.btnColor=el.dataset.btnc==='case'?null:el.dataset.btnc;applySkin()}
-function openDeco(tab){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
-  if(ui.deco)decoPreview(null);
+function openDeco(tab='home'){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
+  if(ui.deco){decoPreview(null);ui.deco.pop=null}
   if(!ui.deco){ui.deco={keep:decoKeep()};document.body.classList.add('decomode');talkShow();$('decoBox').hidden=$('decoPanel').hidden=false}
-  ui.deco.tab=ui.decoTab=tab;ui.deco.shape=null;ui.padKey=null;ui.charmSlot=null;if(tab==='eng'){ui.engPos=0;ui.engMode='slot';ui.engStart=g.engrave}$('decoPanel').classList.toggle('engmode',tab==='eng');
-  $('decoBox').innerHTML=`<div class="dtabs">${ZTABS.deco.map(([k,l])=>`<button class="pxbtn" data-dtab="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}<button class="pxbtn dclose" data-dclose>닫기</button></div><p class="dname" id="dname"></p><p class="ddesc" id="ddesc"></p>`;
-  $('decoBox').querySelectorAll('[data-dtab]').forEach(b=>b.onclick=()=>{if(ui.deco.tab!==b.dataset.dtab){openDeco(b.dataset.dtab);ui.padKey=padKey($('decoBox').querySelector(`[data-dtab="${b.dataset.dtab}"]`));padShow()}});
-  $('decoBox').querySelector('[data-dclose]').onclick=closeDeco;
+  ui.deco.tab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng'){ui.engPos=0;ui.engMode='slot';ui.engStart=g.engrave}$('decoPanel').classList.toggle('engmode',tab==='eng');
+  $('decoBox').innerHTML=`<div class="dhead"><p class="dname" id="dname"></p><button class="pxbtn dclose" data-dclose>닫기</button></div><p class="ddesc" id="ddesc"></p>`;
+  $('decoBox').querySelector('[data-dclose]').onclick=()=>{popClose();decoLeave(closeDeco)};
   renderScreen(tab,$('decoPanel'));$('decoPanel').scrollTop=0;dispatchEvent(new Event('resize'))}
-function closeDeco(){if(!ui.deco)return;requestAnimationFrame(talkShow);decoPreview(null);if(g.engrave!=null){g.engrave=g.engrave.trimEnd();if(!g.engrave)g.engrave=null;applySkin()}save();ui.deco=null;document.body.classList.remove('decomode');$('decoBox').hidden=$('decoPanel').hidden=true;padShow();dispatchEvent(new Event('resize'))}
+function closeDeco(){if(!ui.deco)return;requestAnimationFrame(talkShow);decoPreview(null);if(ui.deco.tab==='eng'&&engNorm(g.engrave)!==engNorm(ui.engStart))g.engrave=ui.engStart;if(g.engrave!=null){g.engrave=g.engrave.trimEnd();if(!g.engrave)g.engrave=null;applySkin()}save();ui.deco=null;document.body.classList.remove('decomode');$('decoBox').hidden=$('decoPanel').hidden=true;padShow();dispatchEvent(new Event('resize'))}
 // the dialog names what the cursor is on, with one short line about it
 function decoText(el){let n='',d='';const ds=el.dataset;
-  if(ds.dtab){n=ZTABS.deco.find(([k])=>k===ds.dtab)[1];d=ds.dtab==='eng'&&lockOf('eng','eng')?lockOf('eng','eng'):'◀ ▶ 로 고르고, 선택으로 바꿔요'}
-  else if(ds.dclose!==undefined){n='닫기';d='꾸미기를 마쳐요'}
+  if(ds.pop!==undefined){n=ui.deco.pop.title;d=el.textContent}
+  else if(ds.go){n=ZTABS.deco.find(([k])=>k===ds.go)[1];d=decoNow(ds.go)+' · 선택하면 들어가요'}
   else if(ds.shape){n=shapeOf(ds.shape).ko;d=(DECO_DESC[ds.shape]||'')+` · 색 ${shapeOf(ds.shape).skins.length}가지`}
   else if(ds.hat!==undefined){const h=HATS.find(x=>x.id===ds.hat);n=h?h.ko:'안 쓰기';d=h?'아이 머리에 씌워요':'모자를 벗어요'}
   else if(ds.patshow){n=ds.patshow==='1'?`${g.acc} 보이기`:'무늬 숨기기';d='물려받은 가보 무늬'}
@@ -2820,10 +2859,10 @@ function decoText(el){let n='',d='';const ds=el.dataset;
   else if(ds.lcd){const l=LCDS.find(x=>x.id===ds.lcd);n=l.ko;d=l.d}
   else if(ds.btnst){n=el.querySelector('span:not(.pv-btn span)')?.textContent||el.textContent;d=el.querySelector('small')?.textContent||''}
   else if(ds.charmlock){n='???';d=''}
-  else if(ds.eqslot!==undefined){const c=CHARMS.find(x=>x.id===(g.equip||[])[+ds.eqslot]);n=`${+ds.eqslot+1}번 자리 · ${c?c.ko:'빈자리'}`;d=ui.charmSlot!=null?'선택하면 자리를 바꿔요':c?'선택하고 다른 자리를 고르면 바꿔요':'아래에서 키링을 고르면 달려요'}
-  else if(ds.charm){const c=CHARMS.find(x=>x.id===ds.charm),i=(g.equip||[]).indexOf(c.id);n=c.ko;d=i>=0?`달려 있어요 (${i+1}번) · 선택하면 빼요`:'선택하면 달아요 (3개까지)'}
+  else if(ds.charm){const c=CHARMS.find(x=>x.id===ds.charm),i=(g.equip||[]).indexOf(c.id);n=c.ko;d=i>=0?`${i+1}번에 달려 있어요 · 선택: 순서 바꾸기·빼기`:(g.equip||[]).length<3?'선택하면 달아요':'선택하면 하나와 바꿔 달아요'}
   const k=ui.deco.keep,inUse=(ds.hat!==undefined&&(ds.hat||null)===(k.hat||null))||(ds.patshow&&(ds.patshow==='0')===!!k.accOff)||(ds.shape&&ds.shape===(k.shape||'egg'))||(ds.skin&&ds.forshape===(k.shape||'egg')&&ds.skin===(k.skin||'classic'))||(ds.bg&&ds.bg===(k.bg||'beige'))||(ds.btnst&&ds.btnst===(k.btnStyle||'flat'))||(ds.lcd&&ds.lcd===(k.lcd||'green'))||(ds.btnc&&ds.btnc===(k.btnColor||'case'));
   if(ds.lock)d=ds.charmlock?ds.lock:ds.lock+' · 미리 볼 수 있어요';
+  else if(el.classList.contains('trying'))d+=' · 미리보는 중';
   else if(ds.shape)d+=inUse?' · 쓰는 중':'';
   else if(ds.hat!==undefined||ds.patshow||ds.skin||ds.bg||ds.btnst||ds.lcd||ds.btnc)d+=inUse?' · 쓰는 중 ✓':' · 선택하면 바꿔요';
   $('dname').textContent=n;$('ddesc').textContent=d}
@@ -2898,25 +2937,27 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6,false,4.8));
   }
   if(tab==='eng'&&lockOf('eng','eng')){el.innerHTML=`<div class="englock"><i class="pxlock"></i><p>첫 졸업을 하면<br>내 각인을 새길 수 있어요</p></div>`;return}
-  // engraving, for the buttons: ◀ ▶ pick one of the eight slots, 선택 drops the cursor into the letter board, 선택 there puts
-  // the letter in and goes back up to the next slot (취소 in the board goes back up, on the slots it erases). Fingers tap a
-  // slot, then a letter; or type with the phone keyboard
+  // engraving, for the buttons: ◀ ▶ walk the eight slots and 저장; 선택 on a slot drops into the letter board, 선택 there puts
+  // the letter in and goes back up to the next slot. ⌫ empties the slot, 끝 empties it and the rest and goes to 저장. Nothing
+  // is kept until 저장 (leaving asks). Fingers tap a slot and a letter, or type with the phone keyboard
   if(tab==='eng'){const ch=engChars(),pos=ui.engPos||0,key=ui.engMode==='key',kb=el.querySelector('.engkeys'),st=kb?kb.scrollTop:0;el.classList.add('engmode');
     el.innerHTML=`<div class="engbig"><div class="engslots${key?' picking':''}">${ch.map((c,i)=>`<span data-engslot="${i}" class="${i===pos?'cur':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
-      <div class="engarr">${ch.map((_,i)=>`<span>${i===pos?'▼':''}</span>`).join('')}</div></div>
-      <div class="engkeys"><button class="pxbtn full" data-engkb>휴대폰 키보드로 쓰기</button>${ENG_KEYS.map((k,i)=>`<button class="pxbtn${key&&i===ui.engKey?' kcur':''}" data-ch="${k}">${k===' '?'␣':k}</button>`).join('')}
-      <button class="pxbtn wide" data-engdel>⌫ 지우기</button><button class="pxbtn wide" data-engundo>되돌리기</button></div>`;
+      <div class="engarr">${ch.map((_,i)=>`<span>${i===pos?'▼':''}</span>`).join('')}</div>
+      <div class="engsave${pos===8?' cur':''}" data-engsave>저장</div></div>
+      <div class="engkeys"><button class="pxbtn full" data-engkb>휴대폰 키보드로 쓰기</button>${ENG_BOARD.map((k,i)=>`<button class="pxbtn${key&&i===ui.engKey?' kcur':''}${i>=ENG_KEYS.length?' wide2':''}" data-ek="${i}">${k===' '?'␣':k}</button>`).join('')}</div>`;
     const K=el.querySelector('.engkeys');K.scrollTop=st;
-    // keep the board's cursor in view by moving the board itself, never the page
     const kc=K.querySelector('.kcur');if(kc){const top=kc.offsetTop-K.offsetTop,bot=top+kc.offsetHeight;if(top<K.scrollTop)K.scrollTop=top-2;else if(bot>K.scrollTop+K.clientHeight)K.scrollTop=bot-K.clientHeight+2}
-    $('dname').textContent=key?`${pos+1}번째 칸에 넣을 글자`:'각인 · 영문 8자';
-    $('ddesc').textContent=key?'방향키로 고르고 선택 · 취소: 칸으로 돌아가기':'◀ ▶ 칸 고르기 · 선택: 글자 고르기 · 취소: 지우기';
+    const changed=engNorm(g.engrave)!==engNorm(ui.engStart);
+    $('dname').textContent=key?`${pos+1}번째 칸에 넣을 글자`:pos===8?'저장':'각인 · 영문 8자';
+    $('ddesc').textContent=key?'방향키로 고르고 선택 · ⌫ 비우기 · 끝 여기까지':pos===8?(changed?'선택하면 케이스에 새겨요':'바꾼 게 없어요'):'◀ ▶ 칸 · 선택: 글자 고르기'+(changed?' · 저장해야 바뀌어요':'');
     el.querySelector('[data-engkb]').onclick=engKeyboard;
+    el.querySelector('[data-engsave]').onclick=()=>{ui.engPos=8;engChoose()};
     el.querySelectorAll('[data-engslot]').forEach(b=>b.onclick=()=>{ui.engPos=+b.dataset.engslot;ui.engMode='slot';renderScreen(tab,el)});
-    el.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{engSet(ui.engPos||0,b.dataset.ch);ui.engPos=Math.min(7,(ui.engPos||0)+1);ui.engMode='slot';renderScreen(tab,el)});
-    el.querySelector('[data-engdel]').onclick=()=>{engDel();renderScreen(tab,el)};
-    el.querySelector('[data-engundo]').onclick=()=>{g.engrave=ui.engStart??null;ui.engPos=0;ui.engMode='slot';applySkin();save();renderScreen(tab,el)};
+    el.querySelectorAll('[data-ek]').forEach(b=>b.onclick=()=>{if((ui.engPos||0)>7)ui.engPos=0;ui.engKey=+b.dataset.ek;ui.engMode='key';engChoose()});
     return}
+  // 꾸미기 home: six big buttons, each with what's on now
+  if(tab==='home'){el.classList.remove('engmode');el.innerHTML=`<div class="dhome">${ZTABS.deco.map(([k,l])=>`<button class="pxbtn" data-go="${k}"><b>${l}</b><small>${decoNow(k)}</small></button>`).join('')}</div>`;
+    el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openDeco(b.dataset.go));return}
   if(tab==='case'||tab==='bg'||tab==='color'||tab==='charm'||tab==='pet'){
     const card=(attr,on,pic,name,sub='',dis=false)=>`<button class="pxcardbig" ${attr} aria-pressed="${on}" ${dis?'disabled':''}>${pic}<span>${name}</span>${sub?`<small>${sub}</small>`:''}</button>`;
     const sk=id=>SKINS.find(k=>k.id===id)||SKINS[0];
@@ -2934,12 +2975,10 @@ function renderScreenIn(tab,el){
     if(tab==='pet'){const box=g.heirBox||[],K=ui.deco?ui.deco.keep:g;
       h=`<h2>아이</h2><h3 class="dsub">소품</h3><div class="pxcards">${card('data-hat=""',!K.hat,'<canvas data-hc=""></canvas>','안 쓰기')}${HATS.map(x=>card(`data-hat="${x.id}"${lockAttr('hat',x.id)}`,K.hat===x.id,`<canvas data-hc="${x.id}"></canvas>`,x.s||x.ko)).join('')}</div>
         <h3 class="dsub">가보 무늬 · ${box.length}/${ACC.length} 모음${g.gen>1?` · ${g.gen}대째`:''}</h3>${g.acc?`<div class="pxcards">${card('data-patshow="1"',!K.accOff,'<canvas data-pc="1"></canvas>','보이기')}${card('data-patshow="0"',!!K.accOff,'<canvas data-pc="0"></canvas>','숨기기')}</div>`:'<p class="dim dsubp">졸업한 아이의 알을 받으면 무늬를 물려받을 수 있어요</p>'}`}
-    // keyring: the three places on the ring up top (pick two in turn to swap them, the same one twice to take it off),
-    // the collection below (a charm goes on the picked place, or the first free one)
-    if(tab==='charm'){const eq=g.equip||[],sel=ui.charmSlot;
-      h=`<h3 class="dsub">달린 키링</h3><div class="pxcards">${[0,1,2].map(i=>{const c=CHARMS.find(x=>x.id===eq[i]);
-        return card(`data-eqslot="${i}"${sel===i?' data-picked':''}`,sel===i,c?`<canvas data-cc="${c.id}"></canvas><b class="no">${i+1}</b>`:`<b class="no">${i+1}</b><i class="eqempty"></i>`,c?c.ko:'빈자리')}).join('')}</div>
-        <h3 class="dsub">모은 키링</h3><div class="pxcards">${CHARMS.map(c=>{const got=(g.charms||[]).includes(c.id),i=eq.indexOf(c.id);
+    // keyring: one list. A charm not on the ring goes on (or, with three on, asks which to swap); one on the ring opens a
+    // small menu: move it (▲ ▼, the ring on the device follows), take it off, or leave it
+    if(tab==='charm'){const eq=g.equip||[];
+      h=`<h3 class="dsub">키링 · ${eq.length} / 3 달림</h3><div class="pxcards">${CHARMS.map(c=>{const got=(g.charms||[]).includes(c.id),i=eq.indexOf(c.id);
         return got?card(`data-charm="${c.id}"`,i>=0,`<canvas data-cc="${c.id}"></canvas>${i>=0?`<b class="no">${i+1}</b>`:''}`,c.ko):card(`data-charmlock="${c.id}" data-lock="${c.cond} 열려요"`,false,`<canvas data-cc="${c.id}" data-lock></canvas>`,'???')}).join('')}</div>`}
     el.innerHTML=h;
     // a shape opens its colours (a locked shape too, to try them on); a colour keeps that shape and colour unless either is locked
@@ -2955,14 +2994,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-lcd]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.lcd=b.dataset.lcd;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-btnc]').forEach(b=>b.onclick=()=>{if(b.dataset.lock){decoPreview(b);return}g.btnColor=b.dataset.btnc==='case'?null:b.dataset.btnc;decoKept();applySkin();save();renderScreen(tab,el)});
     el.querySelectorAll('[data-btnst]').forEach(b=>b.onclick=()=>{g.btnStyle=b.dataset.btnst;decoKept();applySkin();save();renderScreen(tab,el)});
-    const charmDone=()=>{g.equip=(g.equip||[]).filter(Boolean);ui.charmSlot=null;drawCharms();save();const st=el.scrollTop;renderScreen(tab,el);el.scrollTop=st};
-    el.querySelectorAll('[data-eqslot]').forEach(b=>b.onclick=()=>{const i=+b.dataset.eqslot,eq=g.equip=g.equip||[];
-      if(ui.charmSlot==null){if(!eq[i]&&eq.length<=i)return;ui.charmSlot=i;const st=el.scrollTop;renderScreen(tab,el);el.scrollTop=st;
-        $('dname').textContent=`${i+1}번 자리`;$('ddesc').textContent='다른 자리를 고르면 바꾸고, 한 번 더 누르면 빼요';return}
-      const j=ui.charmSlot;if(j===i)eq.splice(i,1);else{const a=eq[j];eq[j]=eq[i];eq[i]=a}charmDone()});
-    el.querySelectorAll('[data-charm]').forEach(b=>b.onclick=()=>{const id=b.dataset.charm,eq=g.equip=g.equip||[],at=eq.indexOf(id);
-      const j=ui.charmSlot;if(j!=null){if(at>=0){eq[at]=eq[j];eq[j]=id}else eq[j]=id}else if(at>=0)eq.splice(at,1);else if(eq.length<3)eq.push(id);
-      else{$('dname').textContent='세 자리가 다 찼어요';$('ddesc').textContent='위에서 바꿀 자리를 먼저 골라요';return}charmDone()});
+    el.querySelectorAll('[data-charm]').forEach(b=>b.onclick=()=>charmPick(b.dataset.charm));
     el.querySelectorAll('[data-cc]').forEach(cv=>{const c=CHARMS.find(x=>x.id===cv.dataset.cc),lk=cv.hasAttribute('data-lock');charmCanvas(cv,c,6,lk,4.8);charmShine(cv,c,lk)});
   }
   if(tab==='set'){
@@ -3238,6 +3270,7 @@ function nav(dx,dy){
   ui.armed=false;
   if(ui.menuOpen){const n=$('menuPanel').querySelectorAll('button:not([disabled])').length||1;ui.menuIdx=((ui.menuIdx||0)+(dy||dx)+n)%n;return}
   if(engOn()){engNav(dx,dy);return}
+  if(ui.deco&&ui.deco.pop&&ui.deco.pop.move&&dy){ui.deco.pop.move(dy);return}   // moving a charm
   if(padRoots()){padMove(dx,dy);return}
   if(ui.game){gameInput('dir',dx,dy);return}
   if(ui.view==='stats'){if(dx)ui.page=(ui.page+(dx>0?1:statPages()-1))%statPages();return}
@@ -3247,7 +3280,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(engOn()){engChoose();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='finds'){openZoom('finds');return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(engOn()){engCancel();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){if(!decoBack())closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.pop){popClose();return}if(engOn()){engCancel();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b)decoLeave(()=>{ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}});return}if(ui.deco){if(ui.deco.tab==='home')closeDeco();else decoLeave(()=>openDeco('home'));return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
