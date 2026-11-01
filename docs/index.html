@@ -1340,7 +1340,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · b4f6b6',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · bd1875',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2784,10 +2784,8 @@ function padMove(dx,dy){document.body.classList.add('padvis');const cur=padCur()
   if(!best)return;ui.padKey=padKey(best);padShow();best.scrollIntoView({block:'nearest',inline:'nearest'});
   if(ui.deco)decoPreview(best)}
 function padChoose(){document.body.classList.add('padvis');const el=padCur();if(!el)return;ui.padKey=padKey(el);ui.padChoosing=true;try{el.click()}finally{ui.padChoosing=false}requestAnimationFrame(padShow)}
-// In decorating, a tap on a card works like the d-pad: it moves the cursor there and tries the item on; 선택 (or a
-// second tap on the same card) applies it or opens a shape's colours. The engraving's letter keys still type at once
-addEventListener('click',e=>{if(!ui.deco||ui.padChoosing||ui.deco.tab==='charm')return;const b=e.target.closest('#decoPanel .pxcardbig');if(!b||b.disabled)return;
-  if(ui.padKey===padKey(b))return;e.stopPropagation();e.preventDefault();document.body.classList.add('padvis');ui.padKey=padKey(b);padShow();decoPreview(b)},true);
+// In decorating, the d-pad tries things on as the cursor moves and 선택 keeps them; a finger tap keeps at once.
+// A locked card only ever tries on (tapping it shows how it opens).
 // in decorating, any press on a choice (select or a tap) keeps it
 function decoKept(){if(ui.deco)ui.deco.keep=decoKeep()}
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('.controls'))document.body.classList.remove('padvis')},true);
@@ -2820,6 +2818,7 @@ function charmMove(id){const step=d=>{const eq=g.equip,i=eq.indexOf(id),j=i+d;if
 const engNorm=v=>((v??ENG_DEFAULT).trimEnd()||ENG_DEFAULT);
 function decoLeave(then){if(!ui.deco)return then();
   if(ui.deco.tab==='eng'&&engNorm(g.engrave)!==engNorm(ui.engStart))return decoPop('바꾼 각인을 저장할까요?',[['저장하고 나가기',()=>{engSave();then()}],['버리고 나가기',()=>{g.engrave=ui.engStart;applySkin();then()}],['계속 쓰기',null,1]]);
+  if(JSON.stringify(decoKeep())!==JSON.stringify(ui.deco.keep)&&ui.deco.tryLocked){decoPreview(null);return then()}
   if(JSON.stringify(decoKeep())!==JSON.stringify(ui.deco.keep))return decoPop('입어 본 걸 저장할까요?',[['저장',()=>{decoKept();save();then()}],['저장 안 함',()=>{decoPreview(null);then()}]]);
   then()}
 // a small menu on the LCD over the page: the d-pad and fingers stay inside it; 취소 closes it. items: [label, fn, focus?]
@@ -2831,7 +2830,7 @@ function popShow(){const P=$('decoPanel');P.querySelector('.dpop')?.remove();con
   const D=P.querySelector('.dpop');D.style.top=(P.scrollTop+P.clientHeight/2)+'px';
   const f=pop.items.findIndex(x=>x[2]);ui.padKey=padKey(P.querySelector(`[data-pop="${f<0?0:f}"]`));padShow()}
 function popClose(){if(!ui.deco||!ui.deco.pop)return;ui.deco.pop=null;$('decoPanel').querySelector('.dpop')?.remove();ui.padKey=null;if(ui.deco.tab)renderScreen(ui.deco.tab,$('decoPanel'))}
-function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);$('decoPanel').querySelectorAll('.trying').forEach(x=>x.classList.remove('trying'));if(el&&!el.closest('.dpop')&&el.matches('.pxcardbig')&&el.getAttribute('aria-pressed')!=='true'&&!el.dataset.shape&&!el.dataset.shapeback&&!el.dataset.charm&&!el.dataset.charmlock)el.classList.add('trying');
+function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);ui.deco.tryLocked=!!(el&&el.dataset.lock);$('decoPanel').querySelectorAll('.trying').forEach(x=>x.classList.remove('trying'));if(el&&!el.closest('.dpop')&&el.matches('.pxcardbig')&&el.getAttribute('aria-pressed')!=='true'&&!el.dataset.shape&&!el.dataset.shapeback&&!el.dataset.charm&&!el.dataset.charmlock)el.classList.add('trying');
   if(el&&el.dataset.hat!==undefined)g.hat=el.dataset.hat||null;if(el&&el.dataset.patshow)g.accOff=el.dataset.patshow==='0';
   if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin;g.btnColor=null}
   if(el&&el.dataset.bg)g.bg=el.dataset.bg;if(el&&el.dataset.btnst)g.btnStyle=el.dataset.btnst;if(el&&el.dataset.lcd)g.lcd=el.dataset.lcd;if(el&&el.dataset.btnc)g.btnColor=el.dataset.btnc==='case'?null:el.dataset.btnc;applySkin()}
