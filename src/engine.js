@@ -32,7 +32,7 @@ for(const l in LINES)for(const a in ANIMALS){SP[l+'_'+a]={ko:LINES[l].pre+ANIMAL
 DEX.push('star');
 const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
 // heirloom patterns, drawn into the body by the screen
-const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
+const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','이마 번개'];
 // Things the pet brings home: [id, name, weight]. Now and then (about once or twice a day, no notification) one lies
 // next to the pet; a tap picks it up into the collection (g.finds, kept across pets). Gem and clover are rare.
 const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],

@@ -729,7 +729,7 @@ for(const l in LINES)for(const a in ANIMALS){SP[l+'_'+a]={ko:LINES[l].pre+ANIMAL
 DEX.push('star');
 const STAGE_KO={baby:'아기',child:'꼬마',teen:'청소년'};
 // heirloom patterns, drawn into the body by the screen
-const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','왕점'];
+const PATTERNS=['줄무늬','이마 별','이마 하트','볼 터치','이마 번개'];
 // Things the pet brings home: [id, name, weight]. Now and then (about once or twice a day, no notification) one lies
 // next to the pet; a tap picks it up into the collection (g.finds, kept across pets). Gem and clover are rare.
 const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분꽃',5],['acorn','도토리',8],['acornS','작은 도토리',8],
@@ -1344,7 +1344,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 812a1f',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · d1e4b3',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2458,7 +2458,9 @@ function charmCanvas(cv,c,k,locked=false,unit=3.8){
 /* heirlooms are marks drawn into the body (stripes, a forehead star, spots), not items floating overhead */
 // marks are worked out once on the base sprite and reused for its mood variants, so they stay put when the face changes
 const STAMPS={'이마 별':[['..#..','..#..','#####','.###.','.#.#.'],['..#..','#####','.###.','.#.#.'],['..#..','#####','.#.#.']],
-  '이마 하트':[['##.##','#####','.###.','..#..'],['#.#','###','.#.']]};
+  '이마 하트':[['##.##','#####','.###.','..#..'],['#.#','###','.#.']],
+  // took the place of 왕점 (a round spot read as a hole, an eye patch as a broken face)
+  '이마 번개':[['..##','.##.','####','.##.','##..'],['.#','##','#.']]};
 function patPoints(s,id){
   const {w:W,h:H,rows}=s,on=(r,c)=>r>=0&&r<H&&c>=0&&c<W&&rows[r][c]==='#';
   // free: ink whose 8 neighbours are ink too, so a carved mark is always framed by ink and never touches the eyes
@@ -2517,20 +2519,6 @@ function patPoints(s,id){
       // faces are drawn a pixel off-centre now and then, so the mirror may slide by one
       for(const sl of[0,-1,1]){const r0=Math.round(2*axis-(l0+len-1))+sl,Rc=[...Array(len)].map((_,i)=>r0+i);
         if(r0>l0+len&&ok(Rc)){[...Lc,...Rc].forEach(c=>pts.push([row,c]));return pts}}}
-    return pts}
-  if(id==='왕점'){
-    // a puppy's eye patch: a round light patch around the left eye, with the eye itself inked in it ([r,c,1] = fill).
-    // (a spot in the middle of the forehead read as a hole or a third eye.) The outline and the mouth are left alone
-    const eb=blobs.filter(b=>b.length<=12).map(b=>({b,top:Math.min(...b.map(p=>p[0])),c:b.reduce((a,p)=>a+p[1],0)/b.length})).filter(e=>e.c<W/2).sort((a,b)=>a.top-b.top)[0];
-    if(eb){const own=new Set(eb.b.map(([r,c])=>r*W+c)),ey=eb.b.reduce((a,p)=>a+p[0],0)/eb.b.length;
-      const near=(r,c,set,skip)=>{for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const k=(r+dr)*W+c+dc;if(set.has(k)&&!(skip&&skip.has(k)))return true}return false};
-      const cut=[];for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(on(r,c)&&Math.hypot(r-ey,c-eb.c)<=2.6&&!near(r,c,out)&&!near(r,c,hole,own))cut.push([r,c]);
-      if(cut.length>=6){cut.forEach(p=>pts.push(p));eb.b.forEach(([r,c])=>pts.push([r,c,1]));return pts}}
-    // no eyes to go by (the heirloom box's blob has them, so this is rare): one round spot on the upper body
-    for(const st of[['.##.','####','####','.##.'],['.##.','####','.##.'],['##','##']]){const sh=st.length;
-      const cand=[];for(let r=top;r<=bot-sh+1;r++)for(let c=1;c<W-4;c++)
-        if(fits(st,r,c)&&st.every((row,i)=>[...row].every((ch,j)=>ch!=='#'||!nearHole(r+i,c+j,1))))cand.push([r,c]);
-      if(cand.length){const [r,c]=cand.sort((a,b)=>(a[0]-b[0])||(Math.abs(a[1]+2-cx*.6)-Math.abs(b[1]+2-cx*.6)))[0];carve(st,r,c);return pts}}
     return pts}
   return pts}
 const PAT_CACHE=new Map();
@@ -2591,7 +2579,7 @@ function festDraw(P,c){const f=fest();if(!f||g.sleeping)return;const t=c.t,k=f.k
 const VISIT_TAG='MGVISIT1:',VISIT_URL='https://aiden-mklee.github.io/mangopet/#visit=';
 function visitCode(){const sp=g.stage==='adult'?g.species:g.stage;return VISIT_TAG+btoa(unescape(encodeURIComponent(JSON.stringify({s:sp,n:g.name||'',a:g.acc&&!g.accOff?g.acc:'',h:g.hat||''})))).replace(/=+$/,'')}
 function readVisit(code){try{const m=String(code).trim().match(/MGVISIT1:([A-Za-z0-9+/]+)/);if(!m)return null;const d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
-  if(!S[d.s]||!(SP[d.s]||STAGE_KO[d.s]))return null;return {s:d.s,n:cleanName(d.n),a:E.PATTERNS.includes(d.a)?d.a:'',h:HATS.some(h=>h.id===d.h)?d.h:''}}catch(e){return null}}
+  if(!S[d.s]||!(SP[d.s]||STAGE_KO[d.s]))return null;return {s:d.s,n:cleanName(d.n),a:E.PATTERNS.includes(toPat(d.a))?toPat(d.a):'',h:HATS.some(h=>h.id===d.h)?d.h:''}}catch(e){return null}}
 function welcomeGuest(v){if(g.phase!=='alive')return false;g.guest={...v,until:g.t+1440};const who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');diaryNote('guest',who);save();
   talk(`🐾 ${who}${josa(who,'이','가')} 놀러 왔어요!`);return true}
 function guestSprite(){const v=g.guest,b=S[v.s];let o=v.a?patterned(b,b,v.a):b;const h=v.h&&HATS.find(x=>x.id===v.h);return h?hatted(o,h):o}
@@ -2740,7 +2728,7 @@ const PAT_BLOB={w:12,h:12,rows:['...######...','.##########.','.##########.','##
 const ACC=E.PATTERNS.map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
 // saves from before patterns carried items (리본, 모자 …): fold them into the three patterns
 const LEGACY_ACC=['리본','안경','모자','꽃','목도리','왕관'];
-const toPat=n=>{const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
+const toPat=n=>{if(n==='왕점')return '이마 번개';const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
 const pxIcon=(cv,rows,col)=>{const P=new Pix(rows[0].length,rows.length);P.spr({w:rows[0].length,h:rows.length,rows},0,0);P.paint(cv,{on:col,cell:Math.max(2,Math.round(2*(window.devicePixelRatio||1))),gap:0})};
 function buildDevBtns(){
   pxIcon($('zoomBtn').querySelector('canvas'),['.###....','#...#...','#...#...','#...#...','.###....','....##..','.....##.','......##'],COL.ink);
@@ -3386,7 +3374,7 @@ function showAd(cb){
 }
 
 /* ---------- boot ---------- */
-if(g.acc)g.acc=toPat(g.acc);if(g.lastAcc)g.lastAcc=toPat(g.lastAcc);if(g.heirBox)g.heirBox=[...new Set(g.heirBox.map(toPat))];if(g.pendingHeir&&g.pendingHeir.acc)g.pendingHeir.acc=toPat(g.pendingHeir.acc);
+if(g.acc)g.acc=toPat(g.acc);(g.hist||[]).forEach(h=>{if(h.acc)h.acc=toPat(h.acc)});if(g.lastAcc)g.lastAcc=toPat(g.lastAcc);if(g.heirBox)g.heirBox=[...new Set(g.heirBox.map(toPat))];if(g.pendingHeir&&g.pendingHeir.acc)g.pendingHeir.acc=toPat(g.pendingHeir.acc);
 if(g.intro==null)g.intro=g.phase==='select'&&!(g.hist||[]).length&&!(g.charms||[]).length?'case':'done';
 buildIcons();buildStatic();applySkin();buildDevBtns();drawCharms();
 if(g.intro==='case'||g.intro==='life')openZoom('intro-'+g.intro);else if(g.intro==='charm')openZoom('intro-charm');
