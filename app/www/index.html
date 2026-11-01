@@ -1346,7 +1346,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · ce1e7b',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · 807b83',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -3385,6 +3385,10 @@ if(g.intro==null)g.intro=g.phase==='select'&&!(g.hist||[]).length&&!(g.charms||[
 buildIcons();buildStatic();applySkin();buildDevBtns();drawCharms();
 if(g.intro==='case'||g.intro==='life')openZoom('intro-'+g.intro);else if(g.intro==='charm')openZoom('intro-charm');
 tick();scheduleSoon();if(Native&&!g.notifAsked&&g.intro==='done')askNotifPermission(false);
+// test mode loads the game from GitHub Pages, which lets a copy be reused for 10 minutes: on opening, ask for the page
+// afresh and, if it's a newer game, load that one (under a new address, so no stored copy can stand in)
+if(location.protocol==='https:'&&/app\.html$/.test(location.pathname))fetch(location.pathname,{cache:'no-store'}).then(r=>r.text()).then(t=>{
+  const m=t.match(/const VERSION='([^']*)'/);if(m&&m[1]!==VERSION){save(true);noSave=true;location.replace(location.pathname+'?v='+Date.now())}}).catch(()=>{});
 // fit the whole device into the screen height
 function fitWindow(){const fw=document.querySelector('.flipwrap');fw.style.zoom=1;const tot=document.querySelector('.phone').scrollHeight,own=fw.getBoundingClientRect().height+44;
   // while the decorating sheet is open, shrink the device into the space above it so it stays a live preview

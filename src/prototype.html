@@ -3038,6 +3038,10 @@ if(g.intro==null)g.intro=g.phase==='select'&&!(g.hist||[]).length&&!(g.charms||[
 buildIcons();buildStatic();applySkin();buildDevBtns();drawCharms();
 if(g.intro==='case'||g.intro==='life')openZoom('intro-'+g.intro);else if(g.intro==='charm')openZoom('intro-charm');
 tick();scheduleSoon();if(Native&&!g.notifAsked&&g.intro==='done')askNotifPermission(false);
+// test mode loads the game from GitHub Pages, which lets a copy be reused for 10 minutes: on opening, ask for the page
+// afresh and, if it's a newer game, load that one (under a new address, so no stored copy can stand in)
+if(location.protocol==='https:'&&/app\.html$/.test(location.pathname))fetch(location.pathname,{cache:'no-store'}).then(r=>r.text()).then(t=>{
+  const m=t.match(/const VERSION='([^']*)'/);if(m&&m[1]!==VERSION){save(true);noSave=true;location.replace(location.pathname+'?v='+Date.now())}}).catch(()=>{});
 requestAnimationFrame(loop);
 })();
 </script>
