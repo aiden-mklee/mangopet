@@ -235,7 +235,7 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .englock{text-align:center;padding-top:28%;line-height:1.7}.englock b{font-size:26px;display:block;margin-bottom:6px}.englock p{margin:0}
 .engkeys{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px}
 .engkeys .pxbtn{padding:2px 0;font-size:12px;min-width:0;text-align:center}
-.engkeys .wide{grid-column:span 4}
+.engkeys .wide{grid-column:span 4}.engkeys .full{grid-column:1/-1}
 .decobox .pxbtn{font-size:11px;padding:2px 6px;background:#f8f6ee;color:#24262b;border-color:#24262b;box-shadow:none}
 .decobox .pxbtn[aria-pressed="true"]{background:#24262b;color:#f8f6ee}
 .decobox .dclose{margin-left:auto}
@@ -1268,6 +1268,13 @@ function lockOf(kind,id){if(ui.unlockAll)return null;const r=(UNLOCK[kind]||{})[
 const engChars=()=>[...(g.engrave??ENG_DEFAULT).padEnd(8,' ').slice(0,8)];
 function engSet(i,c){const a=engChars();a[i]=c;g.engrave=a.join('');applySkin();save()}
 const engOn=()=>ui.deco&&ui.deco.tab==='eng'&&!lockOf('eng','eng');
+// the phone keyboard for the engraving: a nearly invisible field takes the typing and writes a new engraving; letters are upper-cased and anything
+// the case can't print is dropped, eight at most
+function engKeyboard(){let f=$('engField');if(!f){f=document.createElement('input');f.id='engField';f.autocapitalize='characters';f.autocomplete='off';f.spellcheck=false;
+    f.setAttribute('enterkeyhint','done');f.style.cssText='position:fixed;left:50%;top:30%;width:2px;height:2px;opacity:.01;font-size:16px;border:0;padding:0';document.body.append(f);
+    f.oninput=()=>{const v=[...f.value.toUpperCase()].filter(c=>ENG_KEYS.includes(c)).join('').slice(0,8);f.value=v;g.engrave=v;ui.engPos=Math.min(7,v.length);applySkin();save();if(engOn())renderScreen('eng',$('decoPanel'))};
+    f.onkeydown=e=>{if(e.key==='Enter')f.blur()};f.onblur=()=>f.remove()}
+  f.value='';f.focus()}   // starts empty: what's typed becomes the engraving (closing without typing keeps the old one)
 // ⌫ (and 취소): clears the slot, or the one before it when it's already empty
 function engDel(){const c=engChars(),pos=ui.engPos||0;let i=pos;if(c[i]===' '&&i>0)i--;engSet(i,' ');ui.engPos=i}
 function engNav(dx,dy){const pos=ui.engPos||0;
@@ -1301,7 +1308,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 028c0d',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · ff3a59',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2761,6 +2768,11 @@ const DECO_DESC={egg:'둥근 알 모양',square:'네모난 게임기',mini:'작�
 // moving the cursor onto a case, background or button style tries it on the whole device; select keeps it,
 // and leaving it (another tab, the end, cancel) puts back what was kept
 const decoKeep=()=>({shape:g.shape,skin:g.skin,bg:g.bg,btnStyle:g.btnStyle,lcd:g.lcd,btnColor:g.btnColor,hat:g.hat,accOff:g.accOff});
+// 취소 in 꾸미기 steps back instead of leaving at once: something tried on → put back the saved look (cursor on it);
+// nothing tried on → close
+function decoBack(){if(JSON.stringify(decoKeep())===JSON.stringify(ui.deco.keep))return false;decoPreview(null);
+  const on=$('decoPanel').querySelector('.pxcardbig[aria-pressed="true"]');ui.padKey=on?padKey(on):null;padShow();
+  $('dname').textContent='원래대로 돌려 놨어요';$('ddesc').textContent='취소를 한 번 더 누르면 꾸미기를 닫아요';return true}
 function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);
   if(el&&el.dataset.hat!==undefined)g.hat=el.dataset.hat||null;if(el&&el.dataset.patshow)g.accOff=el.dataset.patshow==='0';
   if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin;g.btnColor=null}
@@ -2874,8 +2886,9 @@ function renderScreenIn(tab,el){
     el.innerHTML=`<div class="engbig"><div class="engarr">${ch.map((_,i)=>col(i)).join('')}</div>
       <div class="engslots">${ch.map((c,i)=>`<span data-engslot="${i}" class="${i===pos?'cur':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
       <div class="engarr">${ch.map((_,i)=>`<span>${i===pos?'▼':''}</span>`).join('')}</div></div>
-      <div class="engkeys">${ENG_KEYS.map(k=>`<button class="pxbtn" data-ch="${k}">${k===' '?'␣':k}</button>`).join('')}
+      <div class="engkeys"><button class="pxbtn full" data-engkb>휴대폰 키보드로 쓰기</button>${ENG_KEYS.map(k=>`<button class="pxbtn" data-ch="${k}">${k===' '?'␣':k}</button>`).join('')}
       <button class="pxbtn wide" data-engdel>⌫ 지우기</button><button class="pxbtn wide" data-engreset>처음으로</button></div>`;
+    el.querySelector('[data-engkb]').onclick=engKeyboard;
     el.querySelector('.engkeys').scrollTop=st;   // typing keeps the board where the finger is
     $('dname').textContent='각인 · 영문 8자';$('ddesc').textContent='◀ ▶ 칸 · ▲ ▼ 글자 · 선택 다음 칸 · 취소 지우기';
     el.querySelectorAll('[data-engslot]').forEach(b=>b.onclick=()=>{ui.engPos=+b.dataset.engslot;renderScreen(tab,el)});
@@ -3202,7 +3215,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(engOn()){engNav(1,0);return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='finds'){openZoom('finds');return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(engOn()){engDel();renderScreen('eng',$('decoPanel'));return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(engOn()){engDel();renderScreen('eng',$('decoPanel'));return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.deco){if(!decoBack())closeDeco();return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
@@ -3210,7 +3223,11 @@ document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return
   // below the screen is where thumbs work the d-pad and buttons: a slip onto the shell there changes nothing
   if(t.closest('#shell')&&(ui.deco.tab==='eng'||e.clientY>document.querySelector('#shell .face').getBoundingClientRect().bottom))return;
   openDeco(t.closest('#shell')?'case':'bg')});
-document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{const [x,y]=b.dataset.nav.split(',').map(Number);nav(x,y)});
+document.querySelectorAll('[data-nav]').forEach(b=>{const [x,y]=b.dataset.nav.split(',').map(Number);let hold=0,rep=0,held=false;
+  const stop=()=>{clearTimeout(hold);clearInterval(rep)};
+  b.onpointerdown=()=>{held=false;stop();if(!engOn())return;hold=setTimeout(()=>{held=true;nav(x,y);rep=setInterval(()=>{if(engOn())nav(x,y);else stop()},90)},380)};
+  b.onpointerup=b.onpointerleave=b.onpointercancel=stop;
+  b.onclick=()=>{if(held){held=false;return}nav(x,y)}});
 document.addEventListener('keydown',e=>{
   if(e.target.closest('input,textarea'))return;
   const K={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
