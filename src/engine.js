@@ -45,7 +45,7 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['snail','달팽이 껍데기',5],['ladybug','무당벌레',4],['worm','지렁이',4],
   // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
-  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['chestnut','밤',0,[9,10,11]]];
+  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['persimmon','감',0,[9,10,11]]];
 const SEASON_W=10;
 // the groups of the collection; filling one gives its keyring charm. Ten kinds give the loupe, every everyday find (not the
 // seasonal ones) the shining jewel
@@ -53,7 +53,7 @@ const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunf
   ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover'],'feather'],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap'],'acorn'],
   ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit'],'ring'],
   ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone'],'key'],['작은 친구',['snail','ladybug','worm'],'ladybug'],
-  ['계절',['petal','shell','melon','conch','maple','chestnut','pinecone','snow'],'maple']];
+  ['계절',['petal','shell','melon','conch','maple','persimmon','pinecone','snow'],'maple']];
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;

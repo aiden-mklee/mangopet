@@ -954,6 +954,7 @@ const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
 let g=fresh();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase){g=Object.assign(fresh(),s);if(s.intro==null)g.intro=null}}catch(e){}
+if(g.finds&&g.finds.chestnut){g.finds.persimmon=(g.finds.persimmon||0)+g.finds.chestnut;delete g.finds.chestnut}if(g.found==='chestnut')g.found='persimmon';
 // saves from before the engine had no random seed
 if(typeof g.seed!=='number')g.seed=Math.floor(Math.random()*2**32);
 {const old={sun:'sun',moon:'moon',tofu:'chub',wild:'wild'};if(old[g.species])g.species=old[g.species]+'_'+(ANIMAL_OF[g.con]||'bear');
@@ -2236,7 +2237,8 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   sock:['.###','.###','.###','####','###.'],dice:['#####','#.#.#','##.##','#.#.#','#####'],bone:['##...##','.#####.','##...##'],
   snail:['..###..','.#...#.','.#.#.#.','.#..##.','#######'],ladybug:['.#.#.','#####','##.##','#####','.###.'],worm:['#.....','##..##','.####.'],
   snow:['#.#.#','.###.','##.##','.###.','#.#.#'],melon:['#######','##.#.##','.#####.','..###..','...#...'],conch:['..#..','.##..','#.##.','##.##','.####'],
-  chestnut:['..#..','.###.','#####','#####','.###.']};
+  // 감, not 밤: a chestnut's mound read as a poop on the LCD
+  persimmon:['.#.#.#.','..###..','.#####.','##.####','#######','.#####.']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
 // the 주운 것 tab, in the engine's groups (filling one gives its charm)
