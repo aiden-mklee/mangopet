@@ -100,7 +100,7 @@ addEventListener('resize',fitWindow);setTimeout(fitWindow,50);setTimeout(fitWind
 PLUGINS = (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js'),
            ('share/dist/plugin.js', 'share.js'), ('haptics/dist/plugin.js', 'haptics.js'),
            ('splash-screen/dist/plugin.js', 'splash-screen.js'), ('synapse/dist/synapse.js', 'synapse.js'),
-           ('filesystem/dist/plugin.js', 'filesystem.js'))
+           ('filesystem/dist/plugin.js', 'filesystem.js'), ('app/dist/plugin.js', 'app.js'), ('preferences/dist/plugin.js', 'preferences.js'))
 
 
 def native(s):
@@ -214,7 +214,9 @@ self.addEventListener('fetch',e=>{{if(e.request.method!=='GET')return;
 
 
 LICENSES = [('Galmuri11', '글꼴 · 화면 속 한글', 'Galmuri-OFL.md'), ('Silkscreen', '글꼴 · 영문 픽셀 글씨', 'Silkscreen-OFL.txt'),
-            ('Capacitor와 공식 플러그인', '앱 껍데기 (core, local-notifications, share, haptics, splash-screen, filesystem)', 'Capacitor-MIT.txt')]
+            ('Capacitor와 공식 플러그인', '앱 껍데기 (core, local-notifications, share, haptics, splash-screen, filesystem, app, preferences)', 'Capacitor-MIT.txt'),
+            ('Synapse (Ionic)', '파일 저장 플러그인이 쓰는 연결 라이브러리', 'Synapse-MIT.md'),
+            ('AndroidX', '안드로이드 앱의 기본 라이브러리 (Google)', 'AndroidX-Apache-2.0.txt')]
 
 
 def licenses_page():

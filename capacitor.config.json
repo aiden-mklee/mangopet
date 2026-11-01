@@ -10,7 +10,8 @@
   },
   "plugins": {
     "LocalNotifications": {
-      "iconColor": "#F6C64E"
+      "iconColor": "#F6C64E",
+      "smallIcon": "ic_stat_mango"
     },
     "SplashScreen": {
       "launchShowDuration": 1500,

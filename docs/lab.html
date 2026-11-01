@@ -1321,12 +1321,12 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 0ef62a',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0 · 2419fa',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
 let g=fresh();
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase){g=Object.assign(fresh(),s);if(s.intro==null)g.intro=null}}catch(e){}
+let hadSave=false;try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase){hadSave=true;g=Object.assign(fresh(),s);if(s.intro==null)g.intro=null}}catch(e){}
 if(g.finds&&g.finds.chestnut){g.finds.persimmon=(g.finds.persimmon||0)+g.finds.chestnut;delete g.finds.chestnut}if(g.found==='chestnut')g.found='persimmon';
 // saves from before the engine had no random seed
 if(typeof g.seed!=='number')g.seed=Math.floor(Math.random()*2**32);
@@ -3018,7 +3018,7 @@ function renderScreenIn(tab,el){
     // wiping everything: the save, then the phone's pending notifications, then a fresh start
     const wp=el.querySelector('[data-wipe]');if(wp)wp.onclick=()=>{ui.wipeAsk=true;renderScreen(tab,el)};
     const wn=el.querySelector('[data-wipe-no]');if(wn)wn.onclick=()=>{ui.wipeAsk=false;renderScreen(tab,el)};
-    const wg=el.querySelector('[data-wipe-go]');if(wg)wg.onclick=async()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}
+    const wg=el.querySelector('[data-wipe-go]');if(wg)wg.onclick=async()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}try{if(Prefs)await Prefs.remove({key:KEY})}catch(e){}
       const LN=Native&&Native.LocalNotifications;if(LN)try{const p=await LN.getPending();if(p.notifications.length)await LN.cancel({notifications:p.notifications.map(n=>({id:n.id}))})}catch(e){}
       location.reload()};
     const bm=el.querySelector('[data-bm]'),bdd=el.querySelector('[data-bd]');if(bm)bm.onchange=bdd.onchange=()=>{g.birthday=bm.value&&bdd.value?bm.value+'-'+bdd.value:null;save()};
@@ -3154,7 +3154,11 @@ function loop(){
   requestAnimationFrame(loop);
 }
 let noSave=false;
-function save(){if(noSave)return;g.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(g))}catch(e){}}
+function save(force){if(noSave)return;g.savedAt=Date.now();const j=JSON.stringify(g);try{localStorage.setItem(KEY,j)}catch(e){}prefSave(j,force)}
+// a second copy in the app's own storage (Capacitor Preferences): the web view's storage can be cleared by the system now
+// and then. Written at most every 10 seconds, and always when the app goes away; read back only when the web view has none
+let prefAt=0;
+function prefSave(j,force){if(!Prefs||(!force&&Date.now()-prefAt<10000))return;prefAt=Date.now();Prefs.set({key:KEY,value:j}).catch(()=>{})}
 // moving a save between phones: the whole state (minus the notification log) as one text code
 // Graduation card: a 1080 × 1350 picture of the graduate on an LCD panel, with its name, stars and days,
 // to keep or send to friends. Drawn with the same pixel look as the screen.
@@ -3210,6 +3214,13 @@ const Native=window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacit
 // newer shell plugins: only used when the installed app has them (an older install keeps working without)
 const hasPlugin=n=>!!(Native&&window.Capacitor.isPluginAvailable&&window.Capacitor.isPluginAvailable(n));
 const Haptics=hasPlugin('Haptics')&&window.capacitorHaptics?window.capacitorHaptics.Haptics:null;
+const Prefs=hasPlugin('Preferences')&&window.capacitorPreferences?window.capacitorPreferences.Preferences:null;
+const AppPl=hasPlugin('App')&&window.capacitorApp?window.capacitorApp.App:null;
+// the web view lost its save but the app kept a copy: put it back and start again from it
+if(Prefs&&!hadSave)Prefs.get({key:KEY}).then(r=>{try{const s=r&&r.value&&JSON.parse(r.value);if(s&&s.phase){noSave=true;localStorage.setItem(KEY,r.value);location.reload()}}catch(e){}}).catch(()=>{});
+// Android's back button works like 취소 while anything is open, and otherwise sends the app to the background (not quit)
+if(AppPl)AppPl.addListener('backButton',()=>{const open=ui.deco||!$('zoom').hidden||ui.flipped||ui.menuOpen||ui.game||ui.view!=='main'||!$('talkBox').hidden;
+  if(open)cancel_();else AppPl.minimizeApp().catch(()=>{})});
 const AppShare=hasPlugin('Share')&&hasPlugin('Filesystem')&&window.capacitorShare&&window.capacitorFilesystemPluginCapacitor?
   {Share:window.capacitorShare.Share,Filesystem:window.capacitorFilesystemPluginCapacitor.Filesystem,Directory:window.capacitorFilesystemPluginCapacitor.Directory}:null;
 if(hasPlugin('SplashScreen')&&window.capacitorSplashScreen)window.capacitorSplashScreen.SplashScreen.hide().catch(()=>{});
@@ -3237,13 +3248,13 @@ async function scheduleAhead(){const LN=Native&&Native.LocalNotifications;if(!LN
   schedBusy=false;if(schedAgain){schedAgain=false;scheduleAhead()}}
 const scheduleSoon=()=>{clearTimeout(schedTimer);schedTimer=setTimeout(scheduleAhead,1500)};
 setInterval(()=>{if(!document.hidden)scheduleAhead()},60000);
-addEventListener('pagehide',()=>{save();scheduleAhead()});
+addEventListener('pagehide',()=>{save(true);scheduleAhead()});
 // ask once on the first launch of the app; the settings screen can ask again
 const isAndroid=()=>!!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='android');
 async function askNotifPermission(loud){const LN=Native&&Native.LocalNotifications;if(!LN){if(loud)banner(Native?'⚠️ 알림 기능을 찾지 못했어요':'웹에서는 알림이 없어요');return}
   try{const r=await LN.requestPermissions();g.notifAsked=true;save();if(loud)banner(r.display==='granted'?'🔔 알림이 켜져 있어요':isAndroid()?'🔕 휴대폰 설정 → 애플리케이션 → 망고펫 → 알림에서 켜 주세요':'🔕 아이폰 설정 → 망고펫 → 알림에서 켜 주세요')}
   catch(e){if(loud)banner('⚠️ 알림 오류: '+(e&&e.message||e))}}
-document.addEventListener('visibilitychange',()=>{if(document.hidden){save();scheduleAhead()}else{tick();moodOnOpen();save();scheduleSoon();ui.doing=null;doingStart()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){save(true);scheduleAhead()}else{tick();moodOnOpen();save();scheduleSoon();ui.doing=null;doingStart()}});
 
 /* ---------- events ---------- */
 function nav(dx,dy){
