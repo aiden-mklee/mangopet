@@ -122,7 +122,7 @@ function newPet(g,mode){
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
 }
 function unlockCharm(g,id,ev){g.charms=g.charms||[];if(g.charms.includes(id))return;g.charms.push(id);g.equip=g.equip||[];if(g.equip.length<3)g.equip.push(id);ev.push({type:'charm',id})}
-function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev)}
+function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev);ev.push({type:'hatched'})}
 function crack(g){g.cracks=(g.cracks||0)+1;return g.cracks}
 function evolve(g,st,ev){
   g.stage=st;g.weight=Math.max(g.weight,baseW(g));
@@ -294,9 +294,8 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 // what happens if nobody opens the app: the notifications that would go out, in order (for scheduling ahead)
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
-  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++){const n=ev.length;step(c,ev);
-    // an egg only hatches with the app open, so a closed app hears once that it's ready, and nothing after that
-    if(ev.slice(n).some(e=>e.type==='hatchReady')){notify(c,'🥚','알이 깨어나려 해요! 열어서 깨워 주세요','life',ev);break}}
+  // with the app closed an egg hatches by itself when it's ready (the screen does the same when it catches up)
+  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
   return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
 }
 // Long absences: after the forecast runs dry (the pet ran away, or nobody opened the app for a week),

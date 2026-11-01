@@ -90,7 +90,7 @@ function comebackCase(){
   const g=E.fresh(31);g.t=7*60;E.newPet(g,'relaxed');E.advance(g,10,[],{autoHatch:true});
   const ahead=E.forecast(g,7*1440);return {ahead:ahead.length,comeback:E.comeBack(g,ahead)};
 }
-// an egg left with the app closed: it only hatches with the app open, so one 'ready' notice and nothing after
+// an egg left with the app closed hatches by itself when ready, and the pet's days go on from there
 function eggCase(){const g=E.fresh(8);g.t=10*60;E.newPet(g,'relaxed');return E.forecast(g,2*1440)}
 const result={engine:'mangopet',cases:CASES.map(c=>({...c,expect:runCase(c)})),forecast:forecastCase(),comeback:comebackCase(),egg:eggCase()};
 if(process.argv.includes('--update')){fs.mkdirSync(path.dirname(FILE),{recursive:true});fs.writeFileSync(FILE,JSON.stringify(result,null,1)+'\n');console.log('wrote',path.relative(process.cwd(),FILE));process.exit(0)}
@@ -102,6 +102,6 @@ const fok=result.forecast.matchesRealRun&&JSON.stringify(want.forecast)===JSON.s
 console.log((fok?'ok  ':'FAIL')+' forecast           → '+result.forecast.forecast.length+' notifications ahead, same as a real run: '+result.forecast.matchesRealRun);
 const cok=JSON.stringify(want.comeback)===JSON.stringify(result.comeback);if(!cok)bad++;
 console.log((cok?'ok  ':'FAIL')+' comeback           → '+result.comeback.comeback.length+' reminders after '+result.comeback.ahead+' forecast notices');
-const eok=JSON.stringify(want.egg)===JSON.stringify(result.egg)&&result.egg.length===1;if(!eok)bad++;
-console.log((eok?'ok  ':'FAIL')+' egg left closed    → '+result.egg.map(n=>n.text).join(', '));
+const eok=JSON.stringify(want.egg)===JSON.stringify(result.egg)&&/깨어났어요/.test((result.egg[0]||{}).text);if(!eok)bad++;
+console.log((eok?'ok  ':'FAIL')+' egg left closed    → '+result.egg.slice(0,2).map(n=>n.text).join(', ')+` … (${result.egg.length})`);
 process.exit(bad?1:0);

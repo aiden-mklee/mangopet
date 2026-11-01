@@ -769,7 +769,7 @@ function newPet(g,mode){
   g.acc=H&&rand(g)<.6?H.acc:rand(g)<.1?pick(g,PATTERNS):null;g.accOff=false;
 }
 function unlockCharm(g,id,ev){g.charms=g.charms||[];if(g.charms.includes(id))return;g.charms.push(id);g.equip=g.equip||[];if(g.equip.length<3)g.equip.push(id);ev.push({type:'charm',id})}
-function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev)}
+function hatch(g,ev){if((g.gen||1)>=2)unlockCharm(g,'tag',ev);g.phase='alive';g.stage='baby';g.con=pick(g,Object.keys(CON));notify(g,'🐣','알이 깨어났어요!','life',ev);ev.push({type:'hatched'})}
 function crack(g){g.cracks=(g.cracks||0)+1;return g.cracks}
 function evolve(g,st,ev){
   g.stage=st;g.weight=Math.max(g.weight,baseW(g));
@@ -941,9 +941,8 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 // what happens if nobody opens the app: the notifications that would go out, in order (for scheduling ahead)
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
-  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++){const n=ev.length;step(c,ev);
-    // an egg only hatches with the app open, so a closed app hears once that it's ready, and nothing after that
-    if(ev.slice(n).some(e=>e.type==='hatchReady')){notify(c,'🥚','알이 깨어나려 해요! 열어서 깨워 주세요','life',ev);break}}
+  // with the app closed an egg hatches by itself when it's ready (the screen does the same when it catches up)
+  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
   return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
 }
 // Long absences: after the forecast runs dry (the pet ran away, or nobody opened the app for a week),
@@ -1273,7 +1272,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · dc094c',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0 · 95866b',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1298,7 +1297,10 @@ function onEvent(e){
   if(e.type==='graduate'){sfx('grad');const who=g.name||(SP[g.species]?SP[g.species].ko:'');talk(`🎓 ${who}${josa(who,'이','가')} 졸업했어요!`,`도감에 ${e.full?'★★':'★'}로 남았어요 · 앨범에도 한 장`,true)}if(e.type==='charm')sfx('charm');
   // growing up has its own page below (and adult growth may be held in quiet hours), so its notice is skipped here.
   // Big news waits to be read; while catching up after the app was closed, passing needs are left to the screen itself
-  if(e.type==='notice'&&e.sent&&!/자랐어요|졸업했어요|졸업을 축하해/.test(e.text)){const t=e.icon?`${e.icon} ${e.text}`:e.text;if(e.kind==='life')talkNotice(t,true);else if(!ui.catching)talkNotice(t)}
+  // hatched while the app was closed: named now, and said once together (not the notice and the name separately)
+  if(e.type==='hatched'&&ui.catching&&g.intro==='egg'){introTo('meal');return}   // the first egg, mid-guide: the guide just goes on
+  if(e.type==='hatched'&&ui.catching&&!g.name){giveName();talk('🐣 그사이 알이 깨어났어요!',`이름은 ${g.name}! 설정 › 아이 이름에서 바꿀 수 있어요`,true);return}
+  if(e.type==='notice'&&e.sent&&!(ui.catching&&/알이 깨어났어요/.test(e.text))&&!/자랐어요|졸업했어요|졸업을 축하해/.test(e.text)){const t=e.icon?`${e.icon} ${e.text}`:e.text;if(e.kind==='life')talkNotice(t,true);else if(!ui.catching)talkNotice(t)}
   else if(e.type==='hatchReady'){if(!(ui.anim&&ui.anim.type==='hatch'))ui.anim={type:'hatch',start:now(),dur:1500}}
   else if(e.type==='evolve'){
     // the growing-up show (see drawPet): when it happened while the app was closed it waits a beat, so it's seen on opening.
@@ -1343,7 +1345,7 @@ const graduate=full=>run(E.graduate,full);
 const needList=()=>E.needList(g),needsCall=()=>E.needsCall(g),nm=()=>E.nm(g),check=()=>E.visit(g);
 const unlockCharm=id=>run(E.unlockCharm,id);
 const stepMinute=()=>run(E.step);
-function advance(min){const ev=[];E.advance(g,min,ev);ev.forEach(onEvent)}
+function advance(min){const ev=[];E.advance(g,min,ev,{autoHatch:true});ev.forEach(onEvent)}   // the app was closed: an egg hatches by itself
 
 
 /* ---------- notifications ---------- */
