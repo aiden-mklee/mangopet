@@ -228,7 +228,10 @@ body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:col
 .decobox .dtabs{display:flex;gap:4px;flex-wrap:nowrap;margin-bottom:8px}
 /* locked choices: dashed edge, faded picture, a padlock in the corner; the name stays readable */
 .pxcardbig[data-lock]{border-style:dashed}.pxcardbig[data-lock]>*:not(span){opacity:.35}
-.pxcardbig[data-lock]::before{content:"🔒";position:absolute;top:2px;right:3px;font-size:11px;line-height:1}
+/* a pixel padlock in the screen's ink (an emoji came out yellow on the mono LCD) */
+.pxlock,.pxcardbig[data-lock]::before{--lock:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 7 7%27 shape-rendering=%27crispEdges%27%3E%3Crect x=%272%27 y=%270%27 width=%271%27 height=%271%27/%3E%3Crect x=%273%27 y=%270%27 width=%271%27 height=%271%27/%3E%3Crect x=%274%27 y=%270%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%271%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%271%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%272%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%272%27 width=%271%27 height=%271%27/%3E%3Crect x=%270%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%272%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%273%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%274%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%276%27 y=%273%27 width=%271%27 height=%271%27/%3E%3Crect x=%270%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%272%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%274%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%276%27 y=%274%27 width=%271%27 height=%271%27/%3E%3Crect x=%270%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%272%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%274%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%276%27 y=%275%27 width=%271%27 height=%271%27/%3E%3Crect x=%270%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%271%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%272%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%273%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%274%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%275%27 y=%276%27 width=%271%27 height=%271%27/%3E%3Crect x=%276%27 y=%276%27 width=%271%27 height=%271%27/%3E%3C/svg%3E");background:var(--ink);-webkit-mask:var(--lock) 0 0/100% 100% no-repeat;mask:var(--lock) 0 0/100% 100% no-repeat}
+.pxcardbig[data-lock]::before{content:"";position:absolute;top:3px;right:3px;width:7px;height:7px}
+.pxlock{display:block;width:28px;height:28px;margin:0 auto 8px}
 /* engraving: eight slots and a letter board, picked like an old game's name entry */
 .decopanel:has(.engbig){display:flex;flex-direction:column;overflow:hidden}
 .engbig{flex:none;margin-bottom:6px}
@@ -1299,7 +1302,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · b8d4ce',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · 028c0d',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2865,7 +2868,7 @@ function renderScreenIn(tab,el){
     el.querySelectorAll('[data-starter]').forEach(b=>b.onclick=()=>{unlockCharm(b.dataset.starter);g.equip=g.equip||[];if(!g.equip.includes(b.dataset.starter)){if(g.equip.length>=3)g.equip.pop();g.equip.push(b.dataset.starter)}drawCharms();introTo('done')});
     el.querySelectorAll('[data-cc]').forEach(cv=>charmCanvas(cv,CHARMS.find(x=>x.id===cv.dataset.cc),6,false,4.8));
   }
-  if(tab==='eng'&&lockOf('eng','eng')){el.innerHTML=`<div class="englock"><b>🔒</b><p>첫 졸업을 하면<br>내 각인을 새길 수 있어요</p></div>`;return}
+  if(tab==='eng'&&lockOf('eng','eng')){el.innerHTML=`<div class="englock"><i class="pxlock"></i><p>첫 졸업을 하면<br>내 각인을 새길 수 있어요</p></div>`;return}
   // engraving, like an old arcade name entry: ◀ ▶ move between the eight slots, ▲ ▼ turn the letter in the slot, 선택 goes
   // to the next slot. The letter board below is for fingers: a tap puts that letter in the slot and moves on
   if(tab==='eng'){const ch=engChars(),pos=ui.engPos||0,col=i=>`<span>${i===pos?'▲':''}</span>`,kb=el.querySelector('.engkeys'),st=kb?kb.scrollTop:0;
