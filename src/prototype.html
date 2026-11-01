@@ -955,13 +955,15 @@ function engSave(){const v=engChars().join('').trimEnd();g.engrave=v&&v!==ENG_DE
 // where ⌫ starts: a slot picked by hand, else the last letter (so after typing a shorter word, ⌫ clears what's left)
 function engEraseAt(){if(ui.engErase!=null)return ui.engErase;const a=engChars();for(let i=7;i>=0;i--)if(a[i]!==' ')return i;return -1}
 const ENG_ROWS=['slots','kb','tools','keys'];
-function engNav(dx,dy){const row=ui.engRow||'slots',n=ENG_KEYS.length,col=ui.engCol||0;
+// two places the d-pad works in. Above: the slots and the phone keyboard (▲ ▼ swap between them). After picking a slot:
+// the letters and the ⌫ 지우기 · 저장 row above them, as one block where ▲ ▼ wrap round (top ▲ → bottom row, bottom ▼ → top);
+// only 취소 leaves it, back to the slots
+function engNav(dx,dy){const row=ui.engRow||'slots',n=ENG_KEYS.length,col=ui.engCol||0,last=Math.floor((n-1)/8);
   if(dx){if(row==='slots')ui.engCol=(col+dx+8)%8;else if(row==='tools')ui.engTool=ui.engTool?0:1;
     else if(row==='keys'){ui.engKey=((ui.engKey||0)+dx+n)%n;ui.engCol=ui.engKey%8}}
-  else if(dy>0){if(row==='slots')ui.engRow='kb';else if(row==='kb'){ui.engRow='tools';ui.engTool=col<4?0:1}
-    else if(row==='keys')ui.engKey=Math.min(n-1,(ui.engKey||0)+8)}   // ⌫·저장 is the bottom of the top rows
-  else if(dy<0){if(row==='keys'){if(ui.engKey>=8)ui.engKey-=8}   // the top row of letters stays put: 취소 goes back up
-    else if(row==='tools')ui.engRow='kb';else if(row==='kb')ui.engRow='slots'}
+  else if(dy&&(row==='slots'||row==='kb'))ui.engRow=row==='slots'?'kb':'slots';
+  else if(dy&&row==='tools'){const c=ui.engTool?5:2;ui.engRow='keys';ui.engKey=dy>0?c:Math.min(n-1,last*8+c)}
+  else if(dy&&row==='keys'){const k=(ui.engKey||0)+dy*8;if(k<0||k>=n){ui.engRow='tools';ui.engTool=(ui.engKey%8)<4?0:1}else ui.engKey=k}
   renderScreen('eng',$('decoPanel'))}
 function engChoose(){const row=ui.engRow||'slots',tgt=ui.engPos||0;
   if(row==='slots'){ui.engPos=ui.engErase=ui.engCol||0;ui.engPicked=true;ui.engRow='keys';ui.engKey=ui.engPos}   // write from here: down to the letter under it
@@ -970,7 +972,7 @@ function engChoose(){const row=ui.engRow||'slots',tgt=ui.engPos||0;
   else if(row==='tools'){if(engNorm(g.engrave)!==engNorm(ui.engStart)){engSave();openDeco('home');$('dname').textContent='각인을 새겼어요';return}openDeco('home');return}
   else{engSet(tgt,ENG_KEYS[ui.engKey||0]);ui.engPos=Math.min(7,tgt+1);ui.engErase=null}   // typed: ⌫ goes back to erasing from the end
   renderScreen('eng',$('decoPanel'))}
-function engCancel(){if((ui.engRow||'slots')!=='slots'){if(ui.engRow==='keys')ui.engPicked=false;ui.engRow='slots';ui.engCol=ui.engPos||0;renderScreen('eng',$('decoPanel'))}else decoLeave(()=>openDeco('home'))}
+function engCancel(){if((ui.engRow||'slots')!=='slots'){if(ui.engRow!=='kb')ui.engPicked=false;ui.engRow='slots';ui.engCol=ui.engPos||0;renderScreen('eng',$('decoPanel'))}else decoLeave(()=>openDeco('home'))}
 const lockAttr=(kind,id)=>{const l=lockOf(kind,id);return l?` data-lock="${l}"`:''};
 const ENG_KEYS=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789','♥','★','!','?','.','-',':','&','(',')',' ','+'],ENG_DEFAULT='MANGOPET';
 const BTNS=[{id:'case',s:'기본',ko:'케이스에 맞춤',d:'케이스마다 어울리는 색'},{id:'charcoal',ko:'차콜',c:'#2c2e33',d:'단단한 검정'},{id:'cream',ko:'크림',c:'#e6dfcb',d:'부드러운 크림'},
@@ -2401,7 +2403,7 @@ const TAB_ALIAS={lcd:'color',btn:'color',heir:'pet',wear:'pet'};
 function openZoom(tab,sel){tab=TAB_ALIAS[tab]||tab;
   if(ZTABS.deco.some(([k])=>k===tab)){openDeco(tab);return}
   const group=tab.startsWith('intro')?'intro':tab==='card'?'card':tab==='name'?'name':ZTABS.deco.some(([k])=>k===tab)?'deco':'book';
-  if(group==='book')ui.zoomTab=tab;if(sel)ui.dexSel=sel;
+  if(group==='book')ui.zoomTab=tab;if(sel)ui.dexSel=sel;if(group==='book')clearLcd();
   if(group==='deco'&&ui.flipped)flip(false);
   const sheet=group==='deco'||group==='intro'||group==='name',z=$('zoom');z.hidden=false;z.classList.toggle('sheet',sheet);document.body.classList.toggle('sheeted',sheet);
   $('ztabs').innerHTML=group==='card'?'<span class="ztitle">졸업 카드</span><button class="pxbtn" id="zclose">닫기</button>':group==='name'?'<span class="ztitle">이름 바꾸기</span><button class="pxbtn" id="zclose">닫기</button>':group==='intro'?`<span class="ztitle">처음 시작하기 · ${{'intro-case':1,'intro-life':2,'intro-charm':3}[tab]} / 3</span><button class="pxbtn" id="zclose">건너뛰기</button>`
@@ -2414,7 +2416,7 @@ function openZoom(tab,sel){tab=TAB_ALIAS[tab]||tab;
 // the first-run sheets only close by finishing or skipping them (force)
 function closeZoom(force){if(!force&&String(ui.zoomOn).startsWith('intro'))return;$('zoom').hidden=true;ui.zoomOn=null;ui.padKey=null;padShow();if(document.body.classList.contains('sheeted')){document.body.classList.remove('sheeted');dispatchEvent(new Event('resize'))}}
 function flip(on){
-  ui.flipped=on;$('setPanel').hidden=!on;ui.padKey=null;ui.setPage=null;if(on){if(ui.deco)closeDeco();renderScreen('set',$('setPanel'))}else padShow();
+  ui.flipped=on;$('setPanel').hidden=!on;ui.padKey=null;ui.setPage=null;if(on){if(ui.deco)closeDeco();clearLcd();renderScreen('set',$('setPanel'))}else padShow();
   $('flipBtn').querySelector('span').textContent=on?'닫기':'설정';
   // hide without collapsing, so the device stays put
   $('hint').style.visibility=$('ctx').style.visibility=on?'hidden':'';
@@ -2485,7 +2487,10 @@ function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);ui.deco.tryLock
   if(el&&el.dataset.hat!==undefined)g.hat=el.dataset.hat||null;if(el&&el.dataset.patshow)g.accOff=el.dataset.patshow==='0';
   if(el&&el.dataset.shape){g.shape=el.dataset.shape;g.skin=skinFor(g.shape,k.skin)}if(el&&el.dataset.skin){g.shape=el.dataset.forshape||g.shape;g.skin=el.dataset.skin;g.btnColor=null}
   if(el&&el.dataset.bg)g.bg=el.dataset.bg;if(el&&el.dataset.btnst)g.btnStyle=el.dataset.btnst;if(el&&el.dataset.lcd)g.lcd=el.dataset.lcd;if(el&&el.dataset.btnc)g.btnColor=el.dataset.btnc==='case'?null:el.dataset.btnc;applySkin()}
-function openDeco(tab='home'){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
+// opening 꾸미기, the settings or the big book puts away whatever the LCD had up: a menu (book, arcade, graduation, …)
+// closes, and a game in progress ends as if 취소 was pressed. One thing open at a time
+function clearLcd(){if(ui.menuOpen||ui.bookAsk||ui.arcade||ui.gradAsk||ui.restartAsk)closeMenu();if(ui.game){ui.game=null;ui.view='main'}}
+function openDeco(tab='home'){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);clearLcd();
   if(ui.deco){decoPreview(null);ui.deco.pop=null}
   if(!ui.deco){ui.deco={keep:decoKeep()};document.body.classList.add('decomode');talkShow();$('decoBox').hidden=$('decoPanel').hidden=false}
   ui.deco.tab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng'){if(g.engrave!=null&&!g.engrave.trim())g.engrave=null;ui.engPos=0;ui.engCol=0;ui.engRow='slots';ui.engErase=null;ui.engPicked=false;ui.engStart=g.engrave}$('decoPanel').classList.toggle('engmode',tab==='eng');
@@ -2602,7 +2607,7 @@ function renderScreenIn(tab,el){
     const K=el.querySelector('.engkeys');K.scrollTop=st;
     const kc=K.querySelector('.kcur');if(kc){const top=kc.offsetTop-K.offsetTop,bot=top+kc.offsetHeight;if(top<K.scrollTop)K.scrollTop=top-2;else if(bot>K.scrollTop+K.clientHeight)K.scrollTop=bot-K.clientHeight+2}
     const changed=engNorm(g.engrave)!==engNorm(ui.engStart),from=engEraseAt();
-    const T={slots:['각인 · 영문 8자','선택하면 그 칸부터 써요 · ▼ 지우기·저장'],kb:['휴대폰 키보드로 쓰기','선택하면 키보드가 떠요'],
+    const T={slots:['각인 · 영문 8자','선택하면 그 칸부터 써요 · 지우기·저장은 글자판 위에'],kb:['휴대폰 키보드로 쓰기','선택하면 키보드가 떠요'],
       tools:ui.engTool?['저장',changed?'선택하면 케이스에 새겨요':'바꾼 게 없어요']:['⌫ 지우기',from<0?'지울 글자가 없어요':`선택할 때마다 ${from+1}번째 칸부터 한 칸씩 지워요`],
       keys:[`${tgt+1}번째 칸에 쓸 글자`,'선택: 쓰기 · 취소: 칸으로'+(changed?' · 저장해야 바뀌어요':'')]}[row];
     $('dname').textContent=T[0];$('ddesc').textContent=T[1];
