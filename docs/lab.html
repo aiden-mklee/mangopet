@@ -1300,7 +1300,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 72a640',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0 · ad683f',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -3226,7 +3226,8 @@ const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
-  if(t.closest('#decoBox,.face,.controls,#keyring,.devbtns,.ad,button'))return;
+  // a tap on a choice that re-drew itself leaves a target no longer in the page: that was a choice, not the backdrop
+  if(!document.contains(t)||t.closest('#decoBox,#decoPanel,.face,.controls,#keyring,.devbtns,.ad,button'))return;
   // below the screen is where thumbs work the d-pad and buttons: a slip onto the shell there changes nothing
   if(t.closest('#shell')&&(ui.deco.tab==='eng'||e.clientY>document.querySelector('#shell .face').getBoundingClientRect().bottom))return;
   openDeco(t.closest('#shell')?'case':'bg')});
