@@ -294,7 +294,9 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 // what happens if nobody opens the app: the notifications that would go out, in order (for scheduling ahead)
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
-  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
+  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++){const n=ev.length;step(c,ev);
+    // an egg only hatches with the app open, so a closed app hears once that it's ready, and nothing after that
+    if(ev.slice(n).some(e=>e.type==='hatchReady')){notify(c,'🥚','알이 깨어나려 해요! 열어서 깨워 주세요','life',ev);break}}
   return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
 }
 // Long absences: after the forecast runs dry (the pet ran away, or nobody opened the app for a week),

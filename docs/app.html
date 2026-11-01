@@ -962,7 +962,9 @@ function heirChoice(g,keep){g.pendingHeir=keep?{from:SP[g.species].ko,acc:g.last
 // what happens if nobody opens the app: the notifications that would go out, in order (for scheduling ahead)
 function forecast(g,minutes){
   const c=JSON.parse(JSON.stringify(g)),ev=[];
-  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++)step(c,ev,{autoHatch:true});
+  for(let i=0;i<minutes&&(c.phase==='alive'||c.phase==='egg');i++){const n=ev.length;step(c,ev);
+    // an egg only hatches with the app open, so a closed app hears once that it's ready, and nothing after that
+    if(ev.slice(n).some(e=>e.type==='hatchReady')){notify(c,'🥚','알이 깨어나려 해요! 열어서 깨워 주세요','life',ev);break}}
   return ev.filter(e=>e.type==='notice'&&e.sent).map(e=>({t:e.t,text:e.icon?`${e.icon} ${e.text}`:e.text,kind:e.kind,who:e.who}));
 }
 // Long absences: after the forecast runs dry (the pet ran away, or nobody opened the app for a week),
@@ -1245,7 +1247,7 @@ const UNLOCK={
   bg:{'scene-spring':{g:1,won:1100},'scene-summer':{g:2,won:1100},'scene-autumn':{g:3,won:2200},'scene-winter':{g:4,won:2200},'scene-season':{g:5,won:2200},
     'scene-city':{dex:6,won:2200},'scene-skyline':{dex:6,won:2200},'scene-space':'ad','scene-sea':'ad','scene-fire':'ad'},
   lcd:{amber:'ad',rose:'ad',darkgreen:'ad',blackgreen:'ad'},
-  hat:{beanie:{g:1,won:1100},bow:{g:3,won:2200},crown:{dex:8,won:2200},cloverpin:{item:'clover',n:3,won:2200},sproutpin:{finds:20,won:2200}},
+  hat:{beanie:{g:1,won:1100},bow:{g:3,won:2200},crown:{dex:8,won:2200},cloverpin:{item:'clover',n:1,won:2200},sproutpin:{finds:20,won:2200}},
   btn:{blue:'ad',yellow:'ad',mint:'ad',pink:'ad',purple:'ad'}};
 const dexSeen=()=>Object.values(g.dex||{}).filter(d=>d.seen).length;
 // null when open, otherwise the one line that says how to open it
@@ -1292,12 +1294,12 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='베타 0.1 · 504728',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · dc094c',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
 let g=fresh();
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase)g=Object.assign(fresh(),s)}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.phase){g=Object.assign(fresh(),s);if(s.intro==null)g.intro=null}}catch(e){}
 // saves from before the engine had no random seed
 if(typeof g.seed!=='number')g.seed=Math.floor(Math.random()*2**32);
 {const old={sun:'sun',moon:'moon',tofu:'chub',wild:'wild'};if(old[g.species])g.species=old[g.species]+'_'+(ANIMAL_OF[g.con]||'bear');
@@ -1352,7 +1354,7 @@ function introTo(step){g.intro=step;lastHint='';
   if(step==='meal'){g.hunger=0}
   if(step==='clean'){if(!g.poops){g.poops=1;g.poopSince=g.t}}
   if(step==='charm')openZoom('intro-charm');
-  if(step==='done'){closeZoom(true);giveName();talk('🎉 이제 혼자서도 잘 키울 수 있어요',g.name?`이름은 ${g.name}! 설정에서 바꿀 수 있어요`:'',true)}
+  if(step==='done'){closeZoom(true);giveName();if(Native&&!g.notifAsked)setTimeout(()=>askNotifPermission(false),2500);talk('🎉 이제 혼자서도 잘 키울 수 있어요',g.name?`이름은 ${g.name}! 설정에서 바꿀 수 있어요`:'',true)}
   save()}
 // called after each player action; moves the tutorial on when it was the one asked for
 function introDid(a){const want={meal:'meal',pet:'pet',clean:'clean'}[g.intro];if(want&&want===a)introTo({meal:'pet',pet:'clean',clean:'charm'}[a])}
@@ -2792,7 +2794,7 @@ function renderScreenIn(tab,el){
       <div class="pxrow"><button class="pxbtn" data-nameidea>다른 이름 추천</button><button class="pxbtn" data-namego>이 이름으로</button></div>`;
     const inp=el.querySelector('.pxname');
     const go=()=>{const v=cleanName(inp.value)||idea;g.name=v;ui.nameIdea=null;save();closeZoom(true);lastCtx='';
-      talk(`💛 이제 ${v}${josa(v,'이','')}에요`)};
+      talk(`💛 이제 ${v}${josa(v,'이에요','예요')}`)};
     el.querySelector('[data-nameidea]').onclick=()=>{let n=nameIdea();while(n===idea)n=nameIdea();ui.nameIdea=n;inp.placeholder=ui.nameIdea;if(!g.name)inp.value='';renderScreen(tab,el)};
     el.querySelector('[data-namego]').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
   }
@@ -3094,7 +3096,7 @@ const BACKUP_TAG='MANGOPET1:';
 function backupCode(){const c=Object.assign({},g);delete c.log;return BACKUP_TAG+btoa(unescape(encodeURIComponent(JSON.stringify(c))))}
 function restoreBackup(text){try{const t=String(text||'').replace(/\s+/g,'');if(!t.startsWith(BACKUP_TAG))return false;
   const d=JSON.parse(decodeURIComponent(escape(atob(t.slice(BACKUP_TAG.length)))));if(!d||!d.phase||d.t==null)return false;
-  d.log=[];d.intro='done';noSave=true;localStorage.setItem(KEY,JSON.stringify(d));location.reload();return true}catch(e){return false}}
+  d.log=[];d.intro='done';localStorage.setItem(KEY,JSON.stringify(d));noSave=true;location.reload();return true}catch(e){return false}}
 setInterval(save,2000);
 
 /* ---------- time away and notifications ahead ---------- */
@@ -3133,8 +3135,7 @@ async function shareCard(blob){const {Share,Filesystem,Directory}=AppShare;
   const {uri}=await Filesystem.writeFile({path:'mangopet-card.png',data,directory:Directory.Cache});
   await Share.share({title:'망고펫 졸업 카드',files:[uri]})}
 const AHEAD_MIN=7*1440,AHEAD_MAX=60;
-function upcoming(){if(!['alive','egg'].includes(g.phase))return [];
-  const ahead=E.forecast(g,AHEAD_MIN).slice(0,AHEAD_MAX);
+function upcoming(){const ahead=['alive','egg'].includes(g.phase)?E.forecast(g,AHEAD_MIN).slice(0,AHEAD_MAX):[];   // otherwise only the come-back reminders
   return [...ahead,...E.comeBack(g,ahead)].map(n=>({...n,at:(g.clockAt||Date.now())+(n.t-g.t)*60000/Math.max(1,g.speed)}))}
 // Keep the phone's pending notifications in step with the game all the time, not only when the app goes away:
 // iOS may suspend the page before an async 'schedule on hide' finishes, which left a day with no notifications.
@@ -3144,15 +3145,16 @@ let schedBusy=false,schedAgain=false,schedTimer=0;
 async function scheduleAhead(){const LN=Native&&Native.LocalNotifications;if(!LN)return;
   if(schedBusy){schedAgain=true;return}schedBusy=true;
   try{const soon=Date.now()+(document.hidden?5000:90000),list=upcoming().filter(n=>n.at>soon);
-    if(list.length)await LN.schedule({notifications:list.map((n,i)=>({id:i+1,title:n.who||'망고펫',body:n.text,schedule:{at:new Date(n.at),allowWhileIdle:true}}))});
+    if(list.length)await LN.schedule({notifications:list.map((n,i)=>({id:i+1,title:n.who||'망고펫',body:n.text,schedule:{at:new Date(n.at),allowWhileIdle:true},isExactNotification:false}))});
     const p=await LN.getPending();const extra=p.notifications.filter(n=>+n.id>list.length).map(n=>({id:n.id}));if(extra.length)await LN.cancel({notifications:extra})}catch(e){}
   schedBusy=false;if(schedAgain){schedAgain=false;scheduleAhead()}}
 const scheduleSoon=()=>{clearTimeout(schedTimer);schedTimer=setTimeout(scheduleAhead,1500)};
 setInterval(()=>{if(!document.hidden)scheduleAhead()},60000);
 addEventListener('pagehide',()=>{save();scheduleAhead()});
 // ask once on the first launch of the app; the settings screen can ask again
+const isAndroid=()=>!!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='android');
 async function askNotifPermission(loud){const LN=Native&&Native.LocalNotifications;if(!LN){if(loud)banner(Native?'⚠️ 알림 기능을 찾지 못했어요':'웹에서는 알림이 없어요');return}
-  try{const r=await LN.requestPermissions();g.notifAsked=true;save();if(loud)banner(r.display==='granted'?'🔔 알림이 켜져 있어요':'🔕 아이폰 설정 → 망고펫 → 알림에서 켜 주세요')}
+  try{const r=await LN.requestPermissions();g.notifAsked=true;save();if(loud)banner(r.display==='granted'?'🔔 알림이 켜져 있어요':isAndroid()?'🔕 휴대폰 설정 → 애플리케이션 → 망고펫 → 알림에서 켜 주세요':'🔕 아이폰 설정 → 망고펫 → 알림에서 켜 주세요')}
   catch(e){if(loud)banner('⚠️ 알림 오류: '+(e&&e.message||e))}}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){save();scheduleAhead()}else{tick();moodOnOpen();save();scheduleSoon();ui.doing=null;doingStart()}});
 
@@ -3220,7 +3222,7 @@ function menuClick(e){
   if(b.dataset.ret!==undefined){E.callBack(g);banner('🏠 돌아왔어요!');save();return}
   if(b.dataset.restart!==undefined){ui.restartAsk=true;return}
   if(b.dataset.restartCancel!==undefined){closeMenu();return}
-  if(b.dataset.game){closeMenu();startGame(b.dataset.game);return}
+  if(b.dataset.game){closeMenu();if(g.phase==='alive'&&!g.sleeping&&g.lights)startGame(b.dataset.game);return}
   if(b.dataset.book){closeMenu();ui.view=b.dataset.book;return}
   if(b.dataset.gradCancel!==undefined){closeMenu();return}
   if(b.dataset.gradGo!==undefined){ui.gradAsk=false;ui.view='main';graduate(E.fullTerm(g));lastCtx='';save();return}
@@ -3244,7 +3246,7 @@ if(g.acc)g.acc=toPat(g.acc);if(g.lastAcc)g.lastAcc=toPat(g.lastAcc);if(g.heirBox
 if(g.intro==null)g.intro=g.phase==='select'&&!(g.hist||[]).length&&!(g.charms||[]).length?'case':'done';
 buildIcons();buildStatic();applySkin();buildDevBtns();drawCharms();
 if(g.intro==='case'||g.intro==='life')openZoom('intro-'+g.intro);else if(g.intro==='charm')openZoom('intro-charm');
-tick();scheduleSoon();if(Native&&!g.notifAsked)askNotifPermission(false);
+tick();scheduleSoon();if(Native&&!g.notifAsked&&g.intro==='done')askNotifPermission(false);
 // fit the whole device into the screen height
 function fitWindow(){const fw=document.querySelector('.flipwrap');fw.style.zoom=1;const tot=document.querySelector('.phone').scrollHeight,own=fw.getBoundingClientRect().height+44;
   // while the decorating sheet is open, shrink the device into the space above it so it stays a live preview

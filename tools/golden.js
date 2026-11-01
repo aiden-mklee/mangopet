@@ -32,9 +32,11 @@ const CASES=[
   // a careful player who checks just before each digest: the 12:30 slot still sends a lunch hello
   {name:'attentive',seed:9,mode:'relaxed',script:visits([[8,5],[12,20],[18,25],[21,0]])},
   {name:'early-graduation',seed:5,mode:'relaxed',script:[...visits(OFFICE,4),[3*1440+9*60,'graduate']]},
+  // in October the seasonal finds (maple, chestnut) join in
+  {name:'autumn-finds',seed:13,mode:'relaxed',month:10,script:visits(OFFICE)},
 ];
 const CHECKPOINTS=[60,6*60,1440,2*1440,3*1440+60,5*1440,7*1440+60];
-const KEYS=['phase','stage','species','con','hunger','happy','weight','poops','sick','tummy','sleeping','lights','careMiss','morning','night','checks','acc','seed'];
+const KEYS=['phase','stage','species','con','hunger','happy','weight','poops','sick','tummy','sleeping','lights','careMiss','morning','night','checks','acc','seed','found','finds','charms'];
 
 function care(g,ev){
   if(g.gradReady){E.graduate(g,true,ev);return}   // opening the app graduates a pet that reached full term
@@ -42,6 +44,7 @@ function care(g,ev){
   if(g.sleeping)return;
   if(!g.lights)E.toggleLight(g);
   E.visit(g);
+  if(g.found)E.pickUp(g,ev);
   while((g.sick||g.tummy)&&E.med(g)!=='no');
   if(g.poops)E.clean(g);
   while(g.hunger<4&&E.meal(g)==='ok');
@@ -60,7 +63,7 @@ function act(g,a,ev){
   if(name==='snack')E.snack(g);else if(name==='play')E.playDone(g,+arg);
 }
 function runCase(c){
-  const g=E.fresh(c.seed);g.t=START;if(c.life)g.life=c.life;E.newPet(g,c.mode);
+  const g=E.fresh(c.seed);g.t=START;if(c.life)g.life=c.life;g.month=c.month||5;E.newPet(g,c.mode);
   const ev=[],out=[],script=c.script.map(([at,a])=>[at+START,a]).sort((x,y)=>x[0]-y[0]);let si=0;
   const end=8*1440;
   for(let m=1;m<=end;m++){
@@ -87,7 +90,9 @@ function comebackCase(){
   const g=E.fresh(31);g.t=7*60;E.newPet(g,'relaxed');E.advance(g,10,[],{autoHatch:true});
   const ahead=E.forecast(g,7*1440);return {ahead:ahead.length,comeback:E.comeBack(g,ahead)};
 }
-const result={engine:'mangopet',cases:CASES.map(c=>({...c,expect:runCase(c)})),forecast:forecastCase(),comeback:comebackCase()};
+// an egg left with the app closed: it only hatches with the app open, so one 'ready' notice and nothing after
+function eggCase(){const g=E.fresh(8);g.t=10*60;E.newPet(g,'relaxed');return E.forecast(g,2*1440)}
+const result={engine:'mangopet',cases:CASES.map(c=>({...c,expect:runCase(c)})),forecast:forecastCase(),comeback:comebackCase(),egg:eggCase()};
 if(process.argv.includes('--update')){fs.mkdirSync(path.dirname(FILE),{recursive:true});fs.writeFileSync(FILE,JSON.stringify(result,null,1)+'\n');console.log('wrote',path.relative(process.cwd(),FILE));process.exit(0)}
 const want=JSON.parse(fs.readFileSync(FILE,'utf8'));let bad=0;
 for(const c of result.cases){const w=want.cases.find(x=>x.name===c.name);
@@ -97,4 +102,6 @@ const fok=result.forecast.matchesRealRun&&JSON.stringify(want.forecast)===JSON.s
 console.log((fok?'ok  ':'FAIL')+' forecast           → '+result.forecast.forecast.length+' notifications ahead, same as a real run: '+result.forecast.matchesRealRun);
 const cok=JSON.stringify(want.comeback)===JSON.stringify(result.comeback);if(!cok)bad++;
 console.log((cok?'ok  ':'FAIL')+' comeback           → '+result.comeback.comeback.length+' reminders after '+result.comeback.ahead+' forecast notices');
+const eok=JSON.stringify(want.egg)===JSON.stringify(result.egg)&&result.egg.length===1;if(!eok)bad++;
+console.log((eok?'ok  ':'FAIL')+' egg left closed    → '+result.egg.map(n=>n.text).join(', '));
 process.exit(bad?1:0);

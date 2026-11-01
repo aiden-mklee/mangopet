@@ -25,7 +25,7 @@ ENGINE = os.path.join(ROOT, 'src', 'engine.js')
 SLOT = '<script>/* @engine: tools/build.py inlines src/engine.js here */</script>'
 DOCS = os.path.join(ROOT, 'docs')
 FONT = os.path.join(ROOT, 'tools', 'fonts', 'Galmuri11.woff2')
-BETA = '베타 0.1'  # bump when friends get a new round to test
+BETA = '1.0'  # the version shown in settings; keep in step with MARKETING_VERSION / versionName for store builds
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
 
 
@@ -206,7 +206,7 @@ self.addEventListener('fetch',e=>{{if(e.request.method!=='GET')return;
     # in the app too so they open without a network; licenses.html is made from licenses/ (fonts and Capacitor)
     lic = licenses_page()
     for out in (DOCS, os.path.join(ROOT, 'app', 'www')):
-        for n in ('privacy.html', 'terms.html'):
+        for n in ('privacy.html', 'terms.html', 'support.html'):
             shutil.copy(os.path.join(ROOT, 'src', n), os.path.join(out, n))
         open(os.path.join(out, 'licenses.html'), 'w', encoding='utf-8').write(lic)
     open(os.path.join(DOCS, '.nojekyll'), 'w').close()
