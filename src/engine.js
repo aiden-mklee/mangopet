@@ -311,7 +311,7 @@ function comeBack(g,ahead){
   return out;
 }
 
-const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,NOTIF,DAY,ADULT_AT,FULL_TERM,
+const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,FIND_LIKES,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};

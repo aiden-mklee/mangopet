@@ -566,7 +566,7 @@ body:not(.sheeted) .phone.scenic{justify-content:flex-start!important}
       </div>
     </div>
     </div></div>
-    <div class="devbtns"><button class="pxbtn" id="zoomBtn"><canvas></canvas><span>도감 크게 보기</span></button><button class="pxbtn" id="flipBtn"><canvas></canvas><span>설정</span></button></div>
+    <div class="devbtns"><button class="pxbtn" id="zoomBtn"><canvas></canvas><span>도감 크게 보기</span></button><button class="pxbtn" id="decoBtn"><canvas></canvas><span>꾸미기</span></button><button class="pxbtn" id="flipBtn"><canvas></canvas><span>설정</span></button></div>
     <p class="hint" id="hint"></p>
     <div class="ctx" id="ctx"></div>
     <p class="betanote">베타 · 실제 시간으로 흘러가요. 앱을 닫아도 시간은 흐르고, 다시 열면 그동안의 일이 반영돼요. 이 기기에만 저장되고, 알림과 위젯은 아직 없어요.</p>
@@ -980,7 +980,7 @@ function comeBack(g,ahead){
   return out;
 }
 
-const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,NOTIF,DAY,ADULT_AT,FULL_TERM,
+const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,FIND_LIKES,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
   notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
@@ -1294,7 +1294,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · b581b1',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · 6f5ba1',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2558,6 +2558,16 @@ function diaryOpen(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done')||!opened(
   const who=g.name||'우리 아이';talk(`📖 ${d-D.day>1?'지난번에':'어제'} ${who}${josa(who,'은','는')}`,c.slice(0,3).join('고 ')+'어요',true)}
 // Growth hint: once a day, opening the app while the pet is a child or teen, a passing word says which way it leans
 // when one line clearly leads (E.lineOdds: the same odds that pick the adult). No numbers, and it never decides anything
+// hints for the ??? cards: how a species comes about, and where a find turns up. Short, no numbers
+const LINE_HOW={sun:'아침에 자주 들러 준',moon:'밤에 자주 놀아 준',chub:'간식을 자주 준',wild:'혼자 두는 시간이 길었던'};
+const ANIMAL_HOW={bear:'튼튼한',chick:'쾌변',frog:'변비가 있는',rabbit:'허약한',penguin:'먹보',cat:'잠꾸러기'};
+function dexHint(k){if(k==='star')return '💡 아주 드물어요. 클래식 모드에서 실수 없이 키우면 만날지도';const [l,a]=k.split('_');
+  return `💡 ${LINE_HOW[l]} ${ANIMAL_HOW[a]} 아이가 자라면 만나요`}
+const MONTHS=m=>m.length>2?`${m[0]}~${m.at(-1)}월`:m.join('~')+'월';
+function findHint(k){const f=E.FINDS.find(x=>x[0]===k);if(!f)return '';if(f[3])return `💡 ${MONTHS(f[3])}에만 주워 와요`;
+  const like=Object.entries(E.FIND_LIKES).find(([,ks])=>ks.includes(k)),who=like?`${LINES_KO[like[0]]} 계열 아이가 잘 주워 와요`:'언젠가 주워 올 거예요';
+  return `💡 ${f[2]<=2?'아주 드물어요. ':''}${who}`}
+const LINES_KO={sun:'해',moon:'달',chub:'통통',wild:'야생'};
 const HINT={sun:'☀️ 아침마다 와 줘서 햇살 기운이 생기는 중',moon:'🌙 밤에 자주 놀아 줘서 달빛 기운이 생기는 중',chub:'🍪 간식을 좋아해서 통통해지는 중',wild:'🌿 혼자 있는 시간이 많아서 야생 기운이 생기는 중'};
 function growthHint(){if(talkQ.length||!opened('hint')||g.phase!=='alive'||(g.stage!=='child'&&g.stage!=='teen')||g.sleeping||(g.intro&&g.intro!=='done'))return;const day=Math.floor(g.t/1440);if(g.hintDay===day)return;
   const w=E.lineOdds(g),[a,b]=Object.entries(w).sort((x,y)=>y[1]-x[1]);if(a[1]<.4||a[1]-b[1]<.1)return;g.hintDay=day;save();talk(HINT[a[0]])}
@@ -2622,14 +2632,14 @@ function pickUp(){const ev=[];if(!E.pickUp(g,ev))return;ev.forEach(onEvent);sfx(
 // What the pet is up to when the app is opened (and at each new half hour while it stays open), for about 45 seconds:
 // picked from the hour of the day, the same for the whole half hour. Only when nothing is needed; any action ends it
 const BALL=parse(['.##.','#..#','#..#','.##.']),NOTE=parse(['.##','.#.','.#.','##.','##.']),
-  ZS=parse(['####','..#.','.#..','####']),MOUND=parse(['..####..','.######.','########']),WIN=parse(['#########','#...#...#','#...#...#','#########','#...#...#','#...#...#','#########']),
+  ZS=parse(['####','..#.','.#..','####']),CAN=parse(['..##.....','.#..#...#','######.#.','#######..','######...']),SPROUTS=[parse(['#.#','.#.','.#.']),parse(['##.##','.#.#.','..#..','..#..']),parse(['..#..','#.#.#','.###.','..#..','..#..'])],WIN=parse(['#########','#...#...#','#...#...#','#########','#...#...#','#...#...#','#########']),
   FLY=[parse(['#...#','##.##','.###.','##.##']),parse(['.....','.#.#.','.###.','.#.#.'])],GUEST=[parse(['.##..','####.','.###.','..#..']),parse(['#..#.','.##..','.###.','..#..'])];
 const tri=v=>1-Math.abs(v%2-1);
 const BOOK=[parse(['.###.###.','#...#...#','#.#.#.#.#','#########']),parse(['.###.##..','#...##...','#.#.#.#..','#########'])];
 // things that open as the player keeps coming back (by E.appDay, the app's own day count, not the pet's)
 const OPENS={diary:2,doA:2,friend:3,hint:3,doB:3,doC:4};
 const opened=k=>ui.unlockAll||E.appDay(g)>=OPENS[k];
-const DOING_FROM={stretch:'doA',nap:'doA',sing:'doA',ball:'doB',butterfly:'doB',window:'doB',dig:'doC',bird:'doC',read:'doC',rope:'doC'};
+const DOING_FROM={stretch:'doA',nap:'doA',sing:'doA',ball:'doB',butterfly:'doB',window:'doB',water:'doC',bird:'doC',read:'doC',rope:'doC'};
 // on the day something new opens, the first opening says so once (g.toldOpen)
 const OPEN_NEWS=[[E.FINDS_FROM,'finds','✨ 이제 가끔 뭔가 주워 와요','왼쪽 바닥에 놓이면 눌러서 받아요'],[OPENS.friend,'friend','✨ 친구와 놀 수 있어요','설정 › 친구에서 코드를 주고받아요']];
 function openNews(){if(g.phase!=='alive'||(g.intro&&g.intro!=='done'))return;const d=E.appDay(g);g.toldOpen=g.toldOpen||[];
@@ -2638,7 +2648,9 @@ const DOING={
   stretch:{h:[8,11],over(P,c){const o=c.f%2;P.spr(SPARK,c.x-4,c.y+(o?1:3));P.spr(SPARK,c.x+c.s.w+1,c.y+(o?3:1))}},
   ball:{h:[11,17],over(P,c){const lo=c.x+c.s.w+2,hi=LW-5;if(hi<lo)return;const bx=Math.round(lo+tri(c.t/1600)*(hi-lo));P.spr(BALL,bx,GND-3);if(bx>lo+1)P.px(bx-2,GND-1)}},
   butterfly:{h:[11,18],over(P,c){const bx=Math.round(c.x+c.s.w/2+Math.sin(c.t/900)*(c.s.w/2+3)),by=Math.max(1,c.y-6+Math.round(Math.cos(c.t/600)*3));P.spr(FLY[c.f%2],bx,by)}},
-  dig:{h:[10,17],over(P,c){const mx=c.x+c.s.w+1<=LW-8?c.x+c.s.w+1:Math.max(0,c.x-9);P.spr(MOUND,mx,GND-2);const o=c.f%3;P.px(mx+2+o,GND-5-o);P.px(mx+5-o,GND-4-(2-o))}},
+  // watering a sprout (was digging: the dirt pile and flying earth read as a poop with its smell lines)
+  water:{h:[9,17],over(P,c){const right=c.x+c.s.w+11<=LW,cx=right?c.x+c.s.w+1:Math.max(0,c.x-11),px=cx+8,el=ui.doing?c.t-(ui.doing.until-45000):0,sp=SPROUTS[Math.max(0,Math.min(2,Math.floor(el/12000)))];   // grows twice in the 45 seconds
+    P.spr(CAN,cx,c.y+2);P.spr(sp,px-Math.floor(sp.w/2),GND-sp.h+1);const top=c.y+4,bot=GND-sp.h,n=Math.max(1,bot-top),d=Math.floor(c.t/120);[0,Math.floor(n/2)].forEach(k=>{const yy=top+(d+k)%n;if(yy<bot)P.px(px,yy)})}},
   nap:{h:[13,16],under(c){c.cur=S[(g.stage==='adult'?g.species:g.stage)+'@sleep']||c.cur;c.y=GND-c.s.h+1},
     over(P,c){const k=Math.floor(c.t/500)%6;P.spr(ZS,Math.min(LW-4,c.x+c.s.w+3),c.y-2-k)}},
   sing:{h:[17,22],over(P,c){const k=Math.floor(c.t/900)%2,r=Math.floor(c.t/300)%3;P.spr(NOTE,k?c.x-5:c.x+c.s.w+2,c.y+3-r)}},
@@ -2677,7 +2689,9 @@ function buildDevBtns(){
   pxIcon($('zoomBtn').querySelector('canvas'),['.###....','#...#...','#...#...','#...#...','.###....','....##..','.....##.','......##'],COL.ink);
   pxIcon($('flipBtn').querySelector('canvas'),['..#..#..','.######.','##....##','#..##..#','#..##..#','##....##','.######.','..#..#..'],COL.ink);
   $('zoomBtn').onclick=()=>openZoom(ui.view==='finds'?'finds':ui.view==='dex'?'dex':ui.zoomTab||'dex');
+  pxIcon($('decoBtn').querySelector('canvas'),['......##','.....###','....###.','...###..','..###...','.##.....','###.....','##......'],COL.ink);
   $('flipBtn').onclick=()=>flip(!ui.flipped);
+  $('decoBtn').onclick=()=>openDeco(ui.decoTab||'case');
   // tapping the keyring opens the keyring list
   $('keyring').onclick=()=>openZoom('charm');
   $('zoom').addEventListener('click',e=>{if(e.target.id==='zoom')closeZoom()});
@@ -2747,7 +2761,7 @@ function decoPreview(el){const k=ui.deco.keep;Object.assign(g,k);
 function openDeco(tab){tab=TAB_ALIAS[tab]||tab;if(ui.flipped)flip(false);if(!$('zoom').hidden)closeZoom(true);
   if(ui.deco)decoPreview(null);
   if(!ui.deco){ui.deco={keep:decoKeep()};document.body.classList.add('decomode');talkShow();$('decoBox').hidden=$('decoPanel').hidden=false}
-  ui.deco.tab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng')ui.engPos=0;
+  ui.deco.tab=ui.decoTab=tab;ui.deco.shape=null;ui.padKey=null;if(tab==='eng')ui.engPos=0;
   $('decoBox').innerHTML=`<div class="dtabs">${ZTABS.deco.map(([k,l])=>`<button class="pxbtn" data-dtab="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}<button class="pxbtn dclose" data-dclose>닫기</button></div><p class="dname" id="dname"></p><p class="ddesc" id="ddesc"></p>`;
   $('decoBox').querySelectorAll('[data-dtab]').forEach(b=>b.onclick=()=>{if(ui.deco.tab!==b.dataset.dtab){openDeco(b.dataset.dtab);ui.padKey=padKey($('decoBox').querySelector(`[data-dtab="${b.dataset.dtab}"]`));padShow()}});
   $('decoBox').querySelector('[data-dclose]').onclick=closeDeco;
@@ -2785,7 +2799,7 @@ function renderScreenIn(tab,el){
     [...Object.keys(LINES).map(l=>[`${LINES[l].ko} 계열`,Object.keys(ANIMALS).map(a=>l+'_'+a)]),['희귀',['star']]].forEach(([label,ids])=>{
       h+=`<h3>${label}</h3><div class="pxgrid">${ids.map(k=>{const d=g.dex[k]||{},seen=!!d.seen;return `<button class="pxcard${seen?'':' locked'}" data-sp="${k}" aria-pressed="${ui.dexSel===k}"><canvas></canvas><span>${seen?SP[k].ko:'???'}</span>${d.grad?'<i>★</i>':''}</button>`}).join('')}</div>`});
     const k=ui.dexSel,d=k&&(g.dex[k]||{});
-    h+=`<div class="pxdetail${k?' on':''}">${k?`<canvas id="dexBig"></canvas><div>${d.seen?`<p>${SP[k].ko}</p><p class="dim">${SP[k].line}</p><p>${d.grad?`졸업 ${d.grad}번 ${'★'.repeat(gradStars(d))}`:'아직 졸업 전'}</p>`:'<p>???</p><p class="dim">아직 만나지 못했어요</p>'}</div>`:'<p class="dim">칸을 누르면 자세히 볼 수 있어요</p>'}</div>`;
+    h+=`<div class="pxdetail${k?' on':''}">${k?`<canvas id="dexBig"></canvas><div>${d.seen?`<p>${SP[k].ko}</p><p class="dim">${SP[k].line}</p><p>${d.grad?`졸업 ${d.grad}번 ${'★'.repeat(gradStars(d))}`:'아직 졸업 전'}</p>`:`<p>???</p><p class="dim">${dexHint(k)}</p>`}</div>`:'<p class="dim">칸을 누르면 자세히 볼 수 있어요</p>'}</div>`;
     if(g.hist.length)h+=`<h3>키운 기록</h3><div class="pxlist">${g.hist.slice(0,5).map(x=>`<div><span>${x.name?x.name+' · ':''}${SP[x.sp]?SP[x.sp].ko:STAGE_KO[x.sp]||x.sp}</span><span class="dim">${x.result} · ${x.days}일</span></div>`).join('')}</div>`;
     el.innerHTML=h;
     el.querySelectorAll('.pxcard').forEach(b=>{const k=b.dataset.sp,seen=g.dex[k]&&g.dex[k].seen;sprCanvas(b.querySelector('canvas'),S[k],{on:seen?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!seen,cell:TH,frame:[27,24],gap:0});
@@ -2812,9 +2826,12 @@ function renderScreenIn(tab,el){
   }
   if(tab==='finds'){
     const F=g.finds||{},got=E.FINDS.filter(f=>F[f[0]]).length;
-    const card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}"><canvas></canvas><span>${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
+    const card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}" aria-pressed="${ui.findSel===k}"><canvas></canvas><span>${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
     el.innerHTML=`<h2>주운 것 <small>${got} / ${E.FINDS.length}</small></h2><p class="dim">아이가 가끔 뭔가 주워 와요. 화면 왼쪽에 놓여 있으면 눌러서 받아요.</p>
-      ${FIND_GROUPS.map(([t,ks])=>`<h3>${t} <small>${ks.filter(k=>F[k]).length} / ${ks.length}</small></h3><div class="pxgrid fgrid">${ks.map(card).join('')}</div>`).join('')}`;
+      ${FIND_GROUPS.map(([t,ks])=>`<h3>${t} <small>${ks.filter(k=>F[k]).length} / ${ks.length}</small></h3><div class="pxgrid fgrid">${ks.map(card).join('')}</div>`).join('')}
+      ${(k=>`<div class="pxdetail${k?' on':''}">${k?`<canvas id="findBig"></canvas><div>${F[k]?`<p>${FIND_KO[k]}</p><p class="dim">${F[k]}번 주워 왔어요</p>`:`<p>???</p><p class="dim">${findHint(k)}</p>`}</div>`:'<p class="dim">칸을 누르면 자세히 볼 수 있어요</p>'}</div>`)(ui.findSel)}`;
+    el.querySelectorAll('[data-find]').forEach(b=>b.onclick=()=>{ui.findSel=ui.findSel===b.dataset.find?null:b.dataset.find;const st=el.scrollTop;renderScreen(tab,el);el.scrollTop=st});
+    if(ui.findSel){const k=ui.findSel;sprCanvas(el.querySelector('#findBig'),FIND_SPR[k],{on:F[k]?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!F[k],cell:TH,frame:[11,10],gap:0})}
     el.querySelectorAll('[data-find]').forEach(b=>{const k=b.dataset.find,seen=!!F[k];sprCanvas(b.querySelector('canvas'),FIND_SPR[k],{on:seen?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!seen,cell:TH,frame:[11,10],gap:0})});
   }
   if(tab==='card'){
