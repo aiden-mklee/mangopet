@@ -1327,7 +1327,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · d16d63',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0 · 6b907d',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1634,12 +1634,22 @@ const brickWall=()=>[...Array(2)].flatMap((_,r)=>[...Array(8)].map((_,c)=>({x:c*
 const RUN_MINI=new Map();
 const RUN_S={};
 function runPet(){const k=g.stage==='adult'&&g.species;if(k&&RUNNER[k])return RUN_S[k]||(RUN_S[k]=parse(RUNNER[k]));return runSprite(petSprite())}
-function runSprite(s,W=13){if(s.w<=W)return s;const key=W===13?s:s.rows.join('/')+'@'+W;if(!RUN_MINI.has(key)){const f=W/s.w,w=W,h=Math.max(4,Math.round(s.h*f));
+function runSprite(s,W=13){if(s.w<=W)return s;const key=W===13?s:s.rows.join('/')+'@'+W;if(!RUN_MINI.has(key)&&s.w-W<=4)RUN_MINI.set(key,dropCols(s,W));if(!RUN_MINI.has(key)){const f=W/s.w,w=W,h=Math.max(4,Math.round(s.h*f));
   const at=(x,y)=>s.rows[y]&&s.rows[y][x]==='#';
   // keep a cell when most of the area it covers is ink, so holes like eyes survive the shrink
   const rows=[...Array(h)].map((_,j)=>[...Array(w)].map((_,i)=>{const x0=Math.floor(i/f),x1=Math.max(x0+1,Math.floor((i+1)/f)),y0=Math.floor(j/f),y1=Math.max(y0+1,Math.floor((j+1)/f));
     let n=0,a=0;for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){a++;n+=at(x,y)}return n*2>=a?'#':'.'}).join(''));
   RUN_MINI.set(key,{w,h,rows})}return RUN_MINI.get(key)}
+// a little too wide (the teen is 15): take out the columns most like their neighbour, in mirrored pairs,
+// so both sides stay whole. Shrinking by resampling clipped the right ear and merged the right eye
+function dropCols(s,W){let rows=s.rows.slice();
+  // what taking out column c costs: every short run it would shorten (an eye, a mouth, a thin ear)
+  const run=(r,c)=>{let a=c,b=c;while(a>0&&r[a-1]===r[c])a--;while(b<r.length-1&&r[b+1]===r[c])b++;return b-a+1},
+    cost=c=>rows.reduce((n,r)=>{const k=run(r,c);return n+(k<=3?4-k:0)},0);
+  while(rows[0].length>W){const w=rows[0].length,pair=w-W>=2&&rows.every(r=>r===[...r].reverse().join(''));let best=-1,low=1e9;
+    for(let c=1;c<(pair?Math.floor((w-1)/2):w-1);c++){const k=cost(c)+(pair?cost(w-1-c):0);if(k<low){low=k;best=c}}
+    const cut=pair?[best,w-1-best]:[best];rows=rows.map(r=>[...r].filter((_,i)=>!cut.includes(i)).join(''))}
+  return {w:W,h:s.h,rows}}
 // ducking squashes the pet to 60% of its height, row by row
 const DUCK=new Map();
 function duckSprite(s){if(!DUCK.has(s)){const h=Math.ceil(s.h*.6);DUCK.set(s,{w:s.w,h,rows:[...Array(h)].map((_,i)=>s.rows[Math.floor(i*s.h/h)])})}return DUCK.get(s)}
