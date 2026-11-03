@@ -857,7 +857,8 @@ function graduate(g,full,ev){g.gradReady=false;unlockCharm(g,'star',ev);if(full|
   const left=STARTERS.filter(id=>!(g.charms||[]).includes(id));if(left.length)unlockCharm(g,pick(g,left),ev)}
 function die(g,ev){g.phase='dead';record(g,'무지개다리');notify(g,'🪦','…','life',ev);ev.push({type:'die'})}
 function runAway(g,ev){g.phase='away';g.awayUntil=g.t+180;notify(g,'✉️','집을 나갔어요… 편지가 남아 있어요','life',ev);ev.push({type:'away'})}
-function makeSick(g,ev){g.sick=true;g.doses=g.con==='frail'?2:1;notify(g,'🤒','몸이 뜨거워…',g.mode==='classic'?'urgent':'need',ev)}
+function makeSick(g,ev,cold){g.sick=true;g.everSick=true;g.cold=!!cold;g.doses=g.con==='frail'&&!cold?2:1;
+  notify(g,cold?'🤧':'🤒',cold?'콜록콜록… 감기 걸렸어. 약 줘':'몸이 뜨거워…',g.mode==='classic'?'urgent':'need',ev)}
 function addPoop(g,ev){if(!g.poops)g.poopSince=g.t;if(g.poops<4)g.poops++;if(g.poops>=2)notify(g,'💩',`똥이 ${g.poops}개 쌓였어요`,'need',ev)}
 function queuePoop(g){if(g.poopT<0)g.poopT=poopDelay(g);else g.poopQ=(g.poopQ||0)+1}
 function doPoop(g,ev){if(g.con==='blocked'&&rand(g)<.5){g.tummy=true;g.tummyMin=0;g.rub=0;notify(g,'😣','배가 아파… 쓰다듬어 줘','need',ev)}else addPoop(g,ev)}
@@ -866,7 +867,7 @@ function needList(g){
   if(g.sleeping){if(isNight(g)&&g.lights)L.push({mini:'sleepy',t:'💡 졸려… 불 꺼 줘',a:'불 끄기'});return L}
   if(g.lights&&g.stage!=='baby'&&localHour(g)===21)L.push({mini:'sleepy',t:'🥱 슬슬 졸려',a:'불 끄기'});
   if(g.wakeDark)L.push({mini:'light',t:'☀️ 일어났어! 불 켜 줘',a:'불 켜기'});
-  if(g.sick)L.push({mini:'sick',t:'🤒 몸이 아파',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
+  if(g.sick)L.push({mini:'sick',t:g.cold?'🤧 감기 걸렸어':'🤒 몸이 아파',a:'약'+(g.doses>1?` ${g.doses}번`:'')});
   if(g.tummy)L.push({mini:'tummy',t:'😣 배가 아파',a:'펫을 3번 쓰다듬기 (또는 약)'});
   if(g.hunger===0)L.push({mini:'hungry',t:'🍙 배고파',a:'밥'});
   if(g.happy===0)L.push({mini:'bored',t:'🥱 심심해',a:'놀이 · 간식 · 쓰다듬기'});
@@ -947,6 +948,10 @@ function step(g,ev,opts={}){
   // if the pet is still awake with the light on and nothing is lying there yet
   if(m===0){g.findAt=null;if(appDay(g)>=FINDS_FROM&&!g.sleeping&&g.lights&&g.stage!=='baby'&&!g.found&&rand(g)<FIND_P)g.findAt=g.t+1+Math.floor(rand(g)*59)}
   if(g.findAt===g.t){g.findAt=null;if(!g.sleeping&&g.lights&&!g.found){const w=findWeights(g);let r=rand(g)*w.reduce((a,b)=>a+b,0);g.found=FINDS[w.findIndex(x=>(r-=x)<0)][0]}}
+  // a first cold: someone who keeps things clean might never see the medicine, so once (ever, if the pet has never been
+  // ill) a pet a day or more old catches a light cold in the daytime, one dose cures it. By 15:00 on its third day at the latest
+  if(m===0&&!g.everSick&&!g.sick&&!g.tummy&&!g.sleeping&&g.lights&&g.stage!=='baby'&&g.ageMin>=DAY&&h>=10&&h<=17&&
+    (rand(g)<.2||(g.ageMin>=2*DAY&&h>=15)))makeSick(g,ev,true)
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
     let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
@@ -980,7 +985,7 @@ function toggleLight(g){g.lights=!g.lights;if(g.lights)g.wakeDark=false;
   return g.lights}
 function med(g){if(!g.sick&&!g.tummy)return 'no';
   if(g.tummy){g.tummy=false;g.rub=0;g.poops=Math.min(4,g.poops+1);return 'tummy'}
-  if(--g.doses<=0){g.sick=false;g.sickMin=0;return 'cured'}return 'dose'}
+  if(--g.doses<=0){g.sick=false;g.cold=false;g.sickMin=0;return 'cured'}return 'dose'}
 function clean(g,ev=[]){const n=g.poops;g.poops=0;if(n&&(g.allCleans=(g.allCleans||0)+1)>=50)unlockCharm(g,'poop',ev);return n}
 function pet(g){
   g.unseen=0;
@@ -1353,7 +1358,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · 96471f',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · 5b938c',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
