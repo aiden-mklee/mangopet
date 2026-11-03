@@ -219,10 +219,12 @@ body.padvis .padfocus::after{content:"";position:absolute;inset:-1px;pointer-eve
     linear-gradient(var(--k),var(--k)) right top/7px 3px,linear-gradient(var(--k),var(--k)) right top/3px 7px,
     linear-gradient(var(--k),var(--k)) left bottom/7px 3px,linear-gradient(var(--k),var(--k)) left bottom/3px 7px,
     linear-gradient(var(--k),var(--k)) right bottom/7px 3px,linear-gradient(var(--k),var(--k)) right bottom/3px 7px;background-repeat:no-repeat}
-body.padvis .pxbtn.padfocus,body.padvis .pxcardbig.padfocus{background-color:color-mix(in srgb,currentColor 12%,transparent)}
+/* the light tint is only for plain cells: on an inverted one (worn, picked, menu cursor) it would wash the dark fill away
+   and leave light text on a light cell. :where keeps it from outranking the inverted rules below */
+body.padvis .pxbtn.padfocus:where(:not([aria-pressed="true"]):not(.kcur):not(.sel)),body.padvis .pxcardbig.padfocus{background-color:color-mix(in srgb,currentColor 12%,transparent)}
 /* menus (꾸미기 list, the settings menu, the little menus on the LCD) always show where the cursor is, inverted, from the moment
    they open; card grids keep the cursor hidden until the d-pad is used, so taps don't leave a stray mark */
-.dhome .pxbtn.padfocus,.pxmenu .pxbtn.padfocus,.dpop .pxbtn.padfocus{background:var(--ink);color:var(--lcd)}
+body .dhome .pxbtn.padfocus,body .pxmenu .pxbtn.padfocus,body .dpop .pxbtn.padfocus{background:var(--ink);color:var(--lcd)}
 /* decorating mode: a game-style dialog at the top, the choices in a grid on the LCD, nothing covers the device */
 .decobox{flex:none;width:min(360px,100%);height:112px;overflow:hidden;box-sizing:border-box;background:#f8f6ee;color:#24262b;border:3px solid #24262b;border-radius:8px;
   box-shadow:inset 0 0 0 2px #f8f6ee,inset 0 0 0 4px #9aa0a8,0 3px 0 rgba(0,0,0,.25);padding:9px 12px 10px;font-family:'Galmuri11',var(--font-ui)}
@@ -1350,7 +1352,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0 · d9afdb',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0 · 4ba20c',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
