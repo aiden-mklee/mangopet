@@ -19,9 +19,5 @@
       "backgroundColor": "#F6C64E",
       "showSpinner": false
     }
-  },
-  "server": {
-    "url": "https://aiden-mklee.github.io/mangopet/app.html",
-    "errorPath": "offline.html"
   }
 }

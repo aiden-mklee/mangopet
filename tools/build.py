@@ -147,18 +147,6 @@ def document(frag, pwa, fixed=None):
     return head + frag[t:te] + '\n</head><body>\n' + frag[te:] + tail + '\n</body></html>\n'
 
 
-# shown by the app when it cannot reach GitHub Pages (capacitor.config.json server.errorPath)
-OFFLINE = """<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>망고펫</title>
-<style>html,body{margin:0;height:100%;background:#f3eee6;font-family:-apple-system,sans-serif;color:#3a3326}
-main{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;box-sizing:border-box}
-b{font-size:17px}p{margin:0;font-size:14px;color:#7a705e}button{margin-top:8px;font:inherit;padding:10px 18px;border-radius:12px;border:0;background:#2c2e33;color:#fff}</style>
-</head><body><main><b>인터넷에 연결되지 않았어요</b><p>테스트 버전은 켤 때 최신 게임을 받아와요.<br>연결된 뒤 다시 열어 주세요.</p>
-<button onclick="location.href='https://aiden-mklee.github.io/mangopet/app.html'">다시 시도</button></main></body></html>
-"""
-
-
 def main():
     if '--no-font' not in sys.argv:
         subset_font()
@@ -175,10 +163,9 @@ def main():
     open(os.path.join(DOCS, 'lab.html'), 'w', encoding='utf-8').write(document(lab(s), pwa=False))
     os.makedirs(os.path.join(ROOT, 'app', 'www'), exist_ok=True)
     open(os.path.join(ROOT, 'app', 'www', 'index.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False, fixed=True))
-    # the same app page is also served from GitHub Pages: while testing, the app loads it from there
-    # (capacitor.config.json server.url), so a push updates the phone without rebuilding in Xcode
+    # the same app page is also served from GitHub Pages: test-mode builds (capacitor.config.json server.url) load it from
+    # there. The store build has no server.url and runs app/www; app.html stays so old test installs keep working
     open(os.path.join(DOCS, 'app.html'), 'w', encoding='utf-8').write(document(native(s), pwa=False, fixed=True))
-    open(os.path.join(ROOT, 'app', 'www', 'offline.html'), 'w', encoding='utf-8').write(OFFLINE)
     nm = os.path.join(ROOT, 'node_modules', '@capacitor')
     for src, dst in PLUGINS:
         if os.path.exists(os.path.join(nm, src)):

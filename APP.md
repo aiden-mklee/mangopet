@@ -11,14 +11,13 @@ app/ios/                Xcode 프로젝트 (Swift Package Manager 사용, CocoaP
 app/android/            Android Studio 프로젝트
 ```
 
-## 테스트 모드: 게임을 GitHub Pages에서 불러오기
+## 출시 모드 (2026-11-08부터)
 
-지금 앱은 켤 때마다 `https://aiden-mklee.github.io/mangopet/app.html`에서 최신 게임을 불러옵니다 (`capacitor.config.json`의 `server.url`).
-- 코드를 고쳐 `main`에 올리면, 1~3분 뒤(GitHub Pages 배포) + 최대 10분(캐시) 안에 **앱을 완전히 껐다 켜면** 새 버전입니다. Xcode 다시 빌드가 필요 없습니다.
-- 인터넷이 없으면 `offline.html`("인터넷에 연결되지 않았어요")이 뜹니다.
-- 저장은 GitHub Pages 주소 기준이라, 앱에 들어 있던 예전 버전의 저장과는 따로입니다.
-- **출시 전에는 반드시 되돌립니다**: `capacitor.config.json`에서 `server` 칸을 지우고 `npx cap sync`. 애플은 게임을 밖에서 불러오는 앱을 심사에서 거절할 수 있습니다.
-- Xcode에서 ▶가 필요한 경우: 무료 계정 7일마다, 그리고 앱 껍데기(플러그인, 아이콘, 앱 이름, 이 설정)를 바꿨을 때.
+테스트 모드(`capacitor.config.json`의 `server.url`로 GitHub Pages의 `app.html`을 불러오던 것)를 껐습니다. 앱은 이제 안에 든 `app/www`로 돌아갑니다.
+- 게임을 고치면: `python3 tools/build.py` → `npx cap sync` → Xcode에서 빌드 번호 +1 → Archive → 업로드 → 심사. `main`에 올리는 것만으로는 폰 앱이 바뀌지 않습니다.
+- 저장: 웹뷰 저장 위치가 바뀌어도, 기기 저장소(`@capacitor/preferences`)의 두 번째 사본에서 되살립니다. 그래도 바꾸기 전에는 설정 › 기록 › 내보내기로 백업합니다.
+- `docs/app.html`은 계속 만듭니다. 예전 테스트 빌드가 깔린 폰이 그 주소를 엽니다.
+- 다시 테스트 모드가 필요하면 `capacitor.config.json`에 `"server": {"url": "https://aiden-mklee.github.io/mangopet/app.html"}`를 넣고 `npx cap sync`. 심사에 올리는 빌드에는 절대 넣지 않습니다(애플은 밖에서 게임을 불러오는 앱을 거절할 수 있음).
 
 ## 쓰는 플러그인
 
