@@ -1,7 +1,8 @@
 // Store screenshots: play six scenes in the phone build, then frame each under a headline.
-//   python3 tools/build.py && node tools/store.js   → assets/store/1-egg.png … 6-notif.png (1290 × 2796, iPhone 6.7")
+//   python3 tools/build.py && node tools/store.js   → assets/store/<size>/1-egg.png … 6-notif.png (6.3" 1206 × 2622 and 6.9" 1320 × 2868)
 // Scenes are set up through a hook injected into a temporary copy of docs/index.html.
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
+const SIZES=[{dir:'6.3in-1206x2622',w:402,h:874},{dir:'6.9in-1320x2868',w:440,h:956}];
 const ROOT=path.join(__dirname,'..'),RAW=path.join(ROOT,'.out','store'),OUT=path.join(ROOT,'assets','store'),TMP=path.join(ROOT,'docs','_store.html');
 fs.mkdirSync(RAW,{recursive:true});fs.mkdirSync(OUT,{recursive:true});
 const page=fs.readFileSync(path.join(ROOT,'docs','index.html'),'utf8');
@@ -35,11 +36,14 @@ const SCENES=[
   if(S.name!=='1-egg')await p.evaluate(b=>{window.__dp.talkCancel();if(b)window.__dp.banner('🍙 배고파 · 💩 똥 쌌어')},!!S.banner);await p.waitForTimeout(150);
   const raw=path.join(RAW,S.name+'.png');await p.screenshot({path:raw});
   // frame: headline in the game font, the screen below in a phone outline
-  await p.close();const f=await ctx.newPage();
+  await p.close();
+  // App Store Connect asks for exact sizes per slot: 6.3" (1206 × 2622) and 6.9" (1320 × 2868), at 3× from these CSS sizes
+  for(const Z of SIZES){const fc=await b.newContext({viewport:{width:Z.w,height:Z.h},deviceScaleFactor:3});const f=await fc.newPage();
   await f.setContent(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${FACE}
-    html,body{margin:0;width:430px;height:932px;overflow:hidden;background:${S.bg}}
+    html,body{margin:0;width:${Z.w}px;height:${Z.h}px;overflow:hidden;background:${S.bg}}
     h1{margin:0;padding:64px 28px 0;font:28px/1.45 'Galmuri11',sans-serif;color:${S.ink};text-align:center;white-space:pre-line;-webkit-font-smoothing:none}
     .shot{position:absolute;left:50%;bottom:-60px;transform:translateX(-50%);width:340px;border-radius:36px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.28);border:8px solid #111}
     .shot img{display:block;width:100%}</style></head><body><h1>${S.head}</h1><div class="shot"><img src="data:image/png;base64,${fs.readFileSync(raw).toString('base64')}"></div></body></html>`);
-  await f.waitForTimeout(300);await f.screenshot({path:path.join(OUT,S.name+'.png')});await ctx.close();console.log('wrote assets/store/'+S.name+'.png')}
+  await f.waitForTimeout(300);fs.mkdirSync(path.join(OUT,Z.dir),{recursive:true});await f.screenshot({path:path.join(OUT,Z.dir,S.name+'.png')});await fc.close();console.log('wrote assets/store/'+Z.dir+'/'+S.name+'.png')}
+  await ctx.close()}
  fs.unlinkSync(TMP);await b.close();process.exit(bad?1:0)})();
