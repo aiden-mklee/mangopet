@@ -160,11 +160,13 @@
        "seed": 2399460287,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": null
       }
@@ -189,14 +191,16 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2903413563,
+       "seed": 3535249233,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": null
       }
@@ -221,14 +225,16 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 3847378918,
+       "seed": 184247292,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": null
       }
@@ -240,27 +246,29 @@
        "stage": "teen",
        "species": null,
        "con": "tough",
-       "hunger": 3,
-       "happy": 3,
-       "weight": 24,
+       "hunger": 2,
+       "happy": 2,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 2,
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 3399790539,
+       "seed": 872447859,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": null
       }
@@ -270,7 +278,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "wild_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 4,
        "happy": 3,
@@ -280,23 +288,25 @@
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 4,
        "night": 3,
        "checks": 13,
        "acc": null,
-       "seed": 1056695150,
+       "seed": 1560648426,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": [
         "bear",
-        "bolt",
+        "moon",
         "star",
         "crown",
         "mango"
@@ -308,33 +318,35 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "wild_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 3,
        "happy": 3,
-       "weight": 37,
+       "weight": 39,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 5,
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 1361248535,
+       "seed": 665471668,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": [
         "bear",
-        "bolt",
+        "moon",
         "star",
         "crown",
         "mango"
@@ -346,33 +358,35 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "wild_bear",
+       "species": "moon_bear",
        "con": "tough",
        "hunger": 3,
-       "happy": 2,
-       "weight": 44,
+       "happy": 3,
+       "weight": 45,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 7,
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 4129203403,
+       "seed": 1537919526,
        "found": null,
        "finds": {
-        "stripestone": 2,
+        "button": 1,
+        "marble": 1,
+        "curl": 1,
+        "stripestone": 1,
+        "letter": 1,
         "button2": 1,
-        "roundstone": 1,
-        "ladybug": 1,
-        "marble": 1
+        "pebble": 1
        },
        "charms": [
         "bear",
-        "bolt",
+        "moon",
         "star",
         "crown",
         "mango"
@@ -398,17 +412,22 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
-      "💩 똥 3개 치워 줘",
+      "🤧 감기 걸렸어 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       2550,
-      "🤧 감기 걸렸어 · 🥱 심심해 · 💩 똥 쌌어",
+      "🍙 배고파 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -428,12 +447,12 @@
      ],
      [
       4800,
-      "✨ 들곰으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 달곰으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       5070,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -488,12 +507,12 @@
      ],
      [
       10560,
-      "🎓 들곰이 졸업했어요! 도감에 ★★",
+      "🎓 달곰이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "wild_bear": {
+     "moon_bear": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -501,7 +520,7 @@
     },
     "hist": [
      {
-      "sp": "wild_bear",
+      "sp": "moon_bear",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -670,13 +689,11 @@
        "seed": 1135788953,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": null
       }
@@ -701,16 +718,14 @@
        "night": 0,
        "checks": 2,
        "acc": "줄무늬",
-       "seed": 3471308042,
+       "seed": 4103143712,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": null
       }
@@ -735,16 +750,14 @@
        "night": 1,
        "checks": 4,
        "acc": "줄무늬",
-       "seed": 688200574,
+       "seed": 3783437727,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": null
       }
@@ -758,7 +771,7 @@
        "con": "sleepy",
        "hunger": 2,
        "happy": 2,
-       "weight": 25,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -772,13 +785,11 @@
        "seed": 1312459944,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": null
       }
@@ -788,7 +799,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_cat",
+       "species": "wild_cat",
        "con": "sleepy",
        "hunger": 4,
        "happy": 3,
@@ -803,23 +814,21 @@
        "night": 3,
        "checks": 13,
        "acc": "줄무늬",
-       "seed": 3832226324,
+       "seed": 736989171,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": [
         "cat",
-        "moon",
+        "bolt",
         "star",
         "crown",
-        "cherry"
+        "clover"
        ]
       }
      },
@@ -828,7 +837,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "moon_cat",
+       "species": "wild_cat",
        "con": "sleepy",
        "hunger": 2,
        "happy": 2,
@@ -843,23 +852,21 @@
        "night": 5,
        "checks": 20,
        "acc": "줄무늬",
-       "seed": 3441002842,
+       "seed": 2177331502,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": [
         "cat",
-        "moon",
+        "bolt",
         "star",
         "crown",
-        "cherry"
+        "clover"
        ]
       }
      },
@@ -868,11 +875,11 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "moon_cat",
+       "species": "wild_cat",
        "con": "sleepy",
        "hunger": 3,
-       "happy": 2,
-       "weight": 49,
+       "happy": 3,
+       "weight": 48,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -883,23 +890,21 @@
        "night": 7,
        "checks": 28,
        "acc": "줄무늬",
-       "seed": 4249509503,
+       "seed": 586377877,
        "found": null,
        "finds": {
-        "candy": 1,
-        "heartstone": 1,
-        "heartbutton": 1,
-        "button2": 1,
-        "dice": 1,
-        "sprout": 1,
-        "stripestone": 1
+        "acorn": 1,
+        "bone": 1,
+        "stripestone": 1,
+        "daisy": 1,
+        "sunflower": 1
        },
        "charms": [
         "cat",
-        "moon",
+        "bolt",
         "star",
         "crown",
-        "cherry"
+        "clover"
        ]
       }
      }
@@ -922,17 +927,22 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
-      "💩 똥 2개 치워 줘",
+      "🍙 배고파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       2550,
       "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -947,17 +957,17 @@
      ],
      [
       3630,
-      "🤧 감기 걸렸어 · 🥱 심심해 · 💩 똥 3개 치워 줘",
+      "🤧 감기 걸렸어 · 🍙 배고파 · 🥱 심심해 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       3990,
-      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 달냥으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 들냥으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -976,18 +986,13 @@
       "sent"
      ],
      [
-      6420,
-      "🤒 몸이 뜨거워…",
-      "sent"
-     ],
-     [
       6510,
-      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       6870,
-      "💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -996,8 +1001,13 @@
       "sent"
      ],
      [
+      7860,
+      "🤒 몸이 뜨거워…",
+      "sent"
+     ],
+     [
       7950,
-      "💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -1022,17 +1032,17 @@
      ],
      [
       9750,
-      "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 쌌어",
       "sent"
      ],
      [
       10560,
-      "🎓 달냥이 졸업했어요! 도감에 ★★",
+      "🎓 들냥이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "moon_cat": {
+     "wild_cat": {
       "seen": true,
       "grad": 1,
       "best": 2,
@@ -1041,7 +1051,7 @@
     },
     "hist": [
      {
-      "sp": "moon_cat",
+      "sp": "wild_cat",
       "name": null,
       "acc": "줄무늬",
       "mode": "classic",
@@ -1146,10 +1156,10 @@
        "seed": 4231026120,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": null
       }
@@ -1174,13 +1184,13 @@
        "night": 0,
        "checks": 1,
        "acc": null,
-       "seed": 2903413583,
+       "seed": 3535249253,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": null
       }
@@ -1193,7 +1203,7 @@
        "species": null,
        "con": "blocked",
        "hunger": 3,
-       "happy": 2,
+       "happy": 3,
        "weight": 11,
        "poops": 0,
        "sick": false,
@@ -1205,13 +1215,13 @@
        "night": 1,
        "checks": 2,
        "acc": null,
-       "seed": 2079754322,
+       "seed": 2711589992,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": null
       }
@@ -1225,7 +1235,7 @@
        "con": "blocked",
        "hunger": 3,
        "happy": 3,
-       "weight": 22,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -1236,13 +1246,13 @@
        "night": 2,
        "checks": 4,
        "acc": null,
-       "seed": 368494603,
+       "seed": 2264001613,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": null
       }
@@ -1267,20 +1277,20 @@
        "night": 3,
        "checks": 7,
        "acc": null,
-       "seed": 1184577564,
+       "seed": 2448248904,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": [
         "frog",
         "moon",
         "star",
         "crown",
-        "clover"
+        "cherry"
        ]
       }
      },
@@ -1304,20 +1314,20 @@
        "night": 5,
        "checks": 10,
        "acc": null,
-       "seed": 1489130949,
+       "seed": 4080414826,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": [
         "frog",
         "moon",
         "star",
         "crown",
-        "clover"
+        "cherry"
        ]
       }
      },
@@ -1341,20 +1351,20 @@
        "night": 7,
        "checks": 14,
        "acc": null,
-       "seed": 1921566728,
+       "seed": 3121296871,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "roundstone": 1,
-        "potflower": 1,
-        "button2": 1
+        "button": 1,
+        "rose": 1,
+        "ladybug": 1,
+        "lolli": 1
        },
        "charms": [
         "frog",
         "moon",
         "star",
         "crown",
-        "clover"
+        "cherry"
        ]
       }
      }
@@ -1377,7 +1387,7 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -1391,18 +1401,23 @@
       "sent"
      ],
      [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
+      "sent"
+     ],
+     [
       3360,
       "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       3630,
-      "🌤 오늘도 힘내!",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
       3990,
-      "😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -1412,12 +1427,12 @@
      ],
      [
       5070,
-      "😣 배가 아파",
+      "🍙 점심 먹었어?",
       "sent"
      ],
      [
       5430,
-      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "😣 배가 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -1432,7 +1447,7 @@
      ],
      [
       6870,
-      "🍙 배고파 · 🥱 심심해 · 💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -1442,12 +1457,12 @@
      ],
      [
       7950,
-      "🌤 오늘도 힘내!",
+      "😣 배가 아파",
       "sent"
      ],
      [
       8310,
-      "🍙 배고파 · 🥱 심심해 · 💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -1462,7 +1477,7 @@
      ],
      [
       9750,
-      "🤒 몸이 아파 · 😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 쌌어",
+      "😣 배가 아파 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -1543,7 +1558,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1703683461,
+       "seed": 2335519131,
        "found": null,
        "finds": {},
        "charms": null
@@ -1569,7 +1584,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 3279484486,
+       "seed": 3911320156,
        "found": null,
        "finds": {},
        "charms": null
@@ -1579,14 +1594,14 @@
       "minute": 2880,
       "state": {
        "phase": "away",
-       "stage": "teen",
+       "stage": "child",
        "species": null,
        "con": "blocked",
        "hunger": 0,
        "happy": 0,
-       "weight": 20,
+       "weight": 10,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
@@ -1595,8 +1610,8 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279,
-       "found": "bone",
+       "seed": 1951871949,
+       "found": null,
        "finds": {},
        "charms": null
       }
@@ -1605,14 +1620,14 @@
       "minute": 4380,
       "state": {
        "phase": "away",
-       "stage": "teen",
+       "stage": "child",
        "species": null,
        "con": "blocked",
        "hunger": 0,
        "happy": 0,
-       "weight": 20,
+       "weight": 10,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
@@ -1621,8 +1636,8 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279,
-       "found": "bone",
+       "seed": 1951871949,
+       "found": null,
        "finds": {},
        "charms": null
       }
@@ -1631,14 +1646,14 @@
       "minute": 7200,
       "state": {
        "phase": "away",
-       "stage": "teen",
+       "stage": "child",
        "species": null,
        "con": "blocked",
        "hunger": 0,
        "happy": 0,
-       "weight": 20,
+       "weight": 10,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
@@ -1647,8 +1662,8 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279,
-       "found": "bone",
+       "seed": 1951871949,
+       "found": null,
        "finds": {},
        "charms": null
       }
@@ -1657,14 +1672,14 @@
       "minute": 10140,
       "state": {
        "phase": "away",
-       "stage": "teen",
+       "stage": "child",
        "species": null,
        "con": "blocked",
        "hunger": 0,
        "happy": 0,
-       "weight": 20,
+       "weight": 10,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
@@ -1673,8 +1688,8 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 1320036279,
-       "found": "bone",
+       "seed": 1951871949,
+       "found": null,
        "finds": {},
        "charms": null
       }
@@ -1703,7 +1718,7 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 좋은 아침! · 🍙 배고파 · 🥱 심심해",
+      "☀️ 좋은 아침! · 🍙 배고파 · 🥱 심심해",
       "sent"
      ],
      [
@@ -1769,7 +1784,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 440012082,
+       "seed": 1071847752,
        "found": null,
        "finds": {},
        "charms": null
@@ -1795,7 +1810,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2143695501,
+       "seed": 2775531171,
        "found": null,
        "finds": {},
        "charms": null
@@ -1821,7 +1836,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2143695501,
+       "seed": 2775531171,
        "found": null,
        "finds": {},
        "charms": null
@@ -1847,7 +1862,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2143695501,
+       "seed": 2775531171,
        "found": null,
        "finds": {},
        "charms": null
@@ -1873,7 +1888,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2143695501,
+       "seed": 2775531171,
        "found": null,
        "finds": {},
        "charms": null
@@ -1899,7 +1914,7 @@
        "night": 0,
        "checks": 0,
        "acc": null,
-       "seed": 2143695501,
+       "seed": 2775531171,
        "found": null,
        "finds": {},
        "charms": null
@@ -2196,12 +2211,11 @@
        "seed": 1767624715,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": null
       }
@@ -2226,15 +2240,14 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2271577991,
+       "seed": 2903413661,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": null
       }
@@ -2246,7 +2259,7 @@
        "stage": "child",
        "species": null,
        "con": "greedy",
-       "hunger": 2,
+       "hunger": 1,
        "happy": 2,
        "weight": 18,
        "poops": 0,
@@ -2259,15 +2272,14 @@
        "night": 1,
        "checks": 6,
        "acc": null,
-       "seed": 1951872006,
+       "seed": 120306193,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": null
       }
@@ -2280,8 +2292,8 @@
        "species": null,
        "con": "greedy",
        "hunger": 2,
-       "happy": 2,
-       "weight": 28,
+       "happy": 3,
+       "weight": 27,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2292,15 +2304,14 @@
        "night": 2,
        "checks": 12,
        "acc": null,
-       "seed": 2008236903,
+       "seed": 3271908243,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": null
       }
@@ -2310,11 +2321,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "chub_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
        "hunger": 4,
        "happy": 3,
-       "weight": 38,
+       "weight": 36,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2325,22 +2336,21 @@
        "night": 3,
        "checks": 19,
        "acc": null,
-       "seed": 3896167613,
+       "seed": 864871657,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": [
         "penguin",
-        "donut",
+        "sun",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      },
@@ -2349,17 +2359,17 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "chub_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
        "hunger": 2,
-       "happy": 2,
-       "weight": 55,
+       "happy": 3,
+       "weight": 52,
        "poops": 0,
        "sick": true,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 5,
        "night": 5,
        "checks": 30,
@@ -2367,19 +2377,18 @@
        "seed": 537589372,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": [
         "penguin",
-        "donut",
+        "sun",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      },
@@ -2388,37 +2397,36 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "chub_penguin",
+       "species": "sun_penguin",
        "con": "greedy",
-       "hunger": 2,
-       "happy": 2,
-       "weight": 72,
+       "hunger": 3,
+       "happy": 3,
+       "weight": 68,
        "poops": 0,
-       "sick": false,
+       "sick": true,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 1,
+       "careMiss": 0,
        "morning": 7,
        "night": 7,
        "checks": 42,
        "acc": null,
-       "seed": 1346096033,
+       "seed": 3873438713,
        "found": null,
        "finds": {
-        "curl": 1,
-        "key": 1,
-        "pebble": 1,
-        "button2": 1,
-        "acorn": 1,
-        "mushroom": 1
+        "tulip": 1,
+        "heartstone": 1,
+        "roundstone": 1,
+        "leaf": 1,
+        "dandelion": 1
        },
        "charms": [
         "penguin",
-        "donut",
+        "sun",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      }
@@ -2441,17 +2449,22 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
-      "🤧 감기 걸렸어 · 🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🤧 감기 걸렸어 · 🍙 배고파 · 💩 똥 4개 치워 줘",
       "sent"
      ],
      [
       2550,
-      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 3개 치워 줘",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -2466,12 +2479,12 @@
      ],
      [
       3990,
-      "🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 통펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 햇펭으로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -2496,7 +2509,7 @@
      ],
      [
       6870,
-      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2511,7 +2524,7 @@
      ],
      [
       8310,
-      "💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2526,17 +2539,17 @@
      ],
      [
       9750,
-      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       10560,
-      "🎓 통펭이 졸업했어요! 도감에 ★★",
+      "🎓 햇펭이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "chub_penguin": {
+     "sun_penguin": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -2544,7 +2557,7 @@
     },
     "hist": [
      {
-      "sp": "chub_penguin",
+      "sp": "sun_penguin",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -2714,12 +2727,14 @@
        "seed": 567894484,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": null
       }
@@ -2731,28 +2746,30 @@
        "stage": "child",
        "species": null,
        "con": "frail",
-       "hunger": 0,
+       "hunger": 3,
        "happy": 2,
        "weight": 10,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
-       "lights": false,
-       "careMiss": 0,
+       "lights": true,
+       "careMiss": 1,
        "morning": 0,
        "night": 1,
        "checks": 1,
        "acc": null,
-       "seed": 2967354770,
+       "seed": 503953287,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": null
       }
@@ -2764,7 +2781,7 @@
        "stage": "child",
        "species": null,
        "con": "frail",
-       "hunger": 3,
+       "hunger": 4,
        "happy": 3,
        "weight": 14,
        "poops": 0,
@@ -2777,15 +2794,17 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 2015813115,
+       "seed": 184247302,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": null
       }
@@ -2799,7 +2818,7 @@
        "con": "frail",
        "hunger": 3,
        "happy": 2,
-       "weight": 24,
+       "weight": 22,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2810,15 +2829,17 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 304553396,
+       "seed": 2136119209,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": null
       }
@@ -2831,7 +2852,7 @@
        "species": "sun_rabbit",
        "con": "frail",
        "hunger": 3,
-       "happy": 3,
+       "happy": 4,
        "weight": 30,
        "poops": 1,
        "sick": false,
@@ -2843,15 +2864,17 @@
        "night": 3,
        "checks": 12,
        "acc": null,
-       "seed": 1624589633,
+       "seed": 4087991116,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": [
         "rabbit",
@@ -2870,8 +2893,8 @@
        "species": "sun_rabbit",
        "con": "frail",
        "hunger": 3,
-       "happy": 4,
-       "weight": 36,
+       "happy": 3,
+       "weight": 37,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2882,15 +2905,17 @@
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 3824650028,
+       "seed": 3192814358,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": [
         "rabbit",
@@ -2908,9 +2933,9 @@
        "stage": "adult",
        "species": "sun_rabbit",
        "con": "frail",
-       "hunger": 3,
-       "happy": 4,
-       "weight": 42,
+       "hunger": 4,
+       "happy": 2,
+       "weight": 45,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -2921,15 +2946,17 @@
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 4129203413,
+       "seed": 1033966260,
        "found": null,
        "finds": {
-        "heartbutton": 1,
-        "lolli": 1,
-        "diamond": 1,
-        "daisy": 3,
-        "curl": 1,
-        "dice": 1
+        "peanut": 1,
+        "starbit": 1,
+        "daisy": 1,
+        "rose": 1,
+        "potflower": 1,
+        "stripestone": 1,
+        "snail": 1,
+        "sock": 1
        },
        "charms": [
         "rabbit",
@@ -2944,12 +2971,12 @@
     "notices": [
      [
       1140,
-      "🐣 알이 깨어났어요! · 🌱 조금 자랐어요! · ☀️ 일어났어! 불 켜 줘 · 🍙 배고파",
+      "🐣 알이 깨어났어요! · 🌱 조금 자랐어요! · ☀️ 좋은 아침!",
       "sent"
      ],
      [
       1410,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2959,7 +2986,7 @@
      ],
      [
       1950,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · 🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2969,7 +2996,7 @@
      ],
      [
       2850,
-      "🤧 감기 걸렸어 · 💩 똥 3개 치워 줘",
+      "🌿 또 자랐어요! 곧 어른이 돼요 · 🤧 감기 걸렸어 · 🥱 심심해 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2979,7 +3006,7 @@
      ],
      [
       3390,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -2989,7 +3016,7 @@
      ],
      [
       4290,
-      "💩 똥 3개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3034,7 +3061,7 @@
      ],
      [
       7170,
-      "💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -3079,7 +3106,7 @@
      ],
      [
       10410,
-      "🤒 몸이 아파 · 💩 똥 쌌어",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3271,11 +3298,11 @@
        "seed": 2399460303,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": null
       }
@@ -3300,14 +3327,14 @@
        "night": 0,
        "checks": 1,
        "acc": null,
-       "seed": 3535249249,
+       "seed": 4167084919,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": null
       }
@@ -3319,8 +3346,8 @@
        "stage": "child",
        "species": null,
        "con": "poopy",
-       "hunger": 4,
-       "happy": 2,
+       "hunger": 3,
+       "happy": 3,
        "weight": 14,
        "poops": 0,
        "sick": false,
@@ -3332,14 +3359,14 @@
        "night": 0,
        "checks": 3,
        "acc": null,
-       "seed": 816082978,
+       "seed": 1447918648,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": null
       }
@@ -3353,25 +3380,25 @@
        "con": "poopy",
        "hunger": 3,
        "happy": 3,
-       "weight": 23,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 1,
+       "careMiss": 2,
        "morning": 2,
        "night": 0,
        "checks": 6,
        "acc": null,
-       "seed": 1568224742,
+       "seed": 304553402,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": null
       }
@@ -3381,36 +3408,36 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "moon_chick",
        "con": "poopy",
-       "hunger": 3,
+       "hunger": 4,
        "happy": 3,
        "weight": 30,
-       "poops": 1,
+       "poops": 2,
        "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 1,
+       "careMiss": 3,
        "morning": 3,
        "night": 0,
        "checks": 9,
        "acc": null,
-       "seed": 2256425309,
+       "seed": 2888260979,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": [
         "chick",
-        "sun",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      },
@@ -3419,36 +3446,36 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "moon_chick",
        "con": "poopy",
        "hunger": 4,
-       "happy": 3,
+       "happy": 4,
        "weight": 36,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 1,
+       "careMiss": 3,
        "morning": 5,
        "night": 0,
        "checks": 15,
        "acc": null,
-       "seed": 1361248551,
+       "seed": 3256755561,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": [
         "chick",
-        "sun",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      },
@@ -3457,36 +3484,36 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_chick",
+       "species": "moon_chick",
        "con": "poopy",
-       "hunger": 3,
+       "hunger": 4,
        "happy": 3,
-       "weight": 42,
+       "weight": 43,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 1,
+       "careMiss": 3,
        "morning": 7,
        "night": 0,
        "checks": 21,
        "acc": null,
-       "seed": 1665801936,
+       "seed": 2929473276,
        "found": null,
        "finds": {
-        "lolli": 1,
-        "tulip": 1,
-        "sock": 1,
-        "daisy": 1,
-        "roundstone": 1
+        "snail": 1,
+        "mushroom": 1,
+        "acorn": 1,
+        "pebble": 1,
+        "peanut": 1
        },
        "charms": [
         "chick",
-        "sun",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      }
@@ -3509,22 +3536,27 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · 💩 똥 쌌어",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
       2190,
-      "🤧 감기 걸렸어 · 🥱 심심해 · 💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
       2550,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "🤧 감기 걸렸어 · 🍙 배고파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
       3360,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
@@ -3534,12 +3566,12 @@
      ],
      [
       3990,
-      "💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 햇삐약으로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 쌌어",
+      "✨ 달삐약으로 자랐어요! 이제 졸업할 수 있어요 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3564,7 +3596,7 @@
      ],
      [
       6870,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3574,7 +3606,7 @@
      ],
      [
       7950,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -3594,17 +3626,17 @@
      ],
      [
       9750,
-      "💩 똥 2개 치워 줘",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
       10830,
-      "🎓 햇삐약이 졸업했어요! 도감에 ★★",
+      "🎓 달삐약이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_chick": {
+     "moon_chick": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -3612,7 +3644,7 @@
     },
     "hist": [
      {
-      "sp": "sun_chick",
+      "sp": "moon_chick",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -3749,11 +3781,13 @@
        "seed": 4231026122,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": null
       }
@@ -3778,14 +3812,16 @@
        "night": 0,
        "checks": 1,
        "acc": "줄무늬",
-       "seed": 1071847772,
+       "seed": 1703683442,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": null
       }
@@ -3810,14 +3846,16 @@
        "night": 1,
        "checks": 3,
        "acc": "줄무늬",
-       "seed": 3847378940,
+       "seed": 184247314,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": null
       }
@@ -3830,26 +3868,28 @@
        "species": null,
        "con": "frail",
        "hunger": 3,
-       "happy": 2,
-       "weight": 23,
+       "happy": 3,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 3,
        "checks": 6,
        "acc": "줄무늬",
-       "seed": 3399790561,
+       "seed": 1504283551,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": null
       }
@@ -3859,7 +3899,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
        "hunger": 3,
        "happy": 2,
@@ -3869,23 +3909,25 @@
        "tummy": false,
        "sleeping": false,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 5,
        "checks": 9,
        "acc": "줄무늬",
-       "seed": 1688530842,
+       "seed": 2824319788,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": [
         "rabbit",
-        "sun",
+        "bolt",
         "star",
         "crown",
         "mango"
@@ -3897,33 +3939,35 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
        "hunger": 3,
-       "happy": 3,
-       "weight": 37,
+       "happy": 2,
+       "weight": 36,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 9,
        "checks": 15,
        "acc": "줄무늬",
-       "seed": 793354084,
+       "seed": 729412887,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": [
         "rabbit",
-        "sun",
+        "bolt",
         "star",
         "crown",
         "mango"
@@ -3935,33 +3979,35 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "sun_rabbit",
+       "species": "wild_rabbit",
        "con": "frail",
        "hunger": 3,
-       "happy": 3,
-       "weight": 44,
+       "happy": 2,
+       "weight": 42,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 0,
        "night": 13,
        "checks": 21,
        "acc": "줄무늬",
-       "seed": 530012996,
+       "seed": 466071799,
        "found": null,
        "finds": {
+        "snail": 1,
+        "gem": 1,
+        "dandelion": 1,
         "roundstone": 1,
-        "lolli": 1,
-        "acornS": 1,
-        "button": 1,
-        "dandelion": 1
+        "button2": 1,
+        "sunflower": 1,
+        "worm": 1
        },
        "charms": [
         "rabbit",
-        "sun",
+        "bolt",
         "star",
         "crown",
         "mango"
@@ -3987,12 +4033,12 @@
      ],
      [
       1290,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -4002,12 +4048,12 @@
      ],
      [
       2550,
-      "🤧 감기 걸렸어 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       2730,
-      "🥱 슬슬 졸려 · 💩 똥 쌌어",
+      "🌿 또 자랐어요! 곧 어른이 돼요 · 🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -4017,7 +4063,7 @@
      ],
      [
       3630,
-      "🍙 배고파 · 💩 똥 쌌어",
+      "💩 똥 쌌어",
       "sent"
      ],
      [
@@ -4027,12 +4073,12 @@
      ],
      [
       4170,
-      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
       "sent"
      ],
      [
       4800,
-      "✨ 햇토로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 들토로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -4047,7 +4093,7 @@
      ],
      [
       5610,
-      "🥱 슬슬 졸려 · 💩 똥 2개 치워 줘",
+      "🥱 슬슬 졸려 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -4057,12 +4103,12 @@
      ],
      [
       6510,
-      "💩 똥 쌌어",
+      "🤒 몸이 아파 · 💩 똥 쌌어",
       "sent"
      ],
      [
       6870,
-      "🤒 몸이 아파 · 💩 똥 2개 치워 줘",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -4112,12 +4158,12 @@
      ],
      [
       10860,
-      "🎓 햇토가 졸업했어요! 도감에 ★★",
+      "🎓 들토가 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "sun_rabbit": {
+     "wild_rabbit": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -4125,7 +4171,7 @@
     },
     "hist": [
      {
-      "sp": "sun_rabbit",
+      "sp": "wild_rabbit",
       "name": null,
       "acc": "줄무늬",
       "mode": "relaxed",
@@ -4294,12 +4340,12 @@
        "seed": 567894482,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": null
       }
@@ -4313,7 +4359,7 @@
        "con": "sleepy",
        "hunger": 3,
        "happy": 3,
-       "weight": 13,
+       "weight": 11,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4324,15 +4370,15 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2903413571,
+       "seed": 3535249241,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": null
       }
@@ -4346,7 +4392,7 @@
        "con": "sleepy",
        "hunger": 2,
        "happy": 2,
-       "weight": 15,
+       "weight": 13,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4357,15 +4403,15 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 2015813113,
+       "seed": 2647648783,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": null
       }
@@ -4379,7 +4425,7 @@
        "con": "sleepy",
        "hunger": 3,
        "happy": 2,
-       "weight": 25,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4390,15 +4436,15 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 2136119207,
+       "seed": 1568224734,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": null
       }
@@ -4410,7 +4456,7 @@
        "stage": "adult",
        "species": "moon_cat",
        "con": "sleepy",
-       "hunger": 2,
+       "hunger": 3,
        "happy": 3,
        "weight": 30,
        "poops": 0,
@@ -4423,22 +4469,22 @@
        "night": 3,
        "checks": 12,
        "acc": null,
-       "seed": 4087991114,
+       "seed": 3520096641,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": [
         "cat",
         "moon",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      },
@@ -4451,7 +4497,7 @@
        "con": "sleepy",
        "hunger": 3,
        "happy": 3,
-       "weight": 37,
+       "weight": 39,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4462,22 +4508,22 @@
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 1361248543,
+       "seed": 1993084213,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": [
         "cat",
         "moon",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      },
@@ -4489,8 +4535,8 @@
        "species": "moon_cat",
        "con": "sleepy",
        "hunger": 3,
-       "happy": 3,
-       "weight": 44,
+       "happy": 2,
+       "weight": 46,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4501,22 +4547,22 @@
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 2297637598,
+       "seed": 466071785,
        "found": null,
        "finds": {
-        "curl": 1,
+        "cap": 1,
+        "acorn": 1,
+        "peanut": 1,
         "acornS": 1,
-        "dice": 1,
-        "marble": 1,
-        "daisy": 1,
-        "mushroom": 1
+        "curl": 1,
+        "tulip": 1
        },
        "charms": [
         "cat",
         "moon",
         "star",
         "crown",
-        "cherry"
+        "egg"
        ]
       }
      }
@@ -4534,12 +4580,17 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
       "👀 뭐 해? 나 여기 있어",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -4716,8 +4767,10 @@
        "seed": 1767624621,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": null
       }
@@ -4742,11 +4795,13 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2271577897,
+       "seed": 2903413567,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": null
       }
@@ -4758,9 +4813,9 @@
        "stage": "child",
        "species": null,
        "con": "greedy",
-       "hunger": 2,
+       "hunger": 1,
        "happy": 2,
-       "weight": 15,
+       "weight": 14,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4771,11 +4826,13 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 1951871912,
+       "seed": 2583707582,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": null
       }
@@ -4789,7 +4846,7 @@
        "con": "greedy",
        "hunger": 2,
        "happy": 3,
-       "weight": 25,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -4800,11 +4857,13 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 176670996,
+       "seed": 2640072479,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": null
       }
@@ -4829,17 +4888,19 @@
        "night": 3,
        "checks": 13,
        "acc": null,
-       "seed": 3960108716,
+       "seed": 1496707233,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": [
         "penguin",
         "moon",
         "star",
-        "mango"
+        "egg"
        ]
       }
      },
@@ -4851,8 +4912,8 @@
        "species": "moon_penguin",
        "con": "greedy",
        "hunger": 2,
-       "happy": 4,
-       "weight": 32,
+       "happy": 2,
+       "weight": 33,
        "poops": 2,
        "sick": false,
        "tummy": false,
@@ -4863,17 +4924,19 @@
        "night": 3,
        "checks": 14,
        "acc": null,
-       "seed": 1240942445,
+       "seed": 609106775,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": [
         "penguin",
         "moon",
         "star",
-        "mango"
+        "egg"
        ]
       }
      },
@@ -4885,8 +4948,8 @@
        "species": "moon_penguin",
        "con": "greedy",
        "hunger": 2,
-       "happy": 4,
-       "weight": 32,
+       "happy": 2,
+       "weight": 33,
        "poops": 2,
        "sick": false,
        "tummy": false,
@@ -4897,17 +4960,19 @@
        "night": 3,
        "checks": 14,
        "acc": null,
-       "seed": 1240942445,
+       "seed": 609106775,
        "found": null,
        "finds": {
-        "curl": 1,
-        "sock": 1
+        "note": 1,
+        "curl": 2,
+        "dice": 1,
+        "letter": 1
        },
        "charms": [
         "penguin",
         "moon",
         "star",
-        "mango"
+        "egg"
        ]
       }
      }
@@ -4930,17 +4995,22 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
-      "💩 똥 4개 치워 줘",
+      "🍙 배고파 · 💩 똥 4개 치워 줘",
       "sent"
      ],
      [
       2550,
-      "🤧 감기 걸렸어 · 🍙 배고파 · 🥱 심심해 · 💩 똥 2개 치워 줘",
+      "🤧 감기 걸렸어 · 🍙 배고파 · 💩 똥 2개 치워 줘",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -4955,7 +5025,7 @@
      ],
      [
       3990,
-      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 2개 치워 줘",
+      "🍙 배고파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -5153,11 +5223,9 @@
        "seed": 4231026112,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": null
       }
@@ -5170,8 +5238,8 @@
        "species": null,
        "con": "blocked",
        "hunger": 3,
-       "happy": 4,
-       "weight": 10,
+       "happy": 3,
+       "weight": 11,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -5182,14 +5250,12 @@
        "night": 0,
        "checks": 2,
        "acc": null,
-       "seed": 2271577905,
+       "seed": 2903413575,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": null
       }
@@ -5214,14 +5280,12 @@
        "night": 1,
        "checks": 4,
        "acc": null,
-       "seed": 1383977447,
+       "seed": 2015813117,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": null
       }
@@ -5234,8 +5298,8 @@
        "species": null,
        "con": "blocked",
        "hunger": 3,
-       "happy": 3,
-       "weight": 25,
+       "happy": 2,
+       "weight": 21,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -5246,14 +5310,12 @@
        "night": 2,
        "checks": 8,
        "acc": null,
-       "seed": 240612201,
+       "seed": 3903743827,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": null
       }
@@ -5263,7 +5325,7 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "wild_frog",
+       "species": "moon_frog",
        "con": "blocked",
        "hunger": 4,
        "happy": 3,
@@ -5273,26 +5335,24 @@
        "tummy": false,
        "sleeping": false,
        "lights": true,
-       "careMiss": 2,
+       "careMiss": 1,
        "morning": 4,
        "night": 3,
        "checks": 13,
        "acc": null,
-       "seed": 2128542911,
+       "seed": 2760378581,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": [
         "frog",
-        "bolt",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      },
@@ -5301,11 +5361,11 @@
       "state": {
        "phase": "alive",
        "stage": "adult",
-       "species": "wild_frog",
+       "species": "moon_frog",
        "con": "blocked",
        "hunger": 3,
        "happy": 3,
-       "weight": 39,
+       "weight": 37,
        "poops": 0,
        "sick": false,
        "tummy": false,
@@ -5316,21 +5376,19 @@
        "night": 5,
        "checks": 20,
        "acc": null,
-       "seed": 473648089,
+       "seed": 4200720912,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": [
         "frog",
-        "bolt",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      },
@@ -5339,36 +5397,34 @@
       "state": {
        "phase": "graduated",
        "stage": "adult",
-       "species": "wild_frog",
+       "species": "moon_frog",
        "con": "blocked",
        "hunger": 3,
-       "happy": 3,
-       "weight": 46,
+       "happy": 2,
+       "weight": 44,
        "poops": 0,
        "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
-       "careMiss": 3,
+       "careMiss": 4,
        "morning": 7,
        "night": 7,
        "checks": 28,
        "acc": null,
-       "seed": 3113720563,
+       "seed": 1346095947,
        "found": null,
        "finds": {
-        "marble": 1,
-        "starbit": 1,
-        "sprout": 1,
-        "dandelion": 1,
-        "note": 1
+        "persimmon": 1,
+        "maple": 2,
+        "daisy": 1
        },
        "charms": [
         "frog",
-        "bolt",
+        "moon",
         "star",
         "crown",
-        "clover"
+        "egg"
        ]
       }
      }
@@ -5381,7 +5437,7 @@
      ],
      [
       750,
-      "🌱 조금 자랐어요! · 🤒 몸이 아파 · 💩 똥 쌌어",
+      "🌱 조금 자랐어요! · 😣 배가 아파",
       "sent"
      ],
      [
@@ -5391,17 +5447,22 @@
      ],
      [
       1920,
-      "🌿 또 자랐어요! 곧 어른이 돼요 · ☀️ 일어났어! 불 켜 줘",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
       2190,
-      "😣 배가 아파",
+      "🤧 감기 걸렸어 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       2550,
-      "😣 배가 아파 · 💩 똥 쌌어",
+      "😣 배가 아파 · 🍙 배고파 · 💩 똥 쌌어",
+      "sent"
+     ],
+     [
+      2730,
+      "🌿 또 자랐어요! 곧 어른이 돼요",
       "sent"
      ],
      [
@@ -5411,17 +5472,17 @@
      ],
      [
       3630,
-      "😣 배가 아파",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       3990,
-      "😣 배가 아파 · 💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       4800,
-      "✨ 들개굴로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
+      "✨ 달개굴로 자랐어요! 이제 졸업할 수 있어요 · ☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -5431,7 +5492,7 @@
      ],
      [
       5430,
-      "💩 똥 3개 치워 줘",
+      "😣 배가 아파 · 💩 똥 2개 치워 줘",
       "sent"
      ],
      [
@@ -5441,12 +5502,12 @@
      ],
      [
       6510,
-      "😣 배가 아파 · 💩 똥 쌌어",
+      "💩 똥 2개 치워 줘",
       "sent"
      ],
      [
       6870,
-      "💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 💩 똥 쌌어",
       "sent"
      ],
      [
@@ -5456,12 +5517,12 @@
      ],
      [
       7950,
-      "😣 배가 아파 · 💩 똥 쌌어",
+      "😣 배가 아파",
       "sent"
      ],
      [
       8310,
-      "🤒 몸이 아파 · 💩 똥 쌌어",
+      "😣 배가 아파",
       "sent"
      ],
      [
@@ -5471,22 +5532,22 @@
      ],
      [
       9390,
-      "💩 똥 2개 치워 줘",
+      "😣 배가 아파",
       "sent"
      ],
      [
       9750,
-      "💩 똥 2개 치워 줘",
+      "🤒 몸이 아파 · 😣 배가 아파 · 💩 똥 쌌어",
       "sent"
      ],
      [
       10560,
-      "🎓 들개굴이 졸업했어요! 도감에 ★★",
+      "🎓 달개굴이 졸업했어요! 도감에 ★★",
       "sent"
      ]
     ],
     "dex": {
-     "wild_frog": {
+     "moon_frog": {
       "seen": true,
       "grad": 1,
       "best": 2
@@ -5494,7 +5555,7 @@
     },
     "hist": [
      {
-      "sp": "wild_frog",
+      "sp": "moon_frog",
       "name": null,
       "acc": null,
       "mode": "relaxed",
@@ -5590,13 +5651,13 @@
   },
   {
    "t": 750,
-   "text": "🌱 조금 자랐어요! · 🍙 배고파",
+   "text": "🍙 배고파",
    "kind": "digest",
    "who": null
   },
   {
    "t": 1110,
-   "text": "🍙 배고파 · 🥱 심심해",
+   "text": "🌱 조금 자랐어요! · 🍙 배고파 · 🥱 심심해",
    "kind": "digest",
    "who": null
   },
@@ -5614,7 +5675,7 @@
   },
   {
    "t": 2190,
-   "text": "🌿 또 자랐어요! 곧 어른이 돼요 · 🤧 감기 걸렸어 · 🍙 배고파 · 🥱 심심해",
+   "text": "🤧 감기 걸렸어 · 🍙 배고파 · 🥱 심심해",
    "kind": "digest",
    "who": null
   },

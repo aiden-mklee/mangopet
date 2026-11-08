@@ -98,12 +98,15 @@ const drowsy=g=>g.phase==='alive'&&!g.sleeping&&g.stage!=='baby'&&localHour(g)>=
 function setLife(g,id){if(!LIFE[id])return;g.lifeNext=id;applyLife(g)}
 function applyLife(g){if(!g.lifeNext)return;const old=g.life,was=isNight(g);g.life=g.lifeNext;
   if(g.phase==='alive'&&isNight(g)!==was){g.life=old;return}g.lifeNext=null}
-const stageFor=a=>a<60?'baby':a<DAY?'child':a<ADULT_AT?'teen':a<FULL_TERM?'adult':'grad';
-const hungerInt=g=>({baby:12,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
-const happyInt=g=>({baby:22,child:110,teen:130,adult:150}[g.stage]);
+// baby 3 hours (only its first hour needs a hand every few minutes), child until a day and a half: at 1 hour and 1 day
+// players said they hardly ever saw either
+const BABY_END=180,CHILD_END=DAY*1.5,BUSY=g=>g.stage==='baby'&&g.ageMin<60;
+const stageFor=a=>a<BABY_END?'baby':a<CHILD_END?'child':a<ADULT_AT?'teen':a<FULL_TERM?'adult':'grad';
+const hungerInt=g=>(BUSY(g)?12:{baby:60,child:60,teen:75,adult:90}[g.stage])*(g.con==='greedy'?.7:1);
+const happyInt=g=>BUSY(g)?22:{baby:110,child:110,teen:130,adult:150}[g.stage];
 const baseW=g=>({baby:5,child:10,teen:20,adult:30}[g.stage]);
 const overweight=g=>g.weight>baseW(g)+15;
-function poopDelay(g){const b=g.stage==='baby'?15:120;const m={poopy:.5,blocked:2.5}[g.con]||1;return Math.max(5,Math.round(b*m*(.8+rand(g)*.4)))}
+function poopDelay(g){const b=BUSY(g)?15:120;const m={poopy:.5,blocked:2.5}[g.con]||1;return Math.max(5,Math.round(b*m*(.8+rand(g)*.4)))}
 // graduating on day 7 counts as the full term, whether the player or the clock does it
 const fullTerm=g=>g.ageMin>=FULL_TERM-DAY;
 // saves from before early graduation only ever graduated at day 7

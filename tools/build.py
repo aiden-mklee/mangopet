@@ -25,7 +25,7 @@ ENGINE = os.path.join(ROOT, 'src', 'engine.js')
 SLOT = '<script>/* @engine: tools/build.py inlines src/engine.js here */</script>'
 DOCS = os.path.join(ROOT, 'docs')
 FONT = os.path.join(ROOT, 'tools', 'fonts', 'Galmuri11.woff2')
-BETA = '1.0'  # the version shown in settings; keep in step with MARKETING_VERSION / versionName for store builds
+BETA = '1.0.1'  # the version shown in settings; keep in step with MARKETING_VERSION / versionName for store builds
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
 
 
