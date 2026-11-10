@@ -1361,7 +1361,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · 34bcaf',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 8c1ae3',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2975,8 +2975,11 @@ function renderScreenIn(tab,el){
   // Nothing is kept until 저장 (leaving asks). Fingers tap the same things
   if(tab==='eng'){const ch=engChars(),row=ui.engRow||'slots',tgt=ui.engPos||0,kb=el.querySelector('.engkeys'),st=kb?kb.scrollTop:0;el.classList.add('engmode');
     const cur=(r,i)=>row===r&&(r==='kb'||i===(r==='slots'?ui.engCol:r==='tools'?ui.engTool:ui.engKey));
-    el.innerHTML=`<div class="engbig"><div class="engslots">${ch.map((c,i)=>`<span data-engslot="${i}" class="${cur('slots',i)?'cur':ui.engPicked&&i===tgt?'sel':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
-      <div class="engarr">${ch.map((_,i)=>`<span>${ui.engPicked&&i===tgt?'▲':''}</span>`).join('')}</div>
+    // the slot being worked on: on ⌫ 지우기 the one it erases next (also when ⌫ was tapped straight from the slots, where
+    // nothing was picked and the mark used to vanish), otherwise the picked slot letters go into
+    const mark=row==='tools'&&!ui.engTool?engEraseAt():ui.engPicked?tgt:-1;
+    el.innerHTML=`<div class="engbig"><div class="engslots">${ch.map((c,i)=>`<span data-engslot="${i}" class="${cur('slots',i)?'cur':i===mark?'sel':''}">${c===' '?'&nbsp;':c}</span>`).join('')}</div>
+      <div class="engarr">${ch.map((_,i)=>`<span>${i===mark?'▲':''}</span>`).join('')}</div>
       <div class="engtools"><span class="full${cur('kb')?' cur':''}" data-engkb>휴대폰 키보드로 쓰기</span><span class="${cur('tools',0)?'cur':''}" data-engbs>⌫ 지우기</span><span class="${cur('tools',1)?'cur':''}" data-engsave>저장</span></div></div>
       <div class="engkeys">${ENG_KEYS.map((k,i)=>`<button class="pxbtn${cur('keys',i)?' kcur':''}" data-ek="${i}">${k===' '?'␣':k}</button>`).join('')}</div>`;
     const K=el.querySelector('.engkeys');K.scrollTop=st;
