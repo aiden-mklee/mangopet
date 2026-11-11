@@ -1101,7 +1101,8 @@ function talk(t,s='',big=false){
   else{if(talkQ.length)return;talkLight={t,s};clearTimeout(nTimer);nTimer=setTimeout(()=>{talkLight=null;talkShow()},2600)}
   talkShow()}
 function talkShow(){const b=$('talkBox'),it=talkQ[0]||talkLight,on=!!it&&!ui.deco,was=!b.hidden;b.hidden=!on;
-  if(on&&!was&&talkQ.length){b.classList.remove('drop');void b.offsetWidth;b.classList.add('drop');sfx('news')}   // news just arrived: drop in, one beep and tapdocument.body.classList.toggle('talking',on);if(!on)return;
+  if(on&&!was&&talkQ.length){b.classList.remove('drop');void b.offsetWidth;b.classList.add('drop');sfx('news')}   // news just arrived: drop in, one beep and tap
+  document.body.classList.toggle('talking',on);if(!on)return;
   const ph=document.querySelector('.phone'),st=$('sceneTop'),ad=$('adTop');
   if(st&&!st.hidden&&st.offsetParent){b.style.top=st.offsetTop+'px';b.style.height=st.offsetHeight+'px'}
   else{b.style.top=(ad&&ad.offsetParent?ad.offsetTop+ad.offsetHeight:0)+12+'px';b.style.height=''}
