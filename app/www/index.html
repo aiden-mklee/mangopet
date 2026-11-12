@@ -404,6 +404,11 @@ body:not(.sheeted) .phone.scenic{justify-content:flex-start!important}
 .screen h3{font-size:12px;font-weight:400;margin:0;border-bottom:2px solid var(--ink);padding-bottom:2px}
 .screen p{margin:0}
 .screen .dim{opacity:.78}
+/* 설명서: a thin booklet, one page at a time (◀ ▶), short lines, no numbers to learn */
+.guide h3{margin:2px 0 4px}.guide p{margin:0 0 5px;font-size:12px;line-height:1.5}.guide b{font-weight:normal;background:var(--ink);color:var(--lcd);padding:0 3px}
+.gicons{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:2px 0 6px;text-align:center;font-size:11px}
+.gicons canvas{display:block;margin:0 auto 1px;width:26px;height:26px;image-rendering:pixelated}
+.gnav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 6px}.gnav span{font-size:11px;flex:1;text-align:right;opacity:.75;margin-right:2px;white-space:nowrap}.gnav .pxbtn{min-width:34px}
 .pxgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 /* 주운 것: five across so the names fit, wrapping by word onto a second line */
 .pxgrid.fgrid{grid-template-columns:repeat(5,minmax(0,1fr))}.fgrid .pxcard span{white-space:normal;word-break:keep-all;line-height:1.15;text-align:center}
@@ -1369,7 +1374,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · d591f4',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 799a84',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1886,6 +1891,21 @@ function iconFor(){
   if(g.phase==='dead')return S.tomb;if(g.phase==='away')return S.env;if(g.phase==='egg'||g.phase==='select')return S.egg;return petSprite();
 }
 const TH=Math.max(3,Math.round(3*(window.devicePixelRatio||1)));
+// 설명서 (settings): what a first-time player asks. Short, in the game's words, no numbers to learn
+const GUIDE=[
+ {t:'버튼과 아이콘',h:`<div class="gicons">${ACTS.map(k=>`<div><canvas data-gic="${k}"></canvas>${{meal:'밥',snack:'간식',play:'놀이',light:'불',med:'약',clean:'청소',stats:'상태',dex:'도감'}[k]}</div>`).join('')}</div>`},
+ {t:'고르고 실행하기',h:`<p>아이콘을 누르면 커서만 가요. <b>선택</b>을 눌러야 실행돼요.</p><p><b>취소</b>는 뒤로 가기. 펫을 손가락으로 누르면 쓰다듬어요.</p>`},
+ {t:'말풍선',h:`<div class="gicons"><div><canvas data-gic="" data-gmini="hungry"></canvas>배고파</div><div><canvas data-gic="" data-gmini="bored"></canvas>심심해</div><div><canvas data-gic="" data-gmini="sick"></canvas>아파</div><div><canvas data-gic="" data-gmini="sleepy"></canvas>졸려</div></div><p>펫 옆 말풍선이 지금 필요한 걸 알려 줘요.</p>`},
+ {t:'하루 돌보기',h:`<p>밥으로 배를 채우고, 쓰다듬거나 놀아 주면 기분이 좋아져요. 간식은 살이 쪄요.</p><p>똥은 바로 치워요. 밤엔 불을 끄고, 아침엔 켜 줘요.</p>`},
+ {t:'아플 때',h:`<p>똥을 오래 두거나 살이 너무 찌면 아파요. 그럴 땐 <b>약</b>!</p><p>배가 아프다고 하면 세 번 쓰다듬어 줘요. 오래 비우면 편지를 두고 떠나요.</p>`},
+ {t:'자라기',h:`<p>알 → 아기 → 꼬마 → 청소년 → 어른. 사흘이면 어른, 일주일이면 졸업.</p><p>아침에 자주 오면 해, 밤엔 달, 간식은 통통, 오래 비우면 야생이 되기 쉬워요.</p>`},
+ {t:'졸업과 다음 알',h:`<p>어른이 되면 언제든 졸업할 수 있어요. 도감과 앨범에 남아요.</p><p>남긴 알을 받으면 몸의 무늬를 물려받기도 해요.</p>`},
+ {t:'놀이와 모으기',h:`<p><b>놀이</b>는 미니게임. 잘하면 더 기뻐해요.</p><p>가끔 뭔가 주워 와요. 눌러서 주우면 도감에 모여요. 무언가 해내면 키링도 받아요.</p>`},
+ {t:'꾸미기',h:`<p>기기 아래 <b>꾸미기</b>에서 모자, 케이스, 색, 배경, 키링, 각인을 바꿔요.</p><p>잠긴 칸을 누르면 여는 방법을 알려 줘요.</p>`},
+ {t:'알림과 생활 시간',h:`<p>알림은 하루 몇 번, 묶어서 와요. 밤엔 조용해요.</p><p>늦게 자면 <b>아이·생활</b>에서 생활 시간을 바꿔요. 하루 몇 번, 10초면 충분해요.</p>`},
+];
+function guideHtml(){const i=((ui.guide||0)%GUIDE.length+GUIDE.length)%GUIDE.length,G=GUIDE[i];
+  return `<div class="guide"><div class="gnav"><button class="pxbtn" data-setback>◀ 설정</button><span>${i+1} / ${GUIDE.length}</span><button class="pxbtn" data-gp="-1">◀</button><button class="pxbtn" data-gp="1">▶</button></div><h3>${G.t}</h3>${G.h}</div>`}
 function sprCanvas(cv,s,{on,bg=null,off=null,pad=1,silhouette=false,cell=null,frame=null,gap}={}){
   const P=frame?new Pix(frame[0],frame[1]):new Pix(s.w+pad*2,s.h+pad*2);P.spr(s,frame?Math.floor((frame[0]-s.w)/2):pad,frame?frame[1]-s.h-1:pad,{solid:silhouette});P.paint(cv,{on,bg,off,cell,gap});
 }
@@ -3058,7 +3078,7 @@ function renderScreenIn(tab,el){
   if(tab==='set'){
     const opt=(name,cur,list)=>`<div class="pxrow">${list.map(([v,l])=>`<button class="pxbtn" data-set="${name}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
     // settings: a short menu of big buttons; each opens its page (◀ or 취소 goes back to the menu)
-    const SET_PAGES=[['pet','아이·생활'],['notif','알림·소리'],['deco','꾸미기'],['friend','친구'],['data','기록'],['info','정보']].filter(([k])=>k!=='friend'||opened('friend'));
+    const SET_PAGES=[['pet','아이·생활'],['notif','알림·소리'],['deco','꾸미기'],['friend','친구'],['data','기록'],['guide','설명서'],['info','정보']].filter(([k])=>k!=='friend'||opened('friend'));
     const pages={pet:`${g.phase==='alive'?`<h3>아이 이름</h3><div class="pxrow"><button class="pxbtn" data-rename>${g.name?g.name+' · 바꾸기':'이름 짓기'}</button></div>`:''}
       <h3>생활 시간</h3>${opt('life',g.life||'day',Object.entries(E.LIFE).map(([k,v])=>[k,v.ko]))}<p class="dim">${E.LIFE[g.lifeNext||g.life||'day'].d}${g.lifeNext?' · 다음에 자고 일어날 때부터':''}</p>
       <h3>내 생일</h3><div class="pxrow"><select class="pxsel" data-bm aria-label="생일 월"><option value="">월</option>${[...Array(12)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(0,2)===i+1?' selected':''}>${i+1}월</option>`).join('')}</select><select class="pxsel" data-bd aria-label="생일 일"><option value="">일</option>${[...Array(31)].map((_,i)=>`<option value="${String(i+1).padStart(2,'0')}"${g.birthday&&+g.birthday.slice(3)===i+1?' selected':''}>${i+1}일</option>`).join('')}</select></div><p class="dim">그날 아이가 축하해 줘요. 이 기기에만 저장돼요.</p>
@@ -3081,14 +3101,17 @@ function renderScreenIn(tab,el){
       ${ui.backup==='in'?`<textarea class="pxcode" data-backup-text placeholder="내보낸 코드를 붙여 넣어요"></textarea><div class="pxrow"><button class="pxbtn" data-backup-go>이 기록으로 바꾸기</button></div><p class="dim">${ui.backupMsg||'지금 이 폰의 기록은 이 코드로 바뀌어요'}</p>`:''}
       <h3>기록 지우기</h3>${ui.wipeAsk?`<p class="dim">펫, 도감, 주운 것, 키링, 꾸밈이 이 기기에서 모두 지워지고 되돌릴 수 없어요.</p>
         <div class="pxrow"><button class="pxbtn" data-wipe-go>정말 지우기</button><button class="pxbtn" data-wipe-no>그만두기</button></div>`:'<div class="pxrow"><button class="pxbtn" data-wipe>모든 기록 지우기</button></div>'}`,
+      guide:guideHtml(),
       info:`<h3>정보</h3><div class="pxrow"><a class="pxbtn" href="privacy.html">개인정보 처리방침</a><a class="pxbtn" href="terms.html">이용약관</a><a class="pxbtn" href="licenses.html">오픈소스 라이선스</a></div>
       ${FEEDBACK_URL?`<h3>의견 보내기</h3><div class="pxrow"><a class="pxbtn" href="${FEEDBACK_URL}" target="_blank" rel="noopener">불편한 점·아이디어 보내기</a></div>`:''}
       ${ADS?`<h3>광고</h3><div class="pxrow"><button class="pxbtn" data-set="adFree" data-v="${!g.adFree}" aria-pressed="${!!g.adFree}">${g.adFree?'광고 제거됨 ✓':'광고 제거하기 ₩3,300'}</button></div>`:''}
       <p class="dim">망고펫 ${VERSION}${ADS?' · 가격은 예시예요':''}</p>`};
     const pg=ui.setPage&&pages[ui.setPage]?ui.setPage:null;
-    el.innerHTML=pg?`<div class="pxrow"><button class="pxbtn" data-setback>◀ 설정</button></div><h2>${SET_PAGES.find(x=>x[0]===pg)[1]}</h2>${pages[pg]}`
+    el.innerHTML=pg==='guide'?pages.guide:pg?`<div class="pxrow"><button class="pxbtn" data-setback>◀ 설정</button></div><h2>${SET_PAGES.find(x=>x[0]===pg)[1]}</h2>${pages[pg]}`
       :`<h2>설정</h2><div class="pxmenu">${SET_PAGES.map(([k,l])=>`<button class="pxbtn" data-setpage="${k}">${l}</button>`).join('')}</div>${g.name&&g.phase==='alive'?`<p class="dim">${g.name} · DAY ${petDay()}</p>`:''}`;
     el.querySelectorAll('[data-setpage]').forEach(b=>b.onclick=()=>{ui.setPage=b.dataset.setpage;ui.padKey=null;el.scrollTop=0;renderScreen(tab,el)});
+    el.querySelectorAll('[data-gp]').forEach(b=>b.onclick=()=>{ui.guide=(((ui.guide||0)+ +b.dataset.gp)%GUIDE.length+GUIDE.length)%GUIDE.length;ui.padKey=padKey(b);el.scrollTop=0;renderScreen(tab,el)});
+    el.querySelectorAll('[data-gic]').forEach(c=>{const k=c.dataset.gic,m=c.dataset.gmini;if(m||IC[k])sprCanvas(c,m?MS[m]:IC[k],{on:COL.ink,bg:COL.lcd,pad:1})});
     const sb=el.querySelector('[data-setback]');if(sb)sb.onclick=()=>{const k=ui.setPage;ui.setPage=null;renderScreen(tab,el);const t=el.querySelector(`[data-setpage="${k}"]`);if(t){ui.padKey=padKey(t);padShow()}};
     el.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set,v=b.dataset.v;if(k==='life'){E.setLife(g,v);save();renderScreen(tab,el);return}g[k]=k==='adFree'?v==='true':v;applySkin();lastCtx='';save();renderScreen(tab,el)});
     el.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>{g.shape=b.dataset.shape;g.skin=skinFor(g.shape,g.skin);applySkin();save();renderScreen(tab,el)});
