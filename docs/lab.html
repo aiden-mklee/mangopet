@@ -1351,7 +1351,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · 799a84',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0.1 · 31d2df',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1875,7 +1875,8 @@ const GUIDE=[
  {t:'말풍선',h:`<div class="gicons"><div><canvas data-gic="" data-gmini="hungry"></canvas>배고파</div><div><canvas data-gic="" data-gmini="bored"></canvas>심심해</div><div><canvas data-gic="" data-gmini="sick"></canvas>아파</div><div><canvas data-gic="" data-gmini="sleepy"></canvas>졸려</div></div><p>펫 옆 말풍선이 지금 필요한 걸 알려 줘요.</p>`},
  {t:'하루 돌보기',h:`<p>밥으로 배를 채우고, 쓰다듬거나 놀아 주면 기분이 좋아져요. 간식은 살이 쪄요.</p><p>똥은 바로 치워요. 밤엔 불을 끄고, 아침엔 켜 줘요.</p>`},
  {t:'아플 때',h:`<p>똥을 오래 두거나 살이 너무 찌면 아파요. 그럴 땐 <b>약</b>!</p><p>배가 아프다고 하면 세 번 쓰다듬어 줘요. 오래 비우면 편지를 두고 떠나요.</p>`},
- {t:'자라기',h:`<p>알 → 아기 → 꼬마 → 청소년 → 어른. 사흘이면 어른, 일주일이면 졸업.</p><p>아침에 자주 오면 해, 밤엔 달, 간식은 통통, 오래 비우면 야생이 되기 쉬워요.</p>`},
+ {t:'자라기',h:`<p>알 → 아기 → 꼬마 → 청소년 → 어른. 사흘이면 어른, 일주일이면 졸업.</p><p>동물은 타고난 체질이 정해요. 청소년이 되면 <b>상태</b>에서 볼 수 있어요.</p>`},
+ {t:'어떤 아이가 될까',h:`<p>어른이 될 때 그동안 돌본 방식으로 정해져요.</p><p>아침에 자주 오면 해, 밤엔 달, 간식은 통통, 오래 비우면 야생이 되기 쉬워요.</p>`},
  {t:'졸업과 다음 알',h:`<p>어른이 되면 언제든 졸업할 수 있어요. 도감과 앨범에 남아요.</p><p>남긴 알을 받으면 몸의 무늬를 물려받기도 해요.</p>`},
  {t:'놀이와 모으기',h:`<p><b>놀이</b>는 미니게임. 잘하면 더 기뻐해요.</p><p>가끔 뭔가 주워 와요. 눌러서 주우면 도감에 모여요. 무언가 해내면 키링도 받아요.</p>`},
  {t:'꾸미기',h:`<p>기기 아래 <b>꾸미기</b>에서 모자, 케이스, 색, 배경, 키링, 각인을 바꿔요.</p><p>잠긴 칸을 누르면 여는 방법을 알려 줘요.</p>`},
