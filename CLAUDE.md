@@ -8,6 +8,7 @@
 - `README.md`: 구조, 빌드, 배포
 - `DESIGN.md`: 케이스·LCD·버튼·색·폰트 규칙과 지금까지 정해진 디자인 결정
 - `GAME.md`: 게임 규칙과 밸런스 수치
+- 제품 문서(Claude Docs, 탭 4개: PRD·기능정의서·화면설계서·서비스정책): https://claude.ai/artifact/V8JX13wba7NY9th8hmyDb9 . 규칙·화면·정책이 바뀌면 이 문서도 맞춘다(기능 ID `F-영역-번호`, 화면 ID `S-번호`).
 
 ## 작업 방식
 
