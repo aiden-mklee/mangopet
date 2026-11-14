@@ -1373,7 +1373,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · d9a5af',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 289b38',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1846,11 +1846,11 @@ function drawScene(P,widget){
     if(g.happy>=4&&!nb.length){const c=t%7000;if(c<1500){const k=Math.floor(c/250);P.spr(MINI_HEART,side,y+3-k)}}
     if(ui.sparkUntil&&t>ui.sparkFrom&&t<ui.sparkUntil){const ph=Math.floor(t/300)%2;
       [[x-6,y],[side+2,y-2],[x-7,GND-7],[side+3,GND-5],[x+Math.floor(s.w/2)+6,Math.max(0,top-5)]].forEach(([sx,sy],i)=>{if((i+ph)%2)P.spr(SPARK,Math.max(0,sx),Math.max(0,sy))})}}
-  // long-kept pets give off light every 4 s: a ring rises from the body and spreads out, thinning, and is gone. Day 5 a small
-  // spread, day 6 a wide one, day 7 the wide one and then a burst of sparkles round it, pa-pa-pak. (A solid outline worn all
+  // long-kept pets give off light every 3 s: a ring rises from the body and spreads out, thinning, and is gone. Day 5 a small
+  // spread (still far enough to thin out), day 6 a wide one, day 7 the wide one and then a burst of sparkles round it, pa-pa-pak. (A solid outline worn all
   // the time looked heavy; sparkles on their own were mixed up with the ones for cleaning and petting.)
-  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&g.ageMin>=4*1440){const day=g.ageMin>=6*1440?7:g.ageMin>=5*1440?6:5,k=Math.floor((t%4000)/150),
-      last=day===5?3:6;
+  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&g.ageMin>=4*1440){const day=g.ageMin>=6*1440?7:g.ageMin>=5*1440?6:5,k=Math.floor((t%3000)/150),
+      last=day===5?4:6;
     if(k<=last-2){const R=2+k;rippleRing(s,R).forEach(([yy,xx])=>{if(yy<s.h-1&&(R<4||(yy+xx)%2===0))P.px(x+xx,y+yy)})}
     else if(day===7&&k<=last+2){const cx=x+s.w/2,cy=y+s.h/2,rx=s.w/2+7,ry=s.h/2+5;
       for(let i=0;i<8;i++){const at=last-1+(i%3);if(k<at||k>at+1)continue;const an=i*Math.PI/4-Math.PI/2;   // three quick pops, a few sparkles each
