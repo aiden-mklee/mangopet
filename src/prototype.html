@@ -1490,11 +1490,15 @@ function drawScene(P,widget){
     if(g.happy>=4&&!nb.length){const c=t%7000;if(c<1500){const k=Math.floor(c/250);P.spr(MINI_HEART,side,y+3-k)}}
     if(ui.sparkUntil&&t>ui.sparkFrom&&t<ui.sparkUntil){const ph=Math.floor(t/300)%2;
       [[x-6,y],[side+2,y-2],[x-7,GND-7],[side+3,GND-5],[x+Math.floor(s.w/2)+6,Math.max(0,top-5)]].forEach(([sx,sy],i)=>{if((i+ph)%2)P.spr(SPARK,Math.max(0,sx),Math.max(0,sy))})}}
-  // long-kept pets give off light now and then: most of the time nothing, then a ring rises from the body and spreads out,
-  // thinning, and is gone (from day 5 about every 9 s, from day 6 about every 5 s). The solid outline they once wore all
-  // the time looked heavy, and sparkles were mixed up with the ones for cleaning and petting
-  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&g.ageMin>=4*1440){const per=g.ageMin>=5*1440?5000:9000,k=Math.floor((t%per)/170);
-    if(k<5){const R=2+k;rippleRing(s,R).forEach(([yy,xx])=>{if(yy<s.h-1&&(R<4||(yy+xx)%2===0))P.px(x+xx,y+yy)})}}
+  // long-kept pets give off light every 4 s: a ring rises from the body and spreads out, thinning, and is gone. Day 5 a small
+  // spread, day 6 a wide one, day 7 the wide one and then a burst of sparkles round it, pa-pa-pak. (A solid outline worn all
+  // the time looked heavy; sparkles on their own were mixed up with the ones for cleaning and petting.)
+  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&g.ageMin>=4*1440){const day=g.ageMin>=6*1440?7:g.ageMin>=5*1440?6:5,k=Math.floor((t%4000)/150),
+      last=day===5?3:6;
+    if(k<=last-2){const R=2+k;rippleRing(s,R).forEach(([yy,xx])=>{if(yy<s.h-1&&(R<4||(yy+xx)%2===0))P.px(x+xx,y+yy)})}
+    else if(day===7&&k<=last+2){const cx=x+s.w/2,cy=y+s.h/2,rx=s.w/2+7,ry=s.h/2+5;
+      for(let i=0;i<8;i++){const at=last-1+(i%3);if(k<at||k>at+1)continue;const an=i*Math.PI/4-Math.PI/2;   // three quick pops, a few sparkles each
+        P.spr(SPARK,Math.max(0,Math.round(cx+Math.cos(an)*rx)-1),Math.max(0,Math.round(cy+Math.sin(an)*ry)-1))}}}
   // the petting heart sits above the head and any accessory, on a cleared patch so it always reads
   if(!widget&&t<ui.heartUntil){const hx=Math.max(1,x+Math.floor(s.w/2)-2),hy=Math.max(1,top-6);P.rect(hx-1,hy-1,7,7,0);P.spr(S.hF,hx,hy)}
   if(!widget&&ui.msg&&t<ui.msg.until){const w=ui.msg.t.length*4+1,mx=Math.floor((LW-w)/2);P.rect(mx-1,0,w+2,7,0);P.text(ui.msg.t,mx+1,1)}
