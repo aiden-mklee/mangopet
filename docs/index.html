@@ -758,7 +758,9 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['snail','달팽이 껍데기',5],['ladybug','무당벌레',4],['worm','지렁이',4],
   // seasonal: only in their months (g.month, set by the screen from the phone's calendar; without it they never come)
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
-  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['persimmon','감',0,[9,10,11]]];
+  ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['persimmon','감',0,[9,10,11]],
+  // only from the day's surprise (SURPRISES): no months, so they never come on their own and the jewel does not ask for them
+  ['meteor','유성 조각',0,[]],['rainbowbead','무지개 구슬',0,[]],['firejar','반딧불 병',0,[]],['bubble','비눗방울',0,[]],['blossom','벚꽃 한 송이',0,[]]];
 const SEASON_W=10;
 // the groups of the collection; filling one gives its keyring charm. Ten kinds give the loupe, every everyday find (not the
 // seasonal ones) the shining jewel
@@ -766,7 +768,18 @@ const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunf
   ['잎·깃털',['leaf','ginkgo','curl','sprout','feather','clover'],'feather'],['열매·간식',['acorn','acornS','peanut','candy','lolli','cap'],'acorn'],
   ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit'],'ring'],
   ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone'],'key'],['작은 친구',['snail','ladybug','worm'],'ladybug'],
-  ['계절',['petal','shell','melon','conch','maple','persimmon','pinecone','snow'],'maple']];
+  ['계절',['petal','shell','melon','conch','maple','persimmon','pinecone','snow'],'maple'],
+  ['깜짝',['meteor','rainbowbead','firejar','bubble','blossom'],null]];
+// the day's surprise: once a day, 30 minutes at a time picked from the seed and the day (10:00-19:30 by the pet's clock),
+// one of five scenes. Open the app in those minutes and the scene plays, then its find lies by the pet. No notification,
+// and nothing here draws on rand(g), so the same save always gets the same surprises and old runs stay the same
+const SURPRISES=[['meteor','🌠 유성우가 내려요!','meteor'],['rainbow','🌈 무지개가 떴어요!','rainbowbead'],['firefly','✨ 반딧불이 놀러 왔어요','firejar'],
+  ['bubble','🫧 비눗방울이 둥실둥실','bubble'],['petal','🌸 바람에 꽃잎이 날려요','blossom']],SURPRISE_LEN=30;
+function surpriseOf(g){const day=Math.floor(lt(g)/DAY);let h=((g.seed>>>0)^Math.imul(day+1,2654435761))>>>0;h=Math.imul(h^(h>>>15),2246822507)>>>0;h=(h^(h>>>13))>>>0;
+  return {day,start:600+h%(570-SURPRISE_LEN),s:SURPRISES[(h>>>10)%SURPRISES.length]}}
+function surpriseNow(g){if(g.phase!=='alive'||g.sleeping||!g.lights||appDay(g)<FINDS_FROM)return null;const o=surpriseOf(g),m=lt(g)%DAY;
+  return g.surpriseDay!==o.day&&m>=o.start&&m<o.start+SURPRISE_LEN?o.s:null}
+function surpriseGive(g){const o=surpriseOf(g);g.surpriseDay=o.day;if(!g.found)g.found=o.s[2];return o.s[2]}
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
@@ -985,7 +998,7 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 // picking up what the pet brought: into the collection, with whether it is the first of its kind
 function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
   ev.push({type:'find',id,first});
-  if(first){for(const [,ids,charm] of FIND_GROUPS)if(ids.includes(id)&&ids.every(k=>g.finds[k]))unlockCharm(g,charm,ev);
+  if(first){for(const [,ids,charm] of FIND_GROUPS)if(charm&&ids.includes(id)&&ids.every(k=>g.finds[k]))unlockCharm(g,charm,ev);
     if(Object.keys(g.finds).length>=10)unlockCharm(g,'loupe',ev);
     if(FINDS.every(f=>f[3]||g.finds[f[0]]))unlockCharm(g,'jewel',ev)}
   return id}
@@ -1037,7 +1050,8 @@ function comeBack(g,ahead){
 const E={CON,LINES,ANIMALS,ANIMAL_OF,SP,DEX,STAGE_KO,PATTERNS,FINDS,FIND_GROUPS,FIND_LIKES,NOTIF,DAY,ADULT_AT,FULL_TERM,
   LIFE,setLife,localHour,appDay,FINDS_FROM,drowsy,rand,hourOf,isNight,stageFor,hungerInt,happyInt,baseW,overweight,poopDelay,fullTerm,gradStars,nm,
   fresh,newPet,unlockCharm,hatch,crack,evolve,lineOdds,decideAdult,record,graduate,die,runAway,makeSick,addPoop,queuePoop,doPoop,needList,needsCall,
-  notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp};
+  notify,step,advance,visit,comeBack,meal,snack,toggleLight,med,clean,pet,playDone,revive,callBack,restart,heirChoice,forecast,pickUp,
+  SURPRISES,surpriseOf,surpriseNow,surpriseGive};
 if(typeof module!=='undefined'&&module.exports)module.exports=E;else root.MangoEngine=E;
 })(typeof globalThis!=='undefined'?globalThis:this);
 </script>
@@ -1430,7 +1444,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · ec3701',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · c210d8',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1849,6 +1863,35 @@ function rippleRing(s,R){const key=s;let m=RIPPLE.get(key);if(!m){m={};RIPPLE.se
 const BIG_STAR={w:5,h:5,rows:['..#..','.###.','#####','.###.','.#.#.']};
 const MAIL={w:7,h:5,rows:['#######','##...##','#.#.#.#','#..#..#','#######']};   // news waiting (talkQ): top right of the LCD
 const MINI_HEART={w:3,h:3,rows:['#.#','###','.#.']},SPARK={w:3,h:3,rows:['.#.','###','.#.']};
+// the day's surprise (E.surpriseNow): a 6-second scene, then its find lies by the pet. ui.surprise = {k, start, given}
+const SURP_LEN=6000,SURP_GIVE=4600,PETAL=(()=>{const b=['#.#','###','.#.'],rot=r=>r[0].split('').map((_,i)=>r.map(row=>row[i]).reverse().join(''));return [b,rot(b),rot(rot(b)),rot(rot(rot(b)))].map(parse)})(),
+  BLOSSOM=parse(['.#.#.','##.##','..#..','##.##','.#.#.']),CLOUD=['....###.....','..#######...','.#########..','############','############','.##########.'];
+function surpriseStart(){const sp=E.surpriseNow(g);if(!sp||ui.surprise||g.found||ui.anim||ui.game||ui.view!=='main'||ui.sulk||ui.greet||(g.intro&&g.intro!=='done'))return;
+  ui.surprise={k:sp[0],start:now(),given:false};ui.doing=null;banner(sp[1])}
+function surpriseTick(t){const S_=ui.surprise;if(!S_)return;const c=t-S_.start;
+  if(c>=SURP_GIVE&&!S_.given){S_.given=true;E.surpriseGive(g);save()}if(c>=SURP_LEN)ui.surprise=null}
+// draws over the play area; x,y,s are the pet's place and sprite. Returns true while the pet should look up (a little hop)
+function surpriseDraw(P,x,y,s,t){const S_=ui.surprise;if(!S_)return;const c=t-S_.start,k=S_.k,px=(a,b,v=1)=>P.px(Math.round(a),Math.round(b),v),
+    plus=(a,b,v=1)=>[[0,0],[-1,0],[1,0],[0,-1],[0,1]].forEach(([dx,dy])=>px(a+dx,b+dy,v)),inPet=(a,b)=>a>=x-1&&a<=x+s.w&&b>=y-1;
+  if(k==='meteor')for(let i=0;i<5;i++){const st=i*800,dur=900,p=(c-st)/dur,x0=50-(i%3)*6,lx=x0-30,y0=-3;   // to the ground, a flash where each lands
+    if(p>=0&&p<=1){const hx=x0+(lx-x0)*p,hy=y0+(GND-y0)*p;plus(hx,hy);for(let j=1;j<9;j++)if(j<=4||j%2===0)px(hx+j,hy-j*1.15)}
+    else if(p>1&&p<1.35&&i<4){if(Math.floor((c-st-dur)/110)%2){[[-2,0],[2,0],[0,-2],[-1,-1],[1,-1]].forEach(([dx,dy])=>px(lx+dx,GND-1+dy))}else plus(lx,GND-2)}}
+  if(k==='rainbow'){const prog=Math.min(1,c/2400);   // three thin bands a cell apart, feet running off both edges into clouds
+    [[27,0],[25,1],[23,0]].forEach(([R,dot])=>{const seen=new Set();for(let a=0;a<=180;a+=.3){if(a/180>prog)break;const r=a*Math.PI/180,X=Math.round(24-Math.cos(r)*R),Y=Math.round(31-Math.sin(r)*R),key=X*64+Y;
+      if(Y>19||inPet(X,Y)||seen.has(key))continue;seen.add(key);if(dot&&seen.size%2)continue;px(X,Y)}});
+    const cloud=(x0,y0)=>{const on=(a,b)=>CLOUD[b]&&CLOUD[b][a]==='#';for(let b=-1;b<=6;b++)for(let a=-1;a<=12;a++){if(on(a,b))continue;let n=false;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(on(a+dx,b+dy))n=true;if(n)px(x0+a,y0+b,0)}
+      CLOUD.forEach((r,b)=>[...r].forEach((ch,a)=>{if(ch==='#')px(x0+a,y0+b)}))};
+    if(c>150)cloud(-3,14);if(prog>=1)cloud(38,12);if(c>2600&&c<SURP_GIVE&&Math.floor(c/400)%2){plus(12,8);plus(30,3);plus(41,7)}}
+  if(k==='bubble')for(let i=0;i<5;i++){const st=i*700,p=(c-st)/1800;if(p<0||p>1.15)continue;const bx=6+i*9+Math.sin(p*9+i)*2,by=GND-4-p*26;
+    if(p<1)[[1,0],[2,0],[3,0],[0,1],[4,1],[0,2],[4,2],[0,3],[4,3],[1,4],[2,4],[3,4],[1,1]].forEach(([dx,dy])=>px(bx+dx,by+dy));else [[2,-1],[0,1],[4,1],[2,3]].forEach(([dx,dy])=>px(bx+dx,by+dy))}
+  if(k==='petal'){const S0=[0,420,1050,1400,1900,2500,2850],Y0=[3,13,6,17,9,1,12],DROP=[8,5,11,6,9,7,10],BOB=[2.5,3.5,2,4,3,2.5,3.5],SP=[2400,2800,2200,3000,2600,2500,2900];
+    for(let i=0;i<7;i++){const p=(c-S0[i])/SP[i];if(p<0||p>1)continue;P.spr(i===2?BLOSSOM:PETAL[Math.floor((t+i*130)/240)%4],Math.round(-4+p*(LW+6)+Math.sin(p*5+i)*2),Math.round(Y0[i]+p*DROP[i]+Math.sin(p*(7+i)+i*2)*BOB[i]))}
+    if(c>3400&&c<SURP_GIVE){const p=(c-3400)/1200;P.spr(PETAL[Math.floor(t/240)%4],Math.round(22-p*16+Math.sin(p*9)*3),Math.round(8+p*20))}}
+  if(k==='firefly'&&c<SURP_GIVE){P.invert();   // the screen goes dark, the pet a pale shape; glows swell and fade on their own beat
+    for(let i=0;i<6;i++){const ph=t/1000+i*1.7,fx=5+i*7.5+Math.sin(ph*.9+i)*4,fy=6+(i%3)*5+Math.cos(ph*.7+i*2)*3,b=Math.floor(t/180+i*3)%8;
+      if(b===1||b===5)px(fx,fy,0);else if(b>=2&&b<=4)plus(fx,fy,0)}}}
+const surpriseLook=t=>{const S_=ui.surprise;if(!S_)return false;const c=t-S_.start;return {meteor:c>800&&c<4600,rainbow:c>900&&c<3200,petal:c>3200&&c<4600}[S_.k]||false};
+
 // idle habits: every 9 s an awake, content adult does its own little thing. Cat: tail swish, then one ear folds flat and the
 // other. Rabbit: an ear folds in half. Frog: a fly comes by, the tongue catches it, munch munch, a heart. Bear: a stretch.
 // Chick: a hop with wings up. Penguin: flaps. The frames are drawn by buildAdult (HAB), so patterns and hats go on as usual
@@ -1907,13 +1950,15 @@ function drawScene(P,widget){
   if(!widget&&!A&&ui.greet){const G=ui.greet,p=(t-G.start)/2200,tx=Math.max(petMinX(),Math.min(maxX,Math.floor((LW-s.w)/2)));
     if(p>=1){ui.greet=null;ui.petX=tx}else if(p<.4)x=Math.round(G.x0+(tx-G.x0)*p/.4);else{x=tx;y=GND-s.h+1-(Math.floor((t-G.start)/200)%2)*3;ui.heartUntil=Math.max(ui.heartUntil,t+200)}}
   const D=!widget&&!A&&ui.doing&&DOING[ui.doing.k],c={x,y,s,t,f,cur:widget?s:moodSprite()};if(D&&D.under)D.under(c);
-  const Hb=!widget&&!A&&!D&&!ui.greet&&!ui.sulk&&evo===null&&g.stage==='adult'&&!g.sleeping&&c.cur===S[g.species]?habit(g.species,t%HAB_EVERY,x):null;
+  if(!widget&&ui.surprise&&surpriseLook(t)&&Math.floor(t/250)%2)c.y-=1;
+  const Hb=!widget&&!A&&!D&&!ui.surprise&&!ui.greet&&!ui.sulk&&evo===null&&g.stage==='adult'&&!g.sleeping&&c.cur===S[g.species]?habit(g.species,t%HAB_EVERY,x):null;
   if(Hb){if(Hb.s)c.cur=Hb.s;if(Hb.dy)c.y+=Hb.dy}
   // a visiting friend stands at the right edge; when a find and the host take the room, it peeks in from past the edge
   if(!widget&&g.guest&&S[g.guest.s]&&!g.sleeping){const gw=S[g.guest.s].w,gs=guestSprite(),gx=Math.max(LW-1-gw,c.x+s.w+2),gy=GND-S[g.guest.s].h+1-((f+1)%2);
     P.spr(gs,gx+(gs.dx||0),gy+(gs.dy||0),{flip:true});if(t<(ui.guestHeart||0))P.spr(MINI_HEART,Math.min(LW-3,gx+Math.floor(gw/2)-1),Math.max(0,gy+(gs.dy||0)-5))}
   {let cur=c.cur=dressed(c.cur,s);if(!widget&&ui.sulk)cur=backView(cur);x=c.x;y=c.y;P.spr(cur,x+(cur.dx||0),y+(cur.dy||0))}
   if(Hb&&Hb.over)Hb.over(P,x,y,s);
+  if(!widget&&ui.surprise)surpriseDraw(P,x,y,s,t);
   if(D&&D.over)D.over(P,c);
   if(!widget)festDraw(P,c);
   if(!widget&&talkQ.length&&!g.sleeping)P.spr(MAIL,LW-9,2);
@@ -1993,7 +2038,7 @@ const GUIDE=[
  {t:'자라기',h:`<p>알 → 아기 → 꼬마 → 청소년 → 어른. 사흘이면 어른, 일주일이면 졸업.</p><p>동물은 타고난 체질이 정해요. 청소년이 되면 <b>상태</b>에서 볼 수 있어요.</p>`},
  {t:'어떤 아이가 될까',h:`<p>어른이 될 때 그동안 돌본 방식으로 정해져요.</p><p>아침에 자주 오면 해, 밤엔 달, 간식은 통통, 오래 비우면 야생이 되기 쉬워요.</p>`},
  {t:'졸업과 다음 알',h:`<p>어른이 되면 언제든 졸업할 수 있어요. 도감과 앨범에 남아요.</p><p>남긴 알을 받으면 몸의 무늬를 물려받기도 해요.</p>`},
- {t:'놀이와 모으기',h:`<p><b>놀이</b>는 미니게임. 잘하면 더 기뻐해요.</p><p>가끔 뭔가 주워 와요. 눌러서 주우면 도감에 모여요. 무언가 해내면 키링도 받아요.</p>`},
+ {t:'놀이와 모으기',h:`<p><b>놀이</b>는 미니게임. 잘하면 더 기뻐해요.</p><p>가끔 뭔가 주워 와요. 눌러서 주우면 도감에 모여요. 무언가 해내면 키링도 받아요.</p><p>하루 한 번, 언제일지 모르는 <b>깜짝 시간</b>이 있어요. 그때 열어 보면 특별한 걸 받아요.</p>`},
  {t:'꾸미기',h:`<p>기기 아래 <b>꾸미기</b>에서 모자, 케이스, 색, 배경, 키링, 각인을 바꿔요.</p><p>잠긴 칸을 누르면 여는 방법을 알려 줘요.</p>`},
  {t:'알림과 생활 시간',h:`<p>알림은 하루 몇 번, 묶어서 와요. 밤엔 조용해요.</p><p>늦게 자면 <b>아이·생활</b>에서 생활 시간을 바꿔요. 하루 몇 번, 10초면 충분해요.</p>`},
 ];
@@ -2765,7 +2810,7 @@ const ANIMAL_HOW={bear:'튼튼한',chick:'쾌변',frog:'변비가 있는',rabbit
 function dexHint(k){if(k==='star')return '💡 아주 드물어요. 클래식 모드에서 실수 없이 키우면 만날지도';const [l,a]=k.split('_');
   return `💡 ${LINE_HOW[l]} ${ANIMAL_HOW[a]} 아이가 자라면 만나요`}
 const MONTHS=m=>m.length>2?`${m[0]}~${m.at(-1)}월`:m.join('~')+'월';
-function findHint(k){const f=E.FINDS.find(x=>x[0]===k);if(!f)return '';if(f[3])return `💡 ${MONTHS(f[3])}에만 주워 와요`;
+function findHint(k){const f=E.FINDS.find(x=>x[0]===k);if(!f)return '';if(f[3]&&!f[3].length)return '💡 하루 한 번 깜짝 시간에만 받아요';if(f[3])return `💡 ${MONTHS(f[3])}에만 주워 와요`;
   const like=Object.entries(E.FIND_LIKES).find(([,ks])=>ks.includes(k)),who=like?`${LINES_KO[like[0]]} 계열 아이가 잘 주워 와요`:'언젠가 주워 올 거예요';
   return `💡 ${f[2]<=2?'아주 드물어요. ':''}${who}`}
 const LINES_KO={sun:'해',moon:'달',chub:'통통',wild:'야생'};
@@ -2795,7 +2840,10 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   snail:['..###..','.#...#.','.#.#.#.','.#..##.','#######'],ladybug:['.#.#.','#####','##.##','#####','.###.'],worm:['#.....','##..##','.####.'],
   snow:['#.#.#','.###.','##.##','.###.','#.#.#'],melon:['#######','##.#.##','.#####.','..###..','...#...'],conch:['..#..','.##..','#.##.','##.##','.####'],
   // 감, not 밤: a chestnut's mound read as a poop on the LCD
-  persimmon:['.#.#.#.','..###..','.#####.','##.####','#######','.#####.']};
+  persimmon:['.#.#.#.','..###..','.#####.','##.####','#######','.#####.'],
+  // the day's surprise finds
+  meteor:['#.#.#','.###.','#####','.###.','#.#.#'],rainbowbead:['.###.','#####','#...#','#####','.###.'],firejar:['.###.','..#..','.###.','#.#.#','#...#','.###.'],
+  bubble:['.###.','#.#.#','#...#','#...#','.###.'],blossom:['.#.#.','##.##','..#..','##.##','.#.#.']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
 // the 주운 것 tab, in the engine's groups (filling one gives its charm)
@@ -3343,9 +3391,11 @@ function loop(){
     // a pet that reached full term graduates the moment someone is looking
     if(g.gradReady&&g.phase==='alive'&&!document.hidden&&!ui.game&&!(g.intro&&g.intro!=='done')){ui.doing=null;ui.sulk=null;graduate(true);save()}
     if(g.guest&&(g.t>=g.guest.until||g.phase!=='alive')){const v=g.guest,who=v.n||(SP[v.s]?SP[v.s].ko:'친구네 아이');g.guest=null;save();if(g.phase==='alive')talk(`👋 ${who}${josa(who,'이','가')} 집에 돌아갔어요`)}
-    if(!ui.doing&&g.phase==='alive'&&Math.floor(g.t/30)!==ui.doingBlock)doingStart();
+    if(g.phase==='alive'&&!document.hidden)surpriseStart();
+    if(!ui.doing&&!ui.surprise&&g.phase==='alive'&&Math.floor(g.t/30)!==ui.doingBlock)doingStart();
     if(g.phase==='alive'&&!g.sleeping&&!ui.anim&&!ui.game&&!ui.doing&&!ui.greet&&!ui.sulk&&Math.random()<.6)ui.petX+=Math.floor(Math.random()*5)-2;
     const s=g.phase==='alive'?petSprite():null;if(s)ui.petX=Math.max(petMinX(),Math.min(ui.petX,petMaxX(s)))}
+  surpriseTick(t);
   render();
   if(t-slow>500){slow=t;renderPanel();renderWidgets()}
   requestAnimationFrame(loop);

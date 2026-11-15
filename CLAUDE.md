@@ -37,6 +37,7 @@
 - 꾸미기 모드: `openDeco(tab)`(인자 없으면 목록 `home`)/`closeDeco()`, 미리보기 `decoPreview`, 저장 안 하고 떠날 때 묻기 `decoLeave`, 액정 위 작은 메뉴 `decoPop`, 키링 `charmPick`/`charmMove`, 각인 초안 `engChoose`/`engSave`(`ENG_BOARD`), 확정 `decoKept`. 픽셀 배경은 `Scene`(`SCENES`에 장면 추가). 도트 케이스는 `PxCase`(`queue()`로 다시 그림).
 - 처음 며칠: 엔진 `E.appDay`(앱을 쓴 날수), 화면 `OPENS`·`opened(k)`·`openNews`. 주운 것은 엔진 `FINDS_FROM`.
 - 하는 일과 주운 것: `DOING`(시간대별 장면, `ui.doing`, `doingStart`), 엔진 `FINDS`·`E.pickUp`, 그림 `FIND_SPR`, 놓인 것 `g.found`, 모은 것 `g.finds`.
+- 오늘의 깜짝 시간: 엔진 `SURPRISES`·`E.surpriseOf/surpriseNow/surpriseGive`(하루 한 번 `g.surpriseDay`), 화면 `surpriseStart`·`surpriseTick`·`surpriseDraw`(`ui.surprise`).
 - 이름: `g.name`(엔진 `newPet`에서 비움, 알림 제목 `who`, 키운 기록 `hist[].name`), 화면 `giveName`(부화 때 랜덤 이름)·`openZoom('name')`(바꾸기)·`nameSubj()`.
 - 특별한 날: `FEST`·`fest()`(폰 날짜, 생일 `g.birthday`)·`festDraw`·`festGreet`(`g.festSeen`).
 - 친구와 놀기: `visitCode`/`readVisit`/`welcomeGuest`/`sendVisit`, 손님 `g.guest`(하루), 그림 `guestSprite`.
