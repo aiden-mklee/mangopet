@@ -47,7 +47,8 @@ const FINDS=[['tulip','튤립',8],['daisy','데이지',8],['potflower','화분�
   ['petal','벚꽃잎',0,[3,4]],['shell','조개껍데기',0,[7,8]],['maple','단풍잎',0,[10,11]],['pinecone','솔방울',0,[12,1,2]],
   ['snow','눈송이',0,[12,1,2]],['melon','수박 조각',0,[7,8]],['conch','소라',0,[7,8]],['persimmon','감',0,[9,10,11]],
   // only from the day's surprise (SURPRISES): no months, so they never come on their own and the jewel does not ask for them
-  ['meteor','유성 조각',0,[]],['rainbowbead','무지개 구슬',0,[]],['firejar','반딧불 병',0,[]],['bubble','비눗방울',0,[]],['blossom','벚꽃 한 송이',0,[]]];
+  ['meteor','유성 조각',0,[]],['rainbowbead','무지개 구슬',0,[]],['firejar','반딧불 병',0,[]],['bubble','비눗방울',0,[]],['blossom','벚꽃 한 송이',0,[]],
+  ['snowc','눈 결정',0,[]],['goldleaf','황금 단풍잎',0,[]],['sparkler','불꽃 막대',0,[]]];
 const SEASON_W=10;
 // the groups of the collection; filling one gives its keyring charm. Ten kinds give the loupe, every everyday find (not the
 // seasonal ones) the shining jewel
@@ -56,17 +57,20 @@ const FIND_GROUPS=[['꽃·버섯',['tulip','daisy','potflower','dandelion','sunf
   ['돌·반짝이',['pebble','roundstone','stripestone','heartstone','marble','gem','diamond','ring','starbit'],'ring'],
   ['물건',['button','button2','heartbutton','letter','note','key','sock','dice','bone'],'key'],['작은 친구',['snail','ladybug','worm'],'ladybug'],
   ['계절',['petal','shell','melon','conch','maple','persimmon','pinecone','snow'],'maple'],
-  ['깜짝',['meteor','rainbowbead','firejar','bubble','blossom'],null]];
+  ['깜짝',['meteor','rainbowbead','firejar','bubble','blossom','snowc','goldleaf','sparkler'],null]];
 // the day's surprise: once a day, 30 minutes at a time picked from the seed and the day (10:00-19:30 by the pet's clock),
 // one of five scenes. Open the app in those minutes and the scene plays, then its find lies by the pet. No notification,
 // and nothing here draws on rand(g), so the same save always gets the same surprises and old runs stay the same
+// [scene, words, find, months]: the last three only come in their season (g.month, from the phone's calendar), as
+// one more choice beside the five. One surprise in ten brings a shining find (g.foundShiny, kept apart in g.shiny)
 const SURPRISES=[['meteor','🌠 유성우가 내려요!','meteor'],['rainbow','🌈 무지개가 떴어요!','rainbowbead'],['firefly','✨ 반딧불이 놀러 왔어요','firejar'],
-  ['bubble','🫧 비눗방울이 둥실둥실','bubble'],['petal','🌸 바람에 꽃잎이 날려요','blossom']],SURPRISE_LEN=30;
+  ['bubble','🫧 비눗방울이 둥실둥실','bubble'],['petal','🌸 바람에 꽃잎이 날려요','blossom'],
+  ['snow','❄️ 눈이 와요!','snowc',[12,1,2]],['leaves','🍁 낙엽이 우수수','goldleaf',[9,10,11]],['firework','🎆 불꽃놀이가 시작됐어요!','sparkler',[7,8]]],SURPRISE_LEN=30,SHINY_IN=10;
 function surpriseOf(g){const day=Math.floor(lt(g)/DAY);let h=((g.seed>>>0)^Math.imul(day+1,2654435761))>>>0;h=Math.imul(h^(h>>>15),2246822507)>>>0;h=(h^(h>>>13))>>>0;
-  return {day,start:600+h%(570-SURPRISE_LEN),s:SURPRISES[(h>>>10)%SURPRISES.length]}}
+  const list=SURPRISES.filter(x=>!x[3]||x[3].includes(g.month));return {day,start:600+h%(570-SURPRISE_LEN),s:list[(h>>>10)%list.length],shiny:(h>>>20)%SHINY_IN===0}}
 function surpriseNow(g){if(g.phase!=='alive'||g.sleeping||!g.lights||appDay(g)<FINDS_FROM)return null;const o=surpriseOf(g),m=lt(g)%DAY;
   return g.surpriseDay!==o.day&&m>=o.start&&m<o.start+SURPRISE_LEN?o.s:null}
-function surpriseGive(g){const o=surpriseOf(g);g.surpriseDay=o.day;if(!g.found)g.found=o.s[2];return o.s[2]}
+function surpriseGive(g){const o=surpriseOf(g);g.surpriseDay=o.day;if(!g.found){g.found=o.s[2];g.foundShiny=o.shiny}return o.s[2]}
 const FIND_P=.1;
 // how many days the player has had 망고펫 (not this pet): day 1 is the first, days turn at 8:00. New things open by it
 const appDay=g=>Math.floor((g.t-8*60)/DAY)+1,FINDS_FROM=2;
@@ -284,7 +288,8 @@ function advance(g,min,ev,opts){for(let i=0;i<min;i++)step(g,ev,opts)}
 // one visit = one count, however many buttons it takes
 // picking up what the pet brought: into the collection, with whether it is the first of its kind
 function pickUp(g,ev=[]){const id=g.found;if(!id)return null;g.found=null;g.finds=g.finds||{};const first=!g.finds[id];g.finds[id]=(g.finds[id]||0)+1;
-  ev.push({type:'find',id,first});
+  const shiny=!!g.foundShiny;g.foundShiny=false;if(shiny){g.shiny=g.shiny||{};g.shiny[id]=(g.shiny[id]||0)+1}
+  ev.push({type:'find',id,first,shiny});
   if(first){for(const [,ids,charm] of FIND_GROUPS)if(charm&&ids.includes(id)&&ids.every(k=>g.finds[k]))unlockCharm(g,charm,ev);
     if(Object.keys(g.finds).length>=10)unlockCharm(g,'loupe',ev);
     if(FINDS.every(f=>f[3]||g.finds[f[0]]))unlockCharm(g,'jewel',ev)}

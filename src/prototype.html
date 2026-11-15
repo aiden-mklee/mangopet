@@ -1117,7 +1117,7 @@ function onEvent(e){
     if(e.stage==='child')talk(`🌱 ${nameSubj()}${w}쑥 자랐어요!`);
     else if(e.stage==='teen')talk(`🌿 ${nameSubj()}${w}또 자랐어요!`);
     else if(e.stage==='adult'&&SP[g.species])talk(`✨ ${nameSubj()}${w}어른이 됐어요!`,`${SP[g.species].ko}${roOf(SP[g.species].ko)} 자랐어요. 이제 졸업할 수 있어요`,true)}
-  else if(e.type==='find'){const ko=FIND_KO[e.id];diaryNote('finds',ko);if(!e.first)return;const k=Object.keys(g.finds).length;
+  else if(e.type==='find'){const ko=FIND_KO[e.id];diaryNote('finds',ko);if(e.shiny)talk(`✨ 반짝이는 ${ko}!`,'아주 가끔만 오는 반짝이 버전이에요. 주운 것에 따로 모여요',true);if(!e.first)return;const k=Object.keys(g.finds).length;
     // the finds-count unlocks say so when they open (the group charms speak through their own charm event)
     const m=FIND_MILESTONES.find(x=>x[0]===k);if(m)talk(`🎁 ${m[1]}`,`주운 것 ${k}종! ${m[2]}`,true)}   // no words: the item going into the collection is enough (도감 창 › 주운 것)
   else if(e.type==='charm'){const c=CHARMS.find(x=>x.id===e.id);(ui.newCharms=ui.newCharms||[]).push(c.ko);drawCharms();
@@ -1495,7 +1495,8 @@ const MAIL={w:7,h:5,rows:['#######','##...##','#.#.#.#','#..#..#','#######']};  
 const MINI_HEART={w:3,h:3,rows:['#.#','###','.#.']},SPARK={w:3,h:3,rows:['.#.','###','.#.']};
 // the day's surprise (E.surpriseNow): a 6-second scene, then its find lies by the pet. ui.surprise = {k, start, given}
 const SURP_LEN=6000,SURP_GIVE=4600,PETAL=(()=>{const b=['#.#','###','.#.'],rot=r=>r[0].split('').map((_,i)=>r.map(row=>row[i]).reverse().join(''));return [b,rot(b),rot(rot(b)),rot(rot(rot(b)))].map(parse)})(),
-  BLOSSOM=parse(['.#.#.','##.##','..#..','##.##','.#.#.']),CLOUD=['....###.....','..#######...','.#########..','############','############','.##########.'];
+  BLOSSOM=parse(['.#.#.','##.##','..#..','##.##','.#.#.']),SNOW_BIG=[parse(['#.#.#','.###.','##.##','.###.','#.#.#']),parse(['..#..','#.#.#','.###.','#.#.#','..#..'])],SNOW_X=parse(['#.#','.#.','#.#']),
+  LEAF_L=parse(['..#.#.','.#####','######','.##...','#.....']),LEAF_R=parse(['.#.#..','#####.','######','...##.','.....#']),LEAF_FLAT=parse(['.#.#.#.','#######','.#####.','...#...']),CLOUD=['....###.....','..#######...','.#########..','############','############','.##########.'];
 function surpriseStart(){const sp=E.surpriseNow(g);if(!sp||ui.surprise||g.found||ui.anim||ui.game||ui.view!=='main'||ui.sulk||ui.greet||(g.intro&&g.intro!=='done'))return;
   ui.surprise={k:sp[0],start:now(),given:false};ui.doing=null;banner(sp[1])}
 function surpriseTick(t){const S_=ui.surprise;if(!S_)return;const c=t-S_.start;
@@ -1517,10 +1518,24 @@ function surpriseDraw(P,x,y,s,t){const S_=ui.surprise;if(!S_)return;const c=t-S_
   if(k==='petal'){const S0=[0,420,1050,1400,1900,2500,2850],Y0=[3,13,6,17,9,1,12],DROP=[8,5,11,6,9,7,10],BOB=[2.5,3.5,2,4,3,2.5,3.5],SP=[2400,2800,2200,3000,2600,2500,2900];
     for(let i=0;i<7;i++){const p=(c-S0[i])/SP[i];if(p<0||p>1)continue;P.spr(i===2?BLOSSOM:PETAL[Math.floor((t+i*130)/240)%4],Math.round(-4+p*(LW+6)+Math.sin(p*5+i)*2),Math.round(Y0[i]+p*DROP[i]+Math.sin(p*(7+i)+i*2)*BOB[i]))}
     if(c>3400&&c<SURP_GIVE){const p=(c-3400)/1200;P.spr(PETAL[Math.floor(t/240)%4],Math.round(22-p*16+Math.sin(p*9)*3),Math.round(8+p*20))}}
+  if(k==='snow'){   // flakes, each with its own start, column, pace and sway: big six-armed ones (two kinds), small x's, specks; a thin layer settles
+    const F=[[2,0,16,3600,2.5,1.1],[0,250,4,2400,1,2.3],[1,700,40,2900,2,1.7],[0,900,27,2100,.8,2.9],[1,1300,9,3100,1.6,1.3],[2,1650,33,4100,3,.9],
+      [0,1900,45,2300,1.2,2.6],[1,2300,22,2700,2.2,1.9],[0,2600,12,2000,.7,3.1],[1,3000,37,3300,1.8,1.4],[2,3200,6,3900,2.8,1.0],[0,3500,30,2200,1,2.2],[0,3900,19,2500,1.4,2.7]];
+    if(c<SURP_GIVE)F.forEach(([kind,st,x0,dur,amp,fq],i)=>{const p=(c-st)/dur;if(p<0||p>1)return;const fx=x0+Math.sin(p*fq*6+i)*amp+p*2,fy=-5+p*(GND+5);
+      if(kind===2)P.spr(SNOW_BIG[i%2],Math.round(fx-2),Math.round(fy-2));else if(kind===1)P.spr(SNOW_X,Math.round(fx-1),Math.round(fy-1));else px(fx,fy)});
+    const depth=Math.min(2,Math.floor(c/1600));for(let X=0;X<LW;X++){const h=depth-(Math.abs(X-24)>18?1:0);for(let d=0;d<h;d++)if(!inPet(X,GND-d))px(X,GND-d)}}
+  if(k==='leaves'&&c<SURP_GIVE){   // small maple leaves lying on their side, tilted the way they glide, flat (and hanging) at each turn
+    const L=[[0,10,3800,7,1.1],[700,33,4200,6,.9],[1400,20,3600,8,1.2],[2000,40,4000,5.5,1.0],[2600,4,3900,7.5,.8],[3100,27,3500,6.5,1.3]];
+    L.forEach(([st,x0,dur,amp,fq],i)=>{const p=(c-st)/dur;if(p<0)return;const q=Math.min(1,p),ph=q*fq*Math.PI*2+i*1.3,v=Math.cos(ph);
+      const fx=x0+Math.sin(ph)*amp,fy=Math.min(GND-4,-5+q*(GND+1)-(1-Math.abs(v))*2);P.spr(Math.abs(v)<.35?LEAF_FLAT:v>0?LEAF_R:LEAF_L,Math.round(fx-3),Math.round(fy))})}
+  if(k==='firework'&&c<SURP_GIVE){P.invert();   // the sky goes dark; shells rise and burst into a ring of sparks that spreads and twinkles out
+    for(let i=0;i<3;i++){const st=i*1300,p=(c-st)/1300;if(p<0||p>1.4)continue;const bx=12+i*12,by=6+(i%2)*4;
+      if(p<.45){const yy=GND-(GND-by)*(p/.45);px(bx,yy,0);px(bx,yy+2,0)}
+      else{const q=(p-.45)/.95,R=2+q*7;for(let a=0;a<12;a++){if(q>.6&&(a+Math.floor(t/120))%2)continue;const an=a*Math.PI/6;px(bx+Math.cos(an)*R,by+Math.sin(an)*R*.85,0)}if(q<.3)plus(bx,by,0)}}}
   if(k==='firefly'&&c<SURP_GIVE){P.invert();   // the screen goes dark, the pet a pale shape; glows swell and fade on their own beat
     for(let i=0;i<6;i++){const ph=t/1000+i*1.7,fx=5+i*7.5+Math.sin(ph*.9+i)*4,fy=6+(i%3)*5+Math.cos(ph*.7+i*2)*3,b=Math.floor(t/180+i*3)%8;
       if(b===1||b===5)px(fx,fy,0);else if(b>=2&&b<=4)plus(fx,fy,0)}}}
-const surpriseLook=t=>{const S_=ui.surprise;if(!S_)return false;const c=t-S_.start;return {meteor:c>800&&c<4600,rainbow:c>900&&c<3200,petal:c>3200&&c<4600}[S_.k]||false};
+const surpriseLook=t=>{const S_=ui.surprise;if(!S_)return false;const c=t-S_.start;return {meteor:c>800&&c<4600,rainbow:c>900&&c<3200,petal:c>3200&&c<4600,snow:c>600&&c<4400,leaves:c>1000&&c<4000}[S_.k]||false};
 
 // idle habits: every 9 s an awake, content adult does its own little thing. Cat: tail swish, then one ear folds flat and the
 // other. Rabbit: an ear folds in half. Frog: a fly comes by, the tongue catches it, munch munch, a heart. Bear: a stretch.
@@ -1576,7 +1591,8 @@ function drawScene(P,widget){
     if(A.type==='no'){x+=Math.floor(t/120)%2?1:-1}
     if(A.type==='clean'){poopsShown=A.prev;sweep=Math.floor(p*(LW+4))-2}
     if(A.type==='med'&&Math.floor(t/150)%2)P.spr(S.cross,x+s.w+1,y)}
-  if(g.found&&FIND_SPR[g.found]){const it=FIND_SPR[g.found];P.spr(it,FIND_X,GND-it.h+1);if(!widget&&Math.floor(f/2)%2===0)P.spr(EXCL,FIND_X+Math.floor(it.w/2),GND-it.h-5)}
+  if(g.found&&FIND_SPR[g.found]){const it=FIND_SPR[g.found];P.spr(it,FIND_X,GND-it.h+1);if(!widget&&Math.floor(f/2)%2===0)P.spr(EXCL,FIND_X+Math.floor(it.w/2),GND-it.h-5)
+    if(g.foundShiny){const ph=Math.floor(t/600)%4;[[FIND_X+it.w+1,GND-it.h],[FIND_X+it.w+2,GND-2],[FIND_X-1,GND-it.h-2]].forEach(([sx,sy],i)=>{if((i+ph)%2===0)P.spr(SPARK,sx-1,sy-1);else P.px(sx,sy)})}}
   if(!widget&&!A&&ui.greet){const G=ui.greet,p=(t-G.start)/2200,tx=Math.max(petMinX(),Math.min(maxX,Math.floor((LW-s.w)/2)));
     if(p>=1){ui.greet=null;ui.petX=tx}else if(p<.4)x=Math.round(G.x0+(tx-G.x0)*p/.4);else{x=tx;y=GND-s.h+1-(Math.floor((t-G.start)/200)%2)*3;ui.heartUntil=Math.max(ui.heartUntil,t+200)}}
   const D=!widget&&!A&&ui.doing&&DOING[ui.doing.k],c={x,y,s,t,f,cur:widget?s:moodSprite()};if(D&&D.under)D.under(c);
@@ -2440,7 +2456,7 @@ const ANIMAL_HOW={bear:'튼튼한',chick:'쾌변',frog:'변비가 있는',rabbit
 function dexHint(k){if(k==='star')return '💡 아주 드물어요. 클래식 모드에서 실수 없이 키우면 만날지도';const [l,a]=k.split('_');
   return `💡 ${LINE_HOW[l]} ${ANIMAL_HOW[a]} 아이가 자라면 만나요`}
 const MONTHS=m=>m.length>2?`${m[0]}~${m.at(-1)}월`:m.join('~')+'월';
-function findHint(k){const f=E.FINDS.find(x=>x[0]===k);if(!f)return '';if(f[3]&&!f[3].length)return '💡 하루 한 번 깜짝 시간에만 받아요';if(f[3])return `💡 ${MONTHS(f[3])}에만 주워 와요`;
+function findHint(k){const f=E.FINDS.find(x=>x[0]===k);if(!f)return '';if(f[3]&&!f[3].length){const sp=E.SURPRISES.find(x=>x[2]===k);return sp&&sp[3]?`💡 ${MONTHS(sp[3])} 깜짝 시간에만 받아요`:'💡 하루 한 번 깜짝 시간에만 받아요'}if(f[3])return `💡 ${MONTHS(f[3])}에만 주워 와요`;
   const like=Object.entries(E.FIND_LIKES).find(([,ks])=>ks.includes(k)),who=like?`${LINES_KO[like[0]]} 계열 아이가 잘 주워 와요`:'언젠가 주워 올 거예요';
   return `💡 ${f[2]<=2?'아주 드물어요. ':''}${who}`}
 const LINES_KO={sun:'해',moon:'달',chub:'통통',wild:'야생'};
@@ -2473,7 +2489,8 @@ const FIND_SPR={tulip:['.#.#.','#####','.###.','..#..','#.#..','.##..','..#..'],
   persimmon:['.#.#.#.','..###..','.#####.','##.####','#######','.#####.'],
   // the day's surprise finds
   meteor:['#.#.#','.###.','#####','.###.','#.#.#'],rainbowbead:['.###.','#####','#...#','#####','.###.'],firejar:['.###.','..#..','.###.','#.#.#','#...#','.###.'],
-  bubble:['.###.','#.#.#','#...#','#...#','.###.'],blossom:['.#.#.','##.##','..#..','##.##','.#.#.']};
+  bubble:['.###.','#.#.#','#...#','#...#','.###.'],blossom:['.#.#.','##.##','..#..','##.##','.#.#.'],
+  snowc:['..#..','#.#.#','.###.','#.#.#','..#..'],goldleaf:['.#.#.#.','#######','.#####.','...#...','...#...'],sparkler:['#.#.#','.###.','#.#.#','..#..','..#..','..#..']};
 for(const k in FIND_SPR)FIND_SPR[k]=parse(FIND_SPR[k]);
 const FIND_KO=Object.fromEntries(E.FINDS.map(f=>[f[0],f[1]])),FIND_X=2,FIND_ROOM=10;
 // the 주운 것 tab, in the engine's groups (filling one gives its charm)
@@ -2741,10 +2758,10 @@ function renderScreenIn(tab,el){
   }
   if(tab==='finds'){
     const F=g.finds||{},got=E.FINDS.filter(f=>F[f[0]]).length;
-    const card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}" aria-pressed="${ui.findSel===k}"><canvas></canvas><span>${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
+    const SH=g.shiny||{},card=k=>`<button class="pxcard${F[k]?'':' locked'}" data-find="${k}" aria-pressed="${ui.findSel===k}"><canvas></canvas><span>${SH[k]?'✨':''}${F[k]?FIND_SHORT[k]||FIND_KO[k]:'???'}</span>${F[k]>1?`<i>${F[k]}</i>`:''}</button>`;
     el.innerHTML=`<h2>주운 것 <small>${got} / ${E.FINDS.length}</small></h2><p class="dim">아이가 가끔 뭔가 주워 와요. 화면 왼쪽에 놓여 있으면 눌러서 받아요.</p>
       ${FIND_GROUPS.map(([t,ks])=>`<h3>${t} <small>${ks.filter(k=>F[k]).length} / ${ks.length}</small></h3><div class="pxgrid fgrid">${ks.map(card).join('')}</div>`).join('')}
-      ${(k=>`<div class="pxdetail${k?' on':''}">${k?`<canvas id="findBig"></canvas><div>${F[k]?`<p>${FIND_KO[k]}</p><p class="dim">${F[k]}번 주워 왔어요</p>`:`<p>???</p><p class="dim">${findHint(k)}</p>`}</div>`:'<p class="dim">칸을 누르면 자세히 볼 수 있어요</p>'}</div>`)(ui.findSel)}`;
+      ${(k=>`<div class="pxdetail${k?' on':''}">${k?`<canvas id="findBig"></canvas><div>${F[k]?`<p>${FIND_KO[k]}</p><p class="dim">${F[k]}번 주워 왔어요${(g.shiny||{})[k]?` · ✨ 반짝이 ${g.shiny[k]}번`:''}</p>`:`<p>???</p><p class="dim">${findHint(k)}</p>`}</div>`:'<p class="dim">칸을 누르면 자세히 볼 수 있어요</p>'}</div>`)(ui.findSel)}`;
     el.querySelectorAll('[data-find]').forEach(b=>b.onclick=()=>{ui.findSel=ui.findSel===b.dataset.find?null:b.dataset.find;const st=el.scrollTop;renderScreen(tab,el);el.scrollTop=st});
     if(ui.findSel){const k=ui.findSel;sprCanvas(el.querySelector('#findBig'),FIND_SPR[k],{on:F[k]?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!F[k],cell:TH,frame:[11,10],gap:0})}
     el.querySelectorAll('[data-find]').forEach(b=>{const k=b.dataset.find,seen=!!F[k];sprCanvas(b.querySelector('canvas'),FIND_SPR[k],{on:seen?COL.ink:'rgba(28,37,22,.28)',bg:COL.lcd,silhouette:!seen,cell:TH,frame:[11,10],gap:0})});
