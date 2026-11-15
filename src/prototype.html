@@ -1615,7 +1615,7 @@ function drawStats(P){
   if(ui.page===2){P.ctext('GRAD?',6);const n=E.fullTerm(g)?2:1;for(let i=0;i<n;i++)P.spr(BIG_STAR,Math.floor(LW/2)-(n*7-2)/2+i*7,15);P.ctext('OK',26);return}
   if(ui.page===0){P.ctext('HUNGRY',3);hearts(P,g.hunger,10);P.ctext('HAPPY',18);hearts(P,g.happy,25)}
   else{const known=g.showCon||g.stage==='teen'||g.stage==='adult';
-    P.text('AGE '+petDay()+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
+    P.text('AGE '+Math.min(7,petDay())+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
 }
 function drawGame(P){
   const G=ui.game,s=petSprite(),y=GND-s.h+1;

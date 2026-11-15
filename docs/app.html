@@ -1431,7 +1431,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · 5e5b87',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 07225a',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1972,7 +1972,7 @@ function drawStats(P){
   if(ui.page===2){P.ctext('GRAD?',6);const n=E.fullTerm(g)?2:1;for(let i=0;i<n;i++)P.spr(BIG_STAR,Math.floor(LW/2)-(n*7-2)/2+i*7,15);P.ctext('OK',26);return}
   if(ui.page===0){P.ctext('HUNGRY',3);hearts(P,g.hunger,10);P.ctext('HAPPY',18);hearts(P,g.happy,25)}
   else{const known=g.showCon||g.stage==='teen'||g.stage==='adult';
-    P.text('AGE '+petDay()+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
+    P.text('AGE '+Math.min(7,petDay())+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
 }
 function drawGame(P){
   const G=ui.game,s=petSprite(),y=GND-s.h+1;
