@@ -98,3 +98,7 @@
 - 대표의 요청을 처리하고 답을 마치기 직전에, 본사 픽셀 오피스(https://claude.ai/artifact/BsCyBZx6TBLCTmnjwwpGYw) db에 이 세션 상태를 남긴다. `ArtifactData` 도구(안 보이면 ToolSearch로 `select:ArtifactData`)로 `sessions` 컬렉션 문서 `mangopet`을 get해 version을 읽고 if_version을 달아 update한다.
 - 내용: `{title: "망고펫", status, last_action, updated_at}`. status는 대표 답·확인을 기다리면 `review_ready`, 일이 끝났으면 `completed`, 아직 진행 중이면 `working`. last_action은 방금 한 일 한 줄(개인정보·비밀키 금지). updated_at은 ISO 시각.
 - 도구가 없거나 실패하면 조용히 건너뛴다. 이 일로 대표에게 따로 말하지 않는다.
+- **대화 기록도 남긴다** (대표가 오피스에서 이 세션의 말을 읽고 채팅으로 답한다): 같은 때에 `sessions/mangopet/chat` 컬렉션에 문서 두 개를 set한다(새 문서라 if_version 없음). doc_id는 `YYYYMMDD-HHMMSS-q`(대표 요청)와 `YYYYMMDD-HHMMSS-a`(이 세션의 답), 시각은 한국 시간.
+  - 요청: `{at, from: "대표", text: 대표가 보낸 말 요약(200자 이내)}`. 오피스 채팅에서 온 메시지("[픽셀 오피스에서 대표가 보낸 메시지]")는 오피스가 이미 기록하므로 요청 문서는 건너뛴다.
+  - 답: `{at, from: "망고펫", text: 대표에게 한 답의 핵심(400자 이내, 대표에게 묻는 것이 있으면 꼭 포함), needs_reply: 대표 답이 필요하면 true}`
+- 픽셀 오피스 채팅에서 온 메시지는 예약 작업 "오피스→망고펫 메시지"를 통해 이 세션에 들어온다. 대표가 직접 입력한 것과 같이 다룬다.
