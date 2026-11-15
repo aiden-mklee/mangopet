@@ -92,3 +92,9 @@
 
 - `main`의 `docs/`가 GitHub Pages로 배포된다. 원본을 고친 커밋에는 빌드된 `docs/`도 같이 넣는다.
 - 커밋 메시지는 짧은 한국어나 영어 명령형으로 쓰고, 무엇을 왜 바꿨는지 적는다.
+
+## 본사 픽셀 오피스에 상태 알리기
+
+- 대표의 요청을 처리하고 답을 마치기 직전에, 본사 픽셀 오피스(https://claude.ai/artifact/BsCyBZx6TBLCTmnjwwpGYw) db에 이 세션 상태를 남긴다. `ArtifactData` 도구(안 보이면 ToolSearch로 `select:ArtifactData`)로 `sessions` 컬렉션 문서 `mangopet`을 get해 version을 읽고 if_version을 달아 update한다.
+- 내용: `{title: "망고펫", status, last_action, updated_at}`. status는 대표 답·확인을 기다리면 `review_ready`, 일이 끝났으면 `completed`, 아직 진행 중이면 `working`. last_action은 방금 한 일 한 줄(개인정보·비밀키 금지). updated_at은 ISO 시각.
+- 도구가 없거나 실패하면 조용히 건너뛴다. 이 일로 대표에게 따로 말하지 않는다.
