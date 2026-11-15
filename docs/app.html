@@ -1224,10 +1224,12 @@ function buildRunner(line,an){
   const B={sun:[4.6,4.2,11.5],moon:[4.3,4.6,11.3],chub:[5.8,3.6,12.2],wild:[4.6,4.2,11.5]}[line],cx=6,inB=(x,y)=>((x-cx)/B[0])**2+((y-B[2])/B[1])**2<1;
   for(let y=0;y<H;y++)for(let x=-1;x<14;x++)if(inB(x,y))set(x,y);
   let yt=0;while(!G[yt].includes('#'))yt++;let yb=H-1;while(!G[yb].includes('#'))yb--;
-  const yc=Math.round(B[2]),ye=yc-1,mir=(pts,v='#')=>pts.forEach(([x,y])=>{set(x,y,v);set(2*cx-x,y,v)});
+  const yc=Math.round(B[2]);let ye=yc-1;const mir=(pts,v='#')=>pts.forEach(([x,y])=>{set(x,y,v);set(2*cx-x,y,v)});
   const col=(x,top)=>{for(let y=top;y<H&&G[y][x+OX]!=='#';y++)set(x,y)},colM=(x,top)=>{col(x,top);col(2*cx-x,top)};
   const eL=y=>G[y].indexOf('#')-OX,eR=y=>G[y].lastIndexOf('#')-OX;
-  if(an==='cat'){colM(2,yt-2);colM(3,yt-1)}
+  // the cat: flat-topped body, pointed ears, whiskers, a tail (as the big one)
+  let xr=0;if(an==='cat'){ye=yb-5;const x0=cx-4;xr=cx+4;G.forEach(r=>r.fill('.'));const body=[1,0,0,0,0,0,1,2];yt=yb-body.length+1;
+    body.forEach((inset,i)=>{for(let x=x0+inset;x<=xr-inset;x++)set(x,yt+i)});mir([[x0+1,yt-2],[x0+1,yt-1],[x0+2,yt-1]])}
   if(an==='rabbit'){colM(4,yt-3);colM(5,yt-3)}
   if(an==='bear'){colM(2,yt-1);colM(3,yt-1)}
   if(an==='frog'){colM(3,yt-2);colM(4,yt-2)}
@@ -1241,9 +1243,9 @@ function buildRunner(line,an){
   // mouths
   const ym=ye+(line==='moon'?3:2);
   if(an==='cat')mir([[5,ym]],'.');else if(an==='frog')[[4,ym],[5,ym],[6,ym],[7,ym],[8,ym]].forEach(([x,y])=>set(x,y,'.'));else set(6,ym,'.');
-  if(line==='chub')mir([[2,ym]],'.');
+  if(line==='chub'&&an!=='cat')mir([[2,ym]],'.');
   // whiskers, wings, flippers
-  if(an==='cat'){set(eL(ym)-1,ym);set(eR(ym)+1,ym)}
+  if(an==='cat'){const l=eL(ym),r=eR(ym);set(l-1,ym);set(r+1,ym);[[1,0],[2,-1],[2,-2],[3,-3]].forEach(([dx,dy])=>set(xr+dx,yb+dy))}
   if(an==='chick'||an==='penguin'){set(eL(yc+1)-1,yc+1);set(eR(yc+1)+1,yc+1)}
   // feet
   mir([[4,yb+1]]);
@@ -1429,7 +1431,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · 7e9659',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 5e5b87',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -1744,7 +1746,9 @@ const RUN_S={};
 // the body's own span (bottom half of the sprite), so the line badge floating off the head doesn't widen the run game's hit box
 function bodySpan(s){let L=s.w,R=-1;for(let r=Math.floor(s.h/2);r<s.h;r++){const row=s.rows[r],a=row.indexOf('#'),z=row.lastIndexOf('#');if(a>=0){L=Math.min(L,a);R=Math.max(R,z)}}
   return R<0?{bx:0,bw:s.w}:{bx:L,bw:R-L+1}}
-function runPet(){const k=g.stage==='adult'&&g.species;if(k&&RUNNER[k])return RUN_S[k]||(RUN_S[k]=Object.assign(parse(RUNNER[k]),bodySpan(parse(RUNNER[k]))));return runSprite(petSprite())}
+function runPet(){const k=g.stage==='adult'&&g.species;if(k&&RUNNER[k]){if(!RUN_S[k]){const s=parse(RUNNER[k]),b=bodySpan(s);
+    if(k.endsWith('_cat')){b.bx+=1;b.bw-=4}   // hits count on the body: not the left whisker or the tail (3, the right whisker inside it)
+    RUN_S[k]=Object.assign(s,b)}return RUN_S[k]}return runSprite(petSprite())}
 function runSprite(s,W=13){if(s.w<=W)return s;const key=W===13?s:s.rows.join('/')+'@'+W;if(!RUN_MINI.has(key)&&s.w-W<=4)RUN_MINI.set(key,dropCols(s,W));if(!RUN_MINI.has(key)){const f=W/s.w,w=W,h=Math.max(4,Math.round(s.h*f));
   const at=(x,y)=>s.rows[y]&&s.rows[y][x]==='#';
   // keep a cell when most of the area it covers is ink, so holes like eyes survive the shrink
@@ -1934,7 +1938,7 @@ function drawScene(P,widget){
   // long-kept pets give off light every 3 s: a ring rises from the body and spreads out, thinning, and is gone. Day 5 a small
   // spread (still far enough to thin out), day 6 a wide one, day 7 the wide one and then a burst of sparkles round it, pa-pa-pak. (A solid outline worn all
   // the time looked heavy; sparkles on their own were mixed up with the ones for cleaning and petting.)
-  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&g.ageMin>=4*1440){const day=g.ageMin>=6*1440?7:g.ageMin>=5*1440?6:5,k=Math.floor((t%3000)/150),
+  if(!widget&&!A&&!g.sleeping&&g.stage==='adult'&&petDay()>=5){const day=Math.min(7,petDay()),k=Math.floor((t%3000)/150),
       last=day===5?4:6;
     if(k<=last-2){const R=2+k;rippleRing(s,R).forEach(([yy,xx])=>{if(yy<s.h-1&&(R<4||(yy+xx)%2===0))P.px(x+xx,y+yy)})}
     else if(day===7&&k<=last+2){const cx=x+s.w/2,cy=y+s.h/2,rx=s.w/2+7,ry=s.h/2+5;
@@ -1962,11 +1966,13 @@ function drawFindsLCD(P){const i=ui.findIdx||0,k=FIND_ORDER[i],n=(g.finds||{})[k
   if(!n&&ui.frame%2)P.ctext('?',y0-7);if(n>1)P.text('X'+n,LW-1-(String(n).length+1)*4,9)}
 function hearts(P,n,y){for(let i=0;i<4;i++)P.spr(i<n?S.hF:S.hE,12+i*6,y)}
 const statPages=()=>g.stage==='adult'?3:2;
+const ST_L=parse(['..#','.##','###','.##','..#']),ST_R=parse(['#..','##.','###','##.','#..']);
 function drawStats(P){
+  P.spr(ST_L,0,13);P.spr(ST_R,LW-3,13);   // ◀ ▶: the pages turn with left/right or the select button, round and round
   if(ui.page===2){P.ctext('GRAD?',6);const n=E.fullTerm(g)?2:1;for(let i=0;i<n;i++)P.spr(BIG_STAR,Math.floor(LW/2)-(n*7-2)/2+i*7,15);P.ctext('OK',26);return}
   if(ui.page===0){P.ctext('HUNGRY',3);hearts(P,g.hunger,10);P.ctext('HAPPY',18);hearts(P,g.happy,25)}
   else{const known=g.showCon||g.stage==='teen'||g.stage==='adult';
-    P.text('AGE '+Math.floor(g.ageMin/1440)+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
+    P.text('AGE '+petDay()+'D',4,3);P.text('WT '+g.weight+'G',4,10);P.text('TYPE',4,18);P.text(known?CON[g.con].en:'???',4,25)}
 }
 function drawGame(P){
   const G=ui.game,s=petSprite(),y=GND-s.h+1;
