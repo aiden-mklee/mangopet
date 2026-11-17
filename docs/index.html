@@ -220,6 +220,8 @@ header.top p{margin:0;color:var(--muted);font-size:13px}
 .setpanel{position:absolute;inset:7px;border:8px solid #2b2d32;border-radius:14px 14px 20px 20px}
 /* d-pad cursor on panels drawn as HTML (settings, decorating, first run, big sheets) */
 .padfocus{position:relative}
+body.padvis select.padfocus{outline:2px solid currentColor;outline-offset:1px}
+body.padvis select.padedit{background:var(--ink);color:var(--lcd)}
 /* game-style corner brackets drawn just inside the button (outside would be clipped by scrolling panels);
    only shown once the d-pad is used, and hidden again on a tap */
 body.padvis .padfocus::after{content:"";position:absolute;inset:-1px;pointer-events:none;--k:currentColor;
@@ -1449,7 +1451,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.1 · 00851a',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.1 · 04b55b',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -3001,17 +3003,24 @@ function renderScreen(tab,el){
 // select presses it and cancel closes. Tapping a button moves the cursor there too, so touch and buttons never disagree.
 // the tab rows (decorating's dialog, the book's tabs) are for fingers; the d-pad stays inside the screen's items
 function padRoots(){if(engOn())return null;if(ui.deco&&ui.deco.pop)return [$('decoPanel').querySelector('.dpop')].filter(Boolean);if(ui.deco)return [$('decoPanel')];if(!$('zoom').hidden)return [$('zoom')];if(ui.flipped)return [$('setPanel')];return null}
-function padItems(){const r=padRoots();return r?r.flatMap(x=>[...x.querySelectorAll('button:not([disabled])')]).filter(b=>b.offsetParent&&!b.closest('#ztabs')):[]}
+function padItems(){const r=padRoots();return r?r.flatMap(x=>[...x.querySelectorAll('button:not([disabled]),select:not([disabled])')]).filter(b=>b.offsetParent&&!b.closest('#ztabs')):[]}
 const padKey=el=>[...el.attributes].filter(a=>a.name.startsWith('data-')||a.name==='id').map(a=>a.name+'='+a.value).join('&')||el.textContent;
 function padCur(){const it=padItems();return (ui.padKey!=null&&it.find(b=>padKey(b)===ui.padKey))||it.find(b=>b.getAttribute('aria-pressed')==='true'&&!b.closest('.dtabs,.ztabs,#ztabs'))||(ui.deco&&(it.find(b=>b.closest('#decoPanel'))||it.find(b=>b.dataset.dtab===ui.deco.tab)))||it[0]}
-function padShow(){document.querySelectorAll('.padfocus').forEach(b=>b.classList.remove('padfocus'));if(!padRoots())return;const el=padCur();if(el){el.classList.add('padfocus');if(ui.deco)decoText(el)}}
+function padShow(){document.querySelectorAll('.padfocus').forEach(b=>b.classList.remove('padfocus','padedit'));if(!padRoots()){ui.padEdit=false;return}const el=padCur();if(el){el.classList.add('padfocus');if(el.tagName!=='SELECT')ui.padEdit=false;else if(ui.padEdit)el.classList.add('padedit');if(ui.deco)decoText(el)}}
+// the nearest box that scrolls (the settings page, a window), so ▲▼ can read on past the last button
+function padScroller(el){for(let e=el&&el.parentElement;e;e=e.parentElement){const cs=getComputedStyle(e);if(/(auto|scroll)/.test(cs.overflowY)&&e.scrollHeight>e.clientHeight+2)return e}return null}
 function padMove(dx,dy){document.body.classList.add('padvis');const cur=padCur();if(!cur)return;
+  // a drop-down (birthday month and day) is passed over like a button; 선택 picks it up (inverted) and then any arrow
+  // steps its choices, until 선택 or 취소 puts it down
+  if(cur.tagName==='SELECT'&&ui.padEdit){const n=cur.options.length,i=Math.max(0,Math.min(n-1,cur.selectedIndex+(dx||dy)));if(i!==cur.selectedIndex){cur.selectedIndex=i;cur.dispatchEvent(new Event('change',{bubbles:true}))}requestAnimationFrame(padShow);return}
   const a=cur.getBoundingClientRect(),ax=a.left+a.width/2,ay=a.top+a.height/2;let best=null,bs=1e9;
   for(const b of padItems()){if(b===cur)continue;const r=b.getBoundingClientRect(),ex=r.left+r.width/2-ax,ey=r.top+r.height/2-ay,along=dx?ex*dx:ey*dy,across=Math.abs(dx?ey:ex);
     if(along<=4)continue;const sc=along+across*2.5;if(sc<bs){bs=sc;best=b}}
-  if(!best)return;ui.padKey=padKey(best);padShow();best.scrollIntoView({block:'nearest',inline:'nearest'});
+  // nothing further that way: ▲ ▼ scroll the page instead, so long text (정보, 설명) can still be read
+  if(!best){if(dy){const sc=padScroller(cur);if(sc)sc.scrollBy({top:dy*Math.round(sc.clientHeight*.6),behavior:'smooth'})}return}
+  ui.padKey=padKey(best);padShow();best.scrollIntoView({block:'nearest',inline:'nearest'});
   if(ui.deco)decoPreview(best)}
-function padChoose(){document.body.classList.add('padvis');const el=padCur();if(!el)return;ui.padKey=padKey(el);ui.padChoosing=true;try{el.click()}finally{ui.padChoosing=false}requestAnimationFrame(padShow)}
+function padChoose(){document.body.classList.add('padvis');const el=padCur();if(!el)return;if(el.tagName==='SELECT'){ui.padEdit=!ui.padEdit;padShow();return}ui.padKey=padKey(el);ui.padChoosing=true;try{el.click()}finally{ui.padChoosing=false}requestAnimationFrame(padShow)}
 // In decorating, the d-pad tries things on as the cursor moves and 선택 keeps them; a finger tap keeps at once.
 // A locked card only ever tries on (tapping it shows how it opens).
 // in decorating, any press on a choice (select or a tap) keeps it
@@ -3539,7 +3548,7 @@ function nav(dx,dy){
   let row=ui.sel<4?0:1,col=ui.sel%4;row=1-row;ui.sel=row*4+col;
 }
 const choose_=()=>{sfx('press');if(talkNext())return;if(ui.menuOpen){const b=[...$('menuPanel').querySelectorAll('button:not([disabled])')].at(ui.menuIdx||0);if(b)b.click();return}if(engOn()){engChoose();return}if(padRoots()){padChoose();return}if(['select','dead','away','graduated'].includes(g.phase)){openMenu();return}if(g.phase==='egg'){crackEgg();return}if(ui.game){gameInput('a');return}if(ui.view==='dex'){openZoom('dex',DEX[ui.dexIdx||0]);return}if(ui.view==='finds'){openZoom('finds');return}if(ui.view==='stats'){if(ui.page===2){ui.gradAsk=true;lastCtx=''}else ui.page=(ui.page+1)%statPages();return}act(ACTS[ui.sel])};
-const cancel_=()=>{if(talkCancel())return;if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.pop){popClose();return}if(engOn()){engCancel();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b)decoLeave(()=>{ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}});return}if(ui.deco){if(ui.deco.tab==='home')closeDeco();else decoLeave(()=>openDeco('home'));return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
+const cancel_=()=>{if(talkCancel())return;if(ui.padEdit){ui.padEdit=false;padShow();return}if(ui.menuOpen){closeMenu();return}if(ui.deco&&ui.deco.pop){popClose();return}if(engOn()){engCancel();return}if(ui.deco&&ui.deco.tab==='case'&&ui.deco.shape){const b=$('decoPanel').querySelector('[data-shapeback]');if(b)decoLeave(()=>{ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}});return}if(ui.deco){if(ui.deco.tab==='home')closeDeco();else decoLeave(()=>openDeco('home'));return}if(!$('zoom').hidden){closeZoom();return}if(ui.flipped&&ui.setPage){const b=$('setPanel').querySelector('[data-setback]');if(b){ui.padChoosing=true;try{b.click()}finally{ui.padChoosing=false}}return}if(ui.flipped){flip(false);return}if(ui.game&&(ui.game.phase==='end'||ui.game.phase==='crash')){if(ui.game.phase==='end'&&now()>=ui.game.until)finishGame();return}ui.game=null;ui.view='main';ui.armed=false};
 $('bA').onclick=choose_;$('bB').onclick=cancel_;
 // decorating: tap the backdrop for backgrounds, the shell for cases (the keyring already opens its own tab)
 document.querySelector('.phone').addEventListener('click',e=>{if(!ui.deco)return;const t=e.target;
