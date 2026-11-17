@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>망고펫 · 예전 기록 찾기</title>
+<style>
+body{margin:0;background:#f3eee6;color:#2a2418;font:16px/1.6 -apple-system,system-ui,sans-serif;padding:max(24px,env(safe-area-inset-top)) 20px 32px}
+h1{font-size:20px;margin:0 0 12px}p{margin:0 0 12px}.box{background:#fffdf5;border:2px solid #2a2418;border-radius:10px;padding:14px;margin:16px 0}
+button{display:block;width:100%;font:inherit;font-weight:700;padding:14px;margin:10px 0;border:2px solid #2a2418;border-radius:10px;background:#f6c64e;color:#2a2418}
+button.sub{background:#fffdf5}textarea{width:100%;height:90px;font:12px monospace;box-sizing:border-box}.dim{color:#7a705e;font-size:14px}
+</style></head><body>
+<h1>예전 기록 찾기</h1>
+<div id="out"><p>찾는 중…</p></div>
+<script>
+// Opened inside the 망고펫 app (its web view). Test builds before 2026-11-08 ran the game from this site, so their save
+// lives in this site's storage inside the app, out of reach of the app's own page. This page reads it and hands it back
+// as the same backup code that 설정 › 기록 › 가져오기 takes.
+const KEYS=['mangopet-app-v1','mangopet-beta-v1'],TAG='MANGOPET1:',out=document.getElementById('out');
+let found=null;for(const k of KEYS){try{const s=JSON.parse(localStorage.getItem(k)||'null');if(s&&s.phase&&s.t!=null){found=s;break}}catch(e){}}
+const back=code=>{location.href='capacitor://localhost/'+(code?'#restore='+encodeURIComponent(code):'')};
+if(!found){out.innerHTML='<div class="box"><p>이 폰에서는 예전 기록을 찾지 못했어요.</p><p class="dim">예전 테스트 앱을 쓴 적이 없거나, 앱을 지웠다 다시 깔았거나, 오래 열지 않아 폰이 정리했을 수 있어요.</p></div><button class="sub" id="b">망고펫으로 돌아가기</button>';
+  document.getElementById('b').onclick=()=>back()}
+else{const c=Object.assign({},found);delete c.log;const code=TAG+btoa(unescape(encodeURIComponent(JSON.stringify(c))));
+  const n=Object.keys(c.finds||{}).length,dex=Object.keys(c.dex||{}).length,h=(c.hist||[]).length;
+  out.innerHTML=`<div class="box"><p><b>예전 기록을 찾았어요!</b></p><p>${c.name?c.name+' · ':''}키운 아이 ${h}명 · 주운 것 ${n}종${dex?` · 도감 ${dex}종`:''}</p></div>
+    <button id="go">이 기록을 망고펫으로 가져가기</button><p class="dim">지금 앱에서 키우는 기록은 이 기록으로 바뀌어요.</p>
+    <button class="sub" id="cp">코드만 복사하기</button><textarea readonly>${code}</textarea><p class="dim">돌아가지 않으면 코드를 복사해 설정 › 기록 › 가져오기에 붙여 넣어요.</p>
+    <button class="sub" id="no">그냥 돌아가기</button>`;
+  document.getElementById('go').onclick=()=>back(code);document.getElementById('no').onclick=()=>back();
+  document.getElementById('cp').onclick=async e=>{try{await navigator.clipboard.writeText(code);e.target.textContent='복사했어요'}catch(_){document.querySelector('textarea').select()}}}
+</script></body></html>

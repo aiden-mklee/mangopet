@@ -47,6 +47,7 @@
 - 앱 안 알림: 말하는 창 `talk(제목, 한 줄, 큰 소식?)`(큰 소식은 `talkQ`에 줄 서고 `talkNext`로 넘김, 선택·취소 버튼이 먼저 넘김). `banner(text)`는 가벼운 말로 `talk`를 부른다.
 - 설명서: 설정 › 설명서 `GUIDE`(장마다 제목·짧은 글)·`guideHtml`, 넘긴 장 `ui.guide`. 규칙이 바뀌면 여기 글도 맞춘다.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`(탭 순서 도감·주운 것·앨범). 액정의 도감 아이콘은 "무엇을 볼까요?"(`ui.bookAsk`)로 도감(`drawDexLCD`)·주운 것(`drawFindsLCD`, `FIND_ORDER`) 중 골라 ◀ ▶로 넘긴다.
+- 예전 기록 찾기: 11-08 전 테스트 앱은 게임을 GitHub Pages(`app.html`)에서 불러와서 저장이 그 사이트 쪽에 있다. 앱 설정 › 기록 › 예전 기록 찾기 → `docs/rescue.html`(원본 `src/rescue.html`)이 읽어 `capacitor://localhost/#restore=코드`로 돌려주고, 앱이 물어본 뒤 `restoreBackup`.
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
 
 ## 지켜온 원칙 (사용자가 정한 것)
@@ -76,7 +77,7 @@
 - `app/www/`는 빌드가 만든다. 화면을 고쳤다면 `python3 tools/build.py` 뒤에 `npx cap sync`로 아이폰·안드로이드 프로젝트에 복사한다. 자세한 건 `APP.md`.
 - 앱에서만 예약 알림을 건다 (`scheduleAhead`/`scheduleSoon`, 엔진의 `forecast`. 앱이 켜져 있는 동안에도 1분마다, 행동할 때마다 다시 예약). 웹에서는 아무 일도 하지 않는다.
 - 이 리눅스 환경에서는 아이폰 빌드를 못 한다. 아이폰 실행은 사용자의 맥에서 한다.
-- **출시 모드**(2026-11-08부터): `capacitor.config.json`에 `server`가 없다. 앱은 `app/www`로 돌아서, 게임을 고치면 `main`에 올리는 것과 별개로 맥에서 빌드 번호 +1 → Archive → 업로드 → 심사가 필요하다(`APP.md`). 설정 › 정보의 버전 뒤 6자리로 폰의 빌드가 어느 것인지 알 수 있다. 웹 베타(`docs/`)는 `main`에 올리면 바로 바뀐다.
+- **출시 모드**(2026-11-08부터): `capacitor.config.json`에 `server.url`이 없다(`server.allowNavigation`의 `aiden-mklee.github.io`는 예전 테스트 앱 기록을 찾는 `rescue.html`용). 앱은 `app/www`로 돌아서, 게임을 고치면 `main`에 올리는 것과 별개로 맥에서 빌드 번호 +1 → Archive → 업로드 → 심사가 필요하다(`APP.md`). 설정 › 정보의 버전 뒤 6자리로 폰의 빌드가 어느 것인지 알 수 있다. 웹 베타(`docs/`)는 `main`에 올리면 바로 바뀐다.
 
 ## 사용자에게 명령어를 줄 때
 

@@ -19,5 +19,10 @@
       "backgroundColor": "#F6C64E",
       "showSpinner": false
     }
+  },
+  "server": {
+    "allowNavigation": [
+      "aiden-mklee.github.io"
+    ]
   }
 }

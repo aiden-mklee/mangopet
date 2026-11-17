@@ -196,6 +196,8 @@ self.addEventListener('fetch',e=>{{if(e.request.method!=='GET')return;
         for n in ('privacy.html', 'terms.html', 'support.html'):
             shutil.copy(os.path.join(ROOT, 'src', n), os.path.join(out, n))
         open(os.path.join(out, 'licenses.html'), 'w', encoding='utf-8').write(lic)
+    # the old test builds' save lives in this site's storage inside the app: the app opens this page to fetch it
+    shutil.copy(os.path.join(ROOT, 'src', 'rescue.html'), os.path.join(DOCS, 'rescue.html'))
     open(os.path.join(DOCS, '.nojekyll'), 'w').close()
     print('built docs/ ·', ver)
 
