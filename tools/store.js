@@ -1,5 +1,5 @@
 // Store screenshots: play six scenes in the phone build, then frame each under a headline.
-//   python3 tools/build.py && node tools/store.js   → assets/store/<size>/1-egg.png … 6-notif.png (6.3" 1206 × 2622 and 6.9" 1320 × 2868)
+//   python3 tools/build.py && node tools/store.js   → assets/store/<size>/1-egg.png … 6-surprise.png (6.3" 1206 × 2622 and 6.9" 1320 × 2868)
 // Scenes are set up through a hook injected into a temporary copy of docs/index.html.
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const SIZES=[{dir:'6.3in-1206x2622',w:402,h:874},{dir:'6.9in-1320x2868',w:440,h:956}];
@@ -15,14 +15,15 @@ const GROW=`const D=window.__dp,g=D.g;g.speed=0;D.newPet('relaxed');D.advance(6)
 const SCENES=[
   {name:'1-egg',head:'알을 톡톡,\n내 펫을 깨워요',bg:'#f6c64e',ink:'#463414',save:{skin:'classic',bg:'beige',intro:'case'},wait:900,
     js:`const D=window.__dp;D.g.speed=0;document.querySelector('[data-intronext=life]').click();document.querySelector('[data-intronext=egg]').click();D.g.cracks=2;`},
-  {name:'2-meal',head:'하루 10초면\n충분해요',bg:'#f2b3bf',ink:'#5a2433',save:{skin:'berry',bg:'peach'},wait:500,js:GROW+`g.species='sun_cat';g.hunger=1;D.act('meal');`},
+  {name:'2-meal',head:'한 번 들르면\n10초면 충분해요',bg:'#f2b3bf',ink:'#5a2433',save:{skin:'berry',bg:'peach'},wait:500,js:GROW+`g.species='sun_cat';g.hunger=1;D.act('meal');`},
   {name:'3-dex',head:'24종 + 반짝이,\n도감을 채워요',bg:'#a6dccb',ink:'#1f4a3d',save:{skin:'mint',bg:'mint'},wait:700,
     js:GROW+`['sun_cat','moon_bear','chub_frog','wild_rabbit','sun_penguin','moon_chick','chub_cat','sun_bear','moon_rabbit','chub_penguin','sun_frog'].forEach((k,i)=>g.dex[k]={seen:true,grad:i%3?1:0,best:i%3?(i%2?2:1):0});D.openZoom('dex','chub_frog');`},
   {name:'4-deco',head:'키링 30종,\n나만의 기기로',bg:'#cfe0ea',ink:'#24384a',save:{skin:'banana',bg:'sky'},wait:700,js:GROW+`g.species='moon_bear';D.openZoom('charm');`},
   {name:'5-run',head:'미니게임 5종,\n기록에 도전!',bg:'#dcd5ea',ink:'#352a50',save:{skin:'classic',bg:'lilac'},wait:120,
     js:GROW+`g.species='wild_cat';const G=D.GAMES.run.start({id:'run',wins:0,until:0});G.dist=4*128;G.t0-=9000;G.next=1e15;G.obs.push({x:30,w:3,h:3,y:28});G.jumpAt=performance.now()-300;D.ui.game=G;`},
-  {name:'6-notif',head:'필요할 때만\n살짝 알려 줘요',bg:'#3a3d44',ink:'#f3eee6',save:{skin:'smoke',bg:'night'},wait:500,banner:true,
-    js:GROW+`g.species='chub_penguin';g.hunger=0;g.poops=1;D.banner('🍙 배고파 · 💩 똥 쌌어');`},
+  // the day's surprise: a rainbow arching over the pet (the scene's clock is set back so the arch is already up)
+  {name:'6-surprise',head:'하루 한 번,\n깜짝 시간!',bg:'#f6c64e',ink:'#463414',save:{skin:'mint',bg:'sky'},wait:150,
+    js:GROW+`g.species='sun_cat';g.found=null;D.ui.doing=null;D.ui.petX=18;D.ui.surprise={k:'rainbow',start:performance.now()-2900,given:false};`},
 ];
 (async()=>{const b=await chromium.launch();let bad=0;
  for(const S of SCENES){

@@ -25,7 +25,7 @@ ENGINE = os.path.join(ROOT, 'src', 'engine.js')
 SLOT = '<script>/* @engine: tools/build.py inlines src/engine.js here */</script>'
 DOCS = os.path.join(ROOT, 'docs')
 FONT = os.path.join(ROOT, 'tools', 'fonts', 'Galmuri11.woff2')
-BETA = '1.0.1'  # the version shown in settings; keep in step with MARKETING_VERSION / versionName for store builds
+BETA = '1.0.2'  # the version shown in settings; keep in step with MARKETING_VERSION / versionName for store builds
 FONT_RE = re.compile(r"@font-face\{font-family:'Galmuri11'[^\n]*\n")
 
 
@@ -100,7 +100,8 @@ addEventListener('resize',fitWindow);setTimeout(fitWindow,50);setTimeout(fitWind
 PLUGINS = (('core/dist/capacitor.js', 'capacitor.js'), ('local-notifications/dist/plugin.js', 'local-notifications.js'),
            ('share/dist/plugin.js', 'share.js'), ('haptics/dist/plugin.js', 'haptics.js'),
            ('splash-screen/dist/plugin.js', 'splash-screen.js'), ('synapse/dist/synapse.js', 'synapse.js'),
-           ('filesystem/dist/plugin.js', 'filesystem.js'), ('app/dist/plugin.js', 'app.js'), ('preferences/dist/plugin.js', 'preferences.js'))
+           ('filesystem/dist/plugin.js', 'filesystem.js'), ('app/dist/plugin.js', 'app.js'), ('preferences/dist/plugin.js', 'preferences.js'),
+           ('../@capacitor-community/in-app-review/dist/plugin.js', 'in-app-review.js'))
 
 
 def native(s):
