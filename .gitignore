@@ -3,3 +3,8 @@ node_modules/
 __pycache__/
 .DS_Store
 *.bak
+
+# Android signing: never commit the upload key or its passwords
+*.jks
+*.keystore
+keystore.properties

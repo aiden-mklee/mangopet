@@ -76,6 +76,28 @@ npm run ios
 2. `npm install` 후 `npm run android` → Android Studio가 열리면 폰을 연결하거나 에뮬레이터를 고르고 ▶.
 3. 친구에게 줄 때는 **Build → Build App Bundle(s) / APK(s) → Build APK(s)**로 만든 APK 파일을 보내면 됩니다 (구글 계정 불필요).
 
+## 구글 플레이에 올리기
+
+글과 그림은 `assets/store/listing-play.md`, `assets/store/play/`에 있습니다.
+
+**한 번만 하는 것**
+1. [Play Console](https://play.google.com/console) 가입($25, 개인 계정). 신분증 확인에 며칠 걸릴 수 있습니다.
+2. **업로드 키 만들기**: Android Studio › Build › Generate Signed App Bundle or APK › Android App Bundle › Create new…
+   - 키 파일은 `~/mangopet-keys/upload.jks`처럼 **저장소 밖**에 두고, 비밀번호와 함께 따로 보관합니다(잃어버리면 구글에 재설정 요청이 필요하고, 깃에는 절대 넣지 않음. `.gitignore`가 `*.jks`를 막음).
+   - 처음 올릴 때 "Play 앱 서명"을 켜 둡니다(기본값). 진짜 서명 키는 구글이 보관합니다.
+3. 2023년 11월 뒤에 만든 개인 계정은 **비공개 테스트에 테스터 12명이 14일 동안 참여**해야 프로덕션(정식 출시)을 신청할 수 있습니다.
+
+**올릴 때마다**
+```bash
+cd ~/mangopet
+git pull
+npm install
+npm run android
+```
+1. `app/android/app/build.gradle`의 `versionCode`를 1씩 올립니다(처음은 1 그대로). `versionName`은 아이폰과 같은 버전.
+2. Android Studio › Build › Generate Signed App Bundle or APK › Android App Bundle › release → `app/android/app/release/app-release.aab`
+3. Play Console › 테스트(비공개) 또는 프로덕션 › 새 버전 만들기 → aab 올리기 → 출시 노트 → 검토
+
 ## 화면을 고친 뒤
 
 ```bash
@@ -88,5 +110,4 @@ npx cap sync             # app/www/를 iOS·안드로이드 프로젝트에 복�
 ## 출시 전에 정할 것
 
 - **앱 ID** (`capacitor.config.json`의 `appId`): `com.emango.pet`. 망고 시리즈는 `com.emango.*`로 통일합니다 (가계부는 `com.emango.log` 예정). 스토어에 올리면 바꿀 수 없으니, 개발자 계정 가입 때 이 이름으로 등록합니다.
-- 앱 아이콘과 시작 화면 (지금은 Capacitor 기본 그림)
 - 위젯: Swift(아이폰), Kotlin(안드로이드)으로 따로 만듭니다. 규칙은 `src/engine.js`를 옮기고 `tools/golden.js`의 정답과 맞춥니다.

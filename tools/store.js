@@ -2,7 +2,10 @@
 //   python3 tools/build.py && node tools/store.js   → assets/store/<size>/1-egg.png … 6-surprise.png (6.3" 1206 × 2622 and 6.9" 1290 × 2796, the size the 6.9" slot took for 1.0)
 // Scenes are set up through a hook injected into a temporary copy of docs/index.html.
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
-const SIZES=[{dir:'6.3in-1206x2622',w:402,h:874},{dir:'6.9in-1290x2796',w:430,h:932}];
+// iOS by default; `node tools/store.js android` makes Google Play's phone shots instead (Play takes 9:16 up to 2:1, so the
+// tall iPhone ratio is refused there): 1080 × 1920, with a smaller phone so the headline still fits above it
+const SIZES=process.argv[2]==='android'?[{dir:'play/android-1080x1920',w:405,h:720,dsf:1080/405,shot:270,pad:40}]
+  :[{dir:'6.3in-1206x2622',w:402,h:874},{dir:'6.9in-1290x2796',w:430,h:932}];
 const ROOT=path.join(__dirname,'..'),RAW=path.join(ROOT,'.out','store'),OUT=path.join(ROOT,'assets','store'),TMP=path.join(ROOT,'docs','_store.html');
 fs.mkdirSync(RAW,{recursive:true});fs.mkdirSync(OUT,{recursive:true});
 const page=fs.readFileSync(path.join(ROOT,'docs','index.html'),'utf8');
@@ -39,11 +42,11 @@ const SCENES=[
   // frame: headline in the game font, the screen below in a phone outline
   await p.close();
   // App Store Connect asks for exact sizes per slot: 6.3" (1206 × 2622) and 6.9" (1290 × 2796; 1320 × 2868 was refused on 11-21), at 3× from these CSS sizes
-  for(const Z of SIZES){const fc=await b.newContext({viewport:{width:Z.w,height:Z.h},deviceScaleFactor:3});const f=await fc.newPage();
+  for(const Z of SIZES){const fc=await b.newContext({viewport:{width:Z.w,height:Z.h},deviceScaleFactor:Z.dsf||3});const f=await fc.newPage();
   await f.setContent(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${FACE}
     html,body{margin:0;width:${Z.w}px;height:${Z.h}px;overflow:hidden;background:${S.bg}}
-    h1{margin:0;padding:64px 28px 0;font:28px/1.45 'Galmuri11',sans-serif;color:${S.ink};text-align:center;white-space:pre-line;-webkit-font-smoothing:none}
-    .shot{position:absolute;left:50%;bottom:-60px;transform:translateX(-50%);width:340px;border-radius:36px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.28);border:8px solid #111}
+    h1{margin:0;padding:${Z.pad||64}px 28px 0;font:28px/1.45 'Galmuri11',sans-serif;color:${S.ink};text-align:center;white-space:pre-line;-webkit-font-smoothing:none}
+    .shot{position:absolute;left:50%;bottom:-60px;transform:translateX(-50%);width:${Z.shot||340}px;border-radius:${Z.shot?30:36}px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.28);border:8px solid #111}
     .shot img{display:block;width:100%}</style></head><body><h1>${S.head}</h1><div class="shot"><img src="data:image/png;base64,${fs.readFileSync(raw).toString('base64')}"></div></body></html>`);
   await f.waitForTimeout(300);fs.mkdirSync(path.join(OUT,Z.dir),{recursive:true});await f.screenshot({path:path.join(OUT,Z.dir,S.name+'.png')});await fc.close();console.log('wrote assets/store/'+Z.dir+'/'+S.name+'.png')}
   await ctx.close()}
