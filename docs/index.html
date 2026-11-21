@@ -1451,7 +1451,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-beta-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.2 · db8b08',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.2 · b957c0',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2589,6 +2589,7 @@ function applySkin(){
   r.setProperty('--skin',k.skin);r.setProperty('--skin-lo',k.lo);r.setProperty('--skin-ink',k.ink);r.setProperty('--btn',(BTNS.find(b=>b.id===g.btnColor)||{}).c||k.btn);
   const lc=LCDS.find(x=>x.id===g.lcd)||LCDS[0];r.setProperty('--lcd',lc.lcd);r.setProperty('--ink',lc.ink);r.setProperty('--ghost',lc.ghost);
   Object.assign(COL,{lcd:lc.lcd,ink:lc.ink,ghost:lc.ghost,faint:lc.faint});
+  drawDevIcons();
   const bg=BGS.find(b=>b.id===g.bg)||BGS[0];bg.c.forEach((c,i)=>r.setProperty('--bg'+(i+1),c));r.setProperty('--adink',bg.dark?'#fff':'#000');
   $('shell').classList.toggle('square',g.shape==='square'||g.shape==='mini');$('shell').classList.toggle('mini',g.shape==='mini');$('shell').classList.toggle('round',g.shape==='round');$('shell').classList.toggle('cat',g.shape==='cat');$('shell').classList.toggle('bear',g.shape==='bear');
   document.querySelectorAll('#shapes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===(g.shape||'egg')));
@@ -2961,11 +2962,15 @@ const ACC=E.PATTERNS.map(n=>[n,patterned(PAT_BLOB,PAT_BLOB,n).rows]);
 const LEGACY_ACC=['리본','안경','모자','꽃','목도리','왕관'];
 const toPat=n=>{if(n==='왕점')return '이마 번개';const i=LEGACY_ACC.indexOf(n);return i<0?n:ACC[i%ACC.length][0]};
 const pxIcon=(cv,rows,col)=>{const P=new Pix(rows[0].length,rows.length);P.spr({w:rows[0].length,h:rows.length,rows},0,0);P.paint(cv,{on:col,cell:Math.max(2,Math.round(2*(window.devicePixelRatio||1))),gap:0})};
-function buildDevBtns(){
+// the icons on the buttons under the device follow the screen's ink, so applySkin redraws them when the screen colour changes
+function drawDevIcons(){
   pxIcon($('zoomBtn').querySelector('canvas'),['.###....','#...#...','#...#...','#...#...','.###....','....##..','.....##.','......##'],COL.ink);
   pxIcon($('flipBtn').querySelector('canvas'),['..#..#..','.######.','##....##','#..##..#','#..##..#','##....##','.######.','..#..#..'],COL.ink);
-  $('zoomBtn').onclick=()=>openZoom(ui.view==='finds'?'finds':ui.view==='dex'?'dex':ui.zoomTab||'dex');
   pxIcon($('decoBtn').querySelector('canvas'),['......##','.....###','....###.','...###..','..###...','.##.....','###.....','##......'],COL.ink);
+}
+function buildDevBtns(){
+  drawDevIcons();
+  $('zoomBtn').onclick=()=>openZoom(ui.view==='finds'?'finds':ui.view==='dex'?'dex':ui.zoomTab||'dex');
   $('flipBtn').onclick=()=>flip(!ui.flipped);
   $('decoBtn').onclick=()=>openDeco();
   // tapping the keyring opens the keyring list
