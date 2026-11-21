@@ -10,6 +10,7 @@
     "serve": "python3 -m http.server 8000 --directory docs",
     "app": "python3 tools/build.py && npx cap sync",
     "ios": "npx cap sync ios && npx cap open ios",
+    "ios:old": "node tools/oldapp.js",
     "android": "npx cap sync android && npx cap open android"
   },
   "devDependencies": {
