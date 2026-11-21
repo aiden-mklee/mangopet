@@ -2899,7 +2899,6 @@ function renderScreenIn(tab,el){
       <div class="pxrow"><button class="pxbtn" data-backup="out" aria-pressed="${ui.backup==='out'}">내보내기</button><button class="pxbtn" data-backup="in" aria-pressed="${ui.backup==='in'}">가져오기</button></div>
       ${ui.backup==='out'?`<textarea class="pxcode" readonly>${backupCode()}</textarea><p class="dim">${ui.backupMsg||'코드를 길게 눌러 복사해요'}</p>`:''}
       ${ui.backup==='in'?`<textarea class="pxcode" data-backup-text placeholder="내보낸 코드를 붙여 넣어요"></textarea><div class="pxrow"><button class="pxbtn" data-backup-go>이 기록으로 바꾸기</button></div><p class="dim">${ui.backupMsg||'지금 이 폰의 기록은 이 코드로 바뀌어요'}</p>`:''}
-      ${Native?`<h3>예전 기록 찾기</h3><p class="dim">11월 8일 전에 받은 테스트 앱으로 키우던 기록이 사라졌다면, 폰 안에 남아 있는지 찾아봐요.</p><div class="pxrow"><button class="pxbtn" data-rescue>예전 기록 찾기</button></div>`:''}
       <h3>기록 지우기</h3>${ui.wipeAsk?`<p class="dim">펫, 도감, 주운 것, 키링, 꾸밈이 이 기기에서 모두 지워지고 되돌릴 수 없어요.</p>
         <div class="pxrow"><button class="pxbtn" data-wipe-go>정말 지우기</button><button class="pxbtn" data-wipe-no>그만두기</button></div>`:'<div class="pxrow"><button class="pxbtn" data-wipe>모든 기록 지우기</button></div>'}`,
       guide:guideHtml(),
@@ -2937,7 +2936,6 @@ function renderScreenIn(tab,el){
     const vg=el.querySelector('[data-visit-go]');if(vg)vg.onclick=()=>{const v=readVisit(el.querySelector('[data-visit-text]').value);
       if(!v){ui.visitMsg='코드가 맞지 않아요. 처음부터 끝까지 다 붙여 넣었는지 봐 주세요';renderScreen(tab,el);return}
       if(!welcomeGuest(v)){ui.visitMsg='아이가 있을 때 맞이할 수 있어요';renderScreen(tab,el);return}ui.visitIn=false;ui.visitMsg='';if(ui.flipped)flip(false);renderScreen(tab,el)};
-    const rs=el.querySelector('[data-rescue]');if(rs)rs.onclick=()=>{save(true);location.href=RESCUE_URL};
     el.querySelectorAll('[data-backup]').forEach(b=>b.onclick=async()=>{const k=b.dataset.backup;ui.backup=ui.backup===k?null:k;ui.backupMsg='';
       if(ui.backup==='out'){try{await navigator.clipboard.writeText(backupCode());ui.backupMsg='복사했어요. 새 폰의 설정 → 가져오기에 붙여 넣어요'}catch(e){}}
       renderScreen(tab,el)});
@@ -3090,9 +3088,11 @@ async function makeGradCard(){
 }
 const BACKUP_TAG='MANGOPET1:';
 function backupCode(){const c=Object.assign({},g);delete c.log;return BACKUP_TAG+btoa(unescape(encodeURIComponent(JSON.stringify(c))))}
+// a restored save carries on from the moment it is put back: the days between exporting and importing are not played
+// (otherwise an old code would fast-forward and the pet would be gone by the time the screen opens)
 function restoreBackup(text){try{const t=String(text||'').replace(/\s+/g,'');if(!t.startsWith(BACKUP_TAG))return false;
   const d=JSON.parse(decodeURIComponent(escape(atob(t.slice(BACKUP_TAG.length)))));if(!d||!d.phase||d.t==null)return false;
-  d.log=[];d.intro='done';localStorage.setItem(KEY,JSON.stringify(d));noSave=true;location.reload();return true}catch(e){return false}}
+  d.log=[];d.intro='done';d.clockAt=d.savedAt=Date.now();localStorage.setItem(KEY,JSON.stringify(d));noSave=true;location.reload();return true}catch(e){return false}}
 setInterval(save,2000);
 
 /* ---------- time away and notifications ahead ---------- */
@@ -3126,8 +3126,7 @@ const AppPl=hasPlugin('App')&&window.capacitorApp?window.capacitorApp.App:null;
 // The system decides whether it really shows (at most three times a year), so nothing here repeats it
 function askReview(){if(g.reviewAsked||!hasPlugin('InAppReview')||!window.capacitorInAppReview)return;g.reviewAsked=true;save();
   setTimeout(()=>window.capacitorInAppReview.InAppReview.requestReview().catch(()=>{}),6000)}
-// coming back from the rescue page (설정 › 기록 › 예전 기록 찾기) with an old test build's save
-const RESCUE_URL='https://aiden-mklee.github.io/mangopet/rescue.html';
+// coming back from the rescue page (docs/rescue.html, no longer linked from settings) with an old test build's save
 if(/^#restore=/.test(location.hash)){const code=decodeURIComponent(location.hash.slice(9));history.replaceState(null,'',location.pathname+location.search);
   setTimeout(()=>{if(confirm('예전 기록을 가져올까요?\n지금 키우는 기록은 예전 기록으로 바뀌어요.')&&!restoreBackup(code))alert('기록을 읽지 못했어요')},300)}
 if(Prefs&&!hadSave)Prefs.get({key:KEY}).then(r=>{try{const s=r&&r.value&&JSON.parse(r.value);if(s&&s.phase){noSave=true;localStorage.setItem(KEY,r.value);location.reload()}}catch(e){}}).catch(()=>{});
