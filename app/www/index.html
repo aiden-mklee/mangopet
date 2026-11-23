@@ -1453,7 +1453,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.2 · 4a96c2',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.2 · b8648c',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -2950,8 +2950,12 @@ const BACKS=new WeakMap();
 function backView(sp){let o=BACKS.get(sp);if(o)return o;const W=sp.w+2,H=sp.h+2,on=(x,y)=>sp.rows[y-1]&&sp.rows[y-1][x-1]==='#',out=[...Array(H)].map(()=>Array(W).fill(false)),st=[[0,0]];
   while(st.length){const [x,y]=st.pop();if(x<0||y<0||x>=W||y>=H||out[y][x]||on(x,y))continue;out[y][x]=true;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}
   o={...sp,rows:sp.rows.map((r,y)=>[...r].map((ch,x)=>out[y+1][x+1]?'.':'#').join(''))};BACKS.set(sp,o);return o}
-function moodOnOpen(){ui.greet=ui.sulk=null;if(g.phase!=='alive'||g.sleeping||!g.lights||g.stage==='egg'||ui.game||(g.intro&&g.intro!=='done'))return;const u=g.unseen||0;
-  diaryOpen();openNews();festGreet();setTimeout(growthHint,2500);
+// yesterday's diary, news and a special day are told on the first opening whatever the pet is doing: they used to wait
+// behind the awake-and-lit check, so a morning opening with the pet still asleep or the light off showed nothing and
+// the diary only came on a second opening after the light went on (11-23)
+function moodOnOpen(){ui.greet=ui.sulk=null;if(!ui.game){diaryOpen();openNews();festGreet()}
+  if(g.phase!=='alive'||g.sleeping||!g.lights||g.stage==='egg'||ui.game||(g.intro&&g.intro!=='done'))return;const u=g.unseen||0;
+  setTimeout(growthHint,2500);
   if(u>=SULK_AT){ui.sulk={pats:0,huff:0};ui.doing=null}else if(u>=GREET_IN[0]&&u<GREET_IN[1])ui.greet={start:now(),x0:ui.petX}}
 function sulkPat(){if(!ui.sulk)return;if(++ui.sulk.pats>=2)ui.sulk=null;else ui.sulk.huff=now()+1500}
 function doingOk(){return !ui.sulk&&!ui.greet&&g.phase==='alive'&&!g.sleeping&&g.lights&&!g.sick&&!ui.anim&&!ui.game&&ui.view==='main'&&!needList().length}
