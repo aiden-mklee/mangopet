@@ -1288,7 +1288,7 @@ for(const l in LINES)for(const a in ANIMALS){const k=l+'_'+a,rows=buildAdult(l,a
   S[k]=inBox(rows,b);MOODS.forEach(m=>S[k+'@'+m]=inBox(moodRows(rows,m),b));HAB[k]=fr.map(r=>inBox(r,b));if(a==='frog')ANCH[k]={x:FROG_AT[0]-b.c0,y:FROG_AT[1]-b.r0}}
 ['baby','child','teen'].forEach(k=>MOODS.forEach(m=>S[k+'@'+m]=parse(moodRows(RAW[k],m))));
 // sleepy (night: turn the light off) is a Z; the bulb stays for the morning "turn the light on". "Zz" was too crowded for the bubble
-const MINI={sleepy:["#####","...#.","..#..",".#...","#####"],hungry:[".###.","#####","#...#",".###."],bored:["..##.","..#.#","..#..","###..","##..."],sick:[".###.","#.#.#","#####",".#.#."],light:[".###.","#...#",".###.","..#.."],tummy:[".#.","#.#",".#.","...",".#."]};
+const MINI={sleepy:["#####","...#.","..#..",".#...","#####"],hungry:[".###.","#####","#...#",".###."],bored:[".#.#.","#.#.#","#...#",".#.#.","..#.."],sick:[".###.","#.#.#","#####",".#.#."],light:[".###.","#...#",".###.","..#.."],tummy:[".#.","#.#",".#.","...",".#."]};
 const IC={};for(const k in ICONS)IC[k]={w:ICONS[k][0].length,h:6,rows:ICONS[k]};
 const MS={};for(const k in MINI)MS[k]=parse(MINI[k]);
 
@@ -1453,7 +1453,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-app-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.2 · b9bd67',FEEDBACK_URL='',REALTIME=true,ADS=false;
+const VERSION='1.0.2 · 4a96c2',FEEDBACK_URL='',REALTIME=true,ADS=false;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){const n=new Date();return Object.assign(E.fresh(Math.random()*2**32),{t:n.getHours()*60+n.getMinutes(),speed:1,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}

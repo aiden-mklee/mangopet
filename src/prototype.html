@@ -911,7 +911,7 @@ for(const l in LINES)for(const a in ANIMALS){const k=l+'_'+a,rows=buildAdult(l,a
   S[k]=inBox(rows,b);MOODS.forEach(m=>S[k+'@'+m]=inBox(moodRows(rows,m),b));HAB[k]=fr.map(r=>inBox(r,b));if(a==='frog')ANCH[k]={x:FROG_AT[0]-b.c0,y:FROG_AT[1]-b.r0}}
 ['baby','child','teen'].forEach(k=>MOODS.forEach(m=>S[k+'@'+m]=parse(moodRows(RAW[k],m))));
 // sleepy (night: turn the light off) is a Z; the bulb stays for the morning "turn the light on". "Zz" was too crowded for the bubble
-const MINI={sleepy:["#####","...#.","..#..",".#...","#####"],hungry:[".###.","#####","#...#",".###."],bored:["..##.","..#.#","..#..","###..","##..."],sick:[".###.","#.#.#","#####",".#.#."],light:[".###.","#...#",".###.","..#.."],tummy:[".#.","#.#",".#.","...",".#."]};
+const MINI={sleepy:["#####","...#.","..#..",".#...","#####"],hungry:[".###.","#####","#...#",".###."],bored:[".#.#.","#.#.#","#...#",".#.#.","..#.."],sick:[".###.","#.#.#","#####",".#.#."],light:[".###.","#...#",".###.","..#.."],tummy:[".#.","#.#",".#.","...",".#."]};
 const IC={};for(const k in ICONS)IC[k]={w:ICONS[k][0].length,h:6,rows:ICONS[k]};
 const MS={};for(const k in MINI)MS[k]=parse(MINI[k]);
 
