@@ -273,7 +273,7 @@ function step(g,ev,opts={}){
     (rand(g)<.2||(g.ageMin>=2*DAY&&h>=15)))makeSick(g,ev,true)
   if(m===0&&!g.sick&&g.stage!=='baby'){
     const mult=({tough:.3,frail:2}[g.con]||1)*(g.mode==='relaxed'?.6:1);
-    let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.04*mult:0;if(overweight(g))ch+=.05*mult;
+    let ch=g.poops&&g.t-(g.poopSince||0)>=120?g.poops*.03*mult:0;if(overweight(g))ch+=.05*mult;
     if(rand(g)<ch)makeSick(g,ev);
   }
   if(!g.sleeping&&needsCall(g)){if(g.callStart==null){g.callStart=g.t;g.missed=false}else if(!g.missed&&g.t-g.callStart>=(g.mode==='classic'?120:180)){g.careMiss++;g.missed=true}}else if(!g.sleeping)g.callStart=null;

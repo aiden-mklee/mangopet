@@ -2214,8 +2214,8 @@
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": null
       }
@@ -2246,8 +2246,8 @@
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": null
       }
@@ -2278,8 +2278,8 @@
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": null
       }
@@ -2310,8 +2310,8 @@
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": null
       }
@@ -2336,21 +2336,21 @@
        "night": 3,
        "checks": 19,
        "acc": null,
-       "seed": 864871657,
+       "seed": 2696437470,
        "found": null,
        "finds": {
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": [
         "penguin",
         "sun",
         "star",
         "crown",
-        "egg"
+        "cherry"
        ]
       }
      },
@@ -2365,7 +2365,7 @@
        "happy": 3,
        "weight": 52,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
@@ -2374,21 +2374,21 @@
        "night": 5,
        "checks": 30,
        "acc": null,
-       "seed": 537589372,
+       "seed": 1673378318,
        "found": null,
        "finds": {
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": [
         "penguin",
         "sun",
         "star",
         "crown",
-        "egg"
+        "cherry"
        ]
       }
      },
@@ -2399,11 +2399,11 @@
        "stage": "adult",
        "species": "sun_penguin",
        "con": "greedy",
-       "hunger": 3,
+       "hunger": 2,
        "happy": 3,
-       "weight": 68,
+       "weight": 70,
        "poops": 0,
-       "sick": true,
+       "sick": false,
        "tummy": false,
        "sleeping": true,
        "lights": false,
@@ -2412,21 +2412,21 @@
        "night": 7,
        "checks": 42,
        "acc": null,
-       "seed": 3873438713,
+       "seed": 2481884979,
        "found": null,
        "finds": {
         "tulip": 1,
         "heartstone": 1,
         "roundstone": 1,
-        "leaf": 1,
-        "dandelion": 1
+        "redcap": 1,
+        "bone": 1
        },
        "charms": [
         "penguin",
         "sun",
         "star",
         "crown",
-        "egg"
+        "cherry"
        ]
       }
      }
@@ -2479,7 +2479,7 @@
      ],
      [
       3990,
-      "🤒 몸이 아파 · 🍙 배고파 · 💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2514,7 +2514,7 @@
      ],
      [
       7680,
-      "☀️ 일어났어! 불 켜 줘 · 🤒 몸이 아파",
+      "☀️ 일어났어! 불 켜 줘",
       "sent"
      ],
      [
@@ -2524,7 +2524,7 @@
      ],
      [
       8310,
-      "🍙 배고파 · 💩 똥 2개 치워 줘",
+      "💩 똥 3개 치워 줘",
       "sent"
      ],
      [
@@ -2539,7 +2539,7 @@
      ],
      [
       9750,
-      "🤒 몸이 아파 · 💩 똥 3개 치워 줘",
+      "🍙 배고파 · 💩 똥 3개 치워 줘",
       "sent"
      ],
      [
