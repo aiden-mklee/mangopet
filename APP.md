@@ -16,6 +16,9 @@ app/android/            Android Studio 프로젝트
 테스트 모드(`capacitor.config.json`의 `server.url`로 GitHub Pages의 `app.html`을 불러오던 것)를 껐습니다. 앱은 이제 안에 든 `app/www`로 돌아갑니다.
 - 게임을 고치면: `python3 tools/build.py` → `npx cap sync` → Xcode에서 빌드 번호 +1 → Archive → 업로드 → 심사. `main`에 올리는 것만으로는 폰 앱이 바뀌지 않습니다.
 - 저장: 웹뷰 저장 위치가 바뀌어도, 기기 저장소(`@capacitor/preferences`)의 두 번째 사본에서 되살립니다. 그래도 바꾸기 전에는 설정 › 기록 › 내보내기로 백업합니다.
+- iCloud 백업(1.0.3): 세 번째 사본을 사용자의 iCloud 키-값 저장소에 둡니다. npm 패키지가 아니라 앱 안의 플러그인입니다: `app/ios/App/App/CloudBackupPlugin.swift`(get/set/remove/status, 바뀌면 `change` 이벤트), 이걸 등록하는 `MainViewController.swift`(Main.storyboard의 화면 클래스), 권한 `App.entitlements`(`CODE_SIGN_ENTITLEMENTS`). `npx cap sync`는 이 파일들을 건드리지 않습니다.
+  - 맥에서 처음 한 번: Xcode › App 타깃 › Signing & Capabilities에 **iCloud**가 있고 **Key-value storage**에 체크돼 있는지 봅니다(entitlements 파일이 있어 자동 서명이면 보통 저절로 잡힘). 없으면 + Capability › iCloud › Key-value storage 체크. 빌드 오류가 나면 그 문구를 그대로 붙여 주세요.
+  - 확인: 폰 설정 › 기록에 'iCloud 백업' 줄이 보이면 플러그인이 붙은 것. 앱을 지웠다 다시 깔면 'iCloud에 저장된 망고펫 기록이 있어요' 창이 떠야 합니다.
 - `docs/app.html`은 계속 만듭니다. 예전 테스트 빌드가 깔린 폰이 그 주소를 엽니다.
 - 다시 테스트 모드가 필요하면 `capacitor.config.json`에 `"server": {"url": "https://aiden-mklee.github.io/mangopet/app.html"}`를 넣고 `npx cap sync`. 심사에 올리는 빌드에는 절대 넣지 않습니다(애플은 밖에서 게임을 불러오는 앱을 거절할 수 있음).
 

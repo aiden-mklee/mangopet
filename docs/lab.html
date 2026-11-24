@@ -1429,7 +1429,7 @@ const SPEEDS=[[1,'실시간'],[60,'1초=1분'],[600,'1초=10분'],[3600,'1초=1�
 /* ---------- state ---------- */
 const KEY='mangopet-lab-v1';
 // tools/build.py stamps the build; the feedback form opens from settings when set
-const VERSION='1.0.2 · b8648c',FEEDBACK_URL='',REALTIME=false,ADS=true;
+const VERSION='1.0.2 · 926c04',FEEDBACK_URL='',REALTIME=false,ADS=true;
 // the beta has no ads: the reward buttons (revive, call back, start over) just work
 const noAds=()=>!ADS||g.adFree;
 function fresh(){return Object.assign(E.fresh(Math.random()*2**32),{t:8*60,speed:60,savedAt:Date.now(),clockAt:Date.now(),intro:'case'})}
@@ -3263,6 +3263,7 @@ function renderScreenIn(tab,el){
       <div class="pxrow"><button class="pxbtn" data-backup="out" aria-pressed="${ui.backup==='out'}">내보내기</button><button class="pxbtn" data-backup="in" aria-pressed="${ui.backup==='in'}">가져오기</button></div>
       ${ui.backup==='out'?`<textarea class="pxcode" readonly>${backupCode()}</textarea><p class="dim">${ui.backupMsg||'코드를 길게 눌러 복사해요'}</p>`:''}
       ${ui.backup==='in'?`<textarea class="pxcode" data-backup-text placeholder="내보낸 코드를 붙여 넣어요"></textarea><div class="pxrow"><button class="pxbtn" data-backup-go>이 기록으로 바꾸기</button></div><p class="dim">${ui.backupMsg||'지금 이 폰의 기록은 이 코드로 바뀌어요'}</p>`:''}
+      ${Cloud?`<h3>iCloud 백업</h3><p class="dim">${ui.cloudIn===false?'아이폰 설정에서 iCloud에 로그인하면 기록이 자동으로 백업돼요':'기록이 iCloud에 자동으로 백업돼요. 앱을 지웠다 다시 깔거나 새 아이폰에서도 이어서 키울 수 있어요'}</p>`:''}
       <h3>기록 지우기</h3>${ui.wipeAsk?`<p class="dim">펫, 도감, 주운 것, 키링, 꾸밈이 이 기기에서 모두 지워지고 되돌릴 수 없어요.</p>
         <div class="pxrow"><button class="pxbtn" data-wipe-go>정말 지우기</button><button class="pxbtn" data-wipe-no>그만두기</button></div>`:'<div class="pxrow"><button class="pxbtn" data-wipe>모든 기록 지우기</button></div>'}`,
       guide:guideHtml(),
@@ -3283,7 +3284,7 @@ function renderScreenIn(tab,el){
     // wiping everything: the save, then the phone's pending notifications, then a fresh start
     const wp=el.querySelector('[data-wipe]');if(wp)wp.onclick=()=>{ui.wipeAsk=true;renderScreen(tab,el)};
     const wn=el.querySelector('[data-wipe-no]');if(wn)wn.onclick=()=>{ui.wipeAsk=false;renderScreen(tab,el)};
-    const wg=el.querySelector('[data-wipe-go]');if(wg)wg.onclick=async()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}try{if(Prefs)await Prefs.remove({key:KEY})}catch(e){}
+    const wg=el.querySelector('[data-wipe-go]');if(wg)wg.onclick=async()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}try{if(Prefs)await Prefs.remove({key:KEY})}catch(e){}try{if(Cloud)await Cloud.remove({key:CLOUD_KEY})}catch(e){}
       const LN=Native&&Native.LocalNotifications;if(LN)try{const p=await LN.getPending();if(p.notifications.length)await LN.cancel({notifications:p.notifications.map(n=>({id:n.id}))})}catch(e){}
       location.reload()};
     const bm=el.querySelector('[data-bm]'),bdd=el.querySelector('[data-bd]');if(bm)bm.onchange=bdd.onchange=()=>{g.birthday=bm.value&&bdd.value?bm.value+'-'+bdd.value:null;save()};
@@ -3420,12 +3421,17 @@ function loop(){
   if(t-slow>500){slow=t;renderPanel();renderWidgets()}
   requestAnimationFrame(loop);
 }
-let noSave=false;
-function save(force){if(noSave)return;g.savedAt=Date.now();const j=JSON.stringify(g);try{localStorage.setItem(KEY,j)}catch(e){}prefSave(j,force)}
+let noSave=false,Cloud=null,cloudReady=false;
+function save(force){if(noSave)return;g.savedAt=Date.now();const j=JSON.stringify(g);try{localStorage.setItem(KEY,j)}catch(e){}prefSave(j,force);cloudSave(j,force)}
 // a second copy in the app's own storage (Capacitor Preferences): the web view's storage can be cleared by the system now
 // and then. Written at most every 10 seconds, and always when the app goes away; read back only when the web view has none
 let prefAt=0;
 function prefSave(j,force){if(!Prefs||(!force&&Date.now()-prefAt<10000))return;prefAt=Date.now();Prefs.set({key:KEY,value:j}).catch(()=>{})}
+// a third copy in the player's iCloud (iOS, the app's own CloudBackup plugin, 1.0.3): survives deleting the app and moving
+// to a new iPhone. Written at most once a minute and always when the app goes away, but only once this install is known
+// not to be a fresh one that should first be offered the iCloud copy (cloudReady), so a new game never overwrites it
+let cloudAt=0;const CLOUD_KEY='save';
+function cloudSave(j,force){if(!Cloud||!cloudReady||(!force&&Date.now()-cloudAt<60000))return;cloudAt=Date.now();Cloud.set({key:CLOUD_KEY,value:j}).catch(()=>{})}
 // moving a save between phones: the whole state (minus the notification log) as one text code
 // Graduation card: a 1080 × 1350 picture of the graduate on an LCD panel, with its name, stars and days,
 // to keep or send to friends. Drawn with the same pixel look as the screen.
@@ -3494,6 +3500,22 @@ function askReview(){if(g.reviewAsked||!hasPlugin('InAppReview')||!window.capaci
 if(/^#restore=/.test(location.hash)){const code=decodeURIComponent(location.hash.slice(9));history.replaceState(null,'',location.pathname+location.search);
   setTimeout(()=>{if(confirm('예전 기록을 가져올까요?\n지금 키우는 기록은 예전 기록으로 바뀌어요.')&&!restoreBackup(code))alert('기록을 읽지 못했어요')},300)}
 if(Prefs&&!hadSave)Prefs.get({key:KEY}).then(r=>{try{const s=r&&r.value&&JSON.parse(r.value);if(s&&s.phase){noSave=true;localStorage.setItem(KEY,r.value);location.reload()}}catch(e){}}).catch(()=>{});
+// iCloud: a fresh install (no save here and none in Preferences) asks once whether to bring the iCloud record back. It may
+// arrive from iCloud a little after launch, so the plugin's change event is watched for half a minute; only then does this
+// install start writing its own copy. A restored record carries on from now, like an imported code (restoreBackup)
+Cloud=hasPlugin('CloudBackup')&&window.Capacitor.registerPlugin?window.Capacitor.registerPlugin('CloudBackup'):null;cloudReady=hadSave;
+function cloudOffer(v){try{const s=JSON.parse(v);if(!s||!s.phase||cloudReady)return false;
+  if(Object.keys(g.dex||{}).length||(g.hist||[]).length){cloudReady=true;return false}   // already playing here: keep this one
+  if(!confirm('iCloud에 저장된 망고펫 기록이 있어요.\n이 기록을 가져올까요?')){setTimeout(()=>{cloudReady=true},600000);return true}   // said no: the iCloud copy is kept 10 more minutes in case it was a slip
+  cloudReady=true;
+  s.log=[];s.intro='done';s.clockAt=s.savedAt=Date.now();const j=JSON.stringify(s);noSave=true;localStorage.setItem(KEY,j);
+  if(Prefs)Prefs.set({key:KEY,value:j}).catch(()=>{});location.reload();return true}catch(e){return false}}
+if(Cloud&&!hadSave)(async()=>{
+  if(Prefs)try{const r=await Prefs.get({key:KEY});if(r&&r.value&&JSON.parse(r.value).phase)return}catch(e){}   // the Preferences copy is restored above
+  const look=()=>Cloud.get({key:CLOUD_KEY}).then(r=>r&&r.value?cloudOffer(r.value):false).catch(()=>false);
+  let asked=false;const once=()=>look().then(x=>{if(x)asked=true;return x});
+  if(await once())return;Cloud.addListener('change',d=>{if(!asked&&!cloudReady&&(d.keys||[]).includes(CLOUD_KEY))once()});setTimeout(()=>{if(!asked)cloudReady=true},30000)})();
+if(Cloud)Cloud.status().then(r=>{ui.cloudIn=!!(r&&r.signedIn)}).catch(()=>{});
 // Android's back button works like 취소 while anything is open, and otherwise sends the app to the background (not quit)
 if(AppPl)AppPl.addListener('backButton',()=>{const open=ui.deco||!$('zoom').hidden||ui.flipped||ui.menuOpen||ui.game||ui.view!=='main'||!$('talkBox').hidden;
   if(open)cancel_();else AppPl.minimizeApp().catch(()=>{})});

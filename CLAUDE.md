@@ -48,6 +48,7 @@
 - 설명서: 설정 › 설명서 `GUIDE`(장마다 제목·짧은 글)·`guideHtml`, 넘긴 장 `ui.guide`. 규칙이 바뀌면 여기 글도 맞춘다.
 - 화면 속 설정과 도감: `renderScreen(tab, el)`, 크게 보기 창은 `openZoom`(탭 순서 도감·주운 것·앨범). 액정의 도감 아이콘은 "무엇을 볼까요?"(`ui.bookAsk`)로 도감(`drawDexLCD`)·주운 것(`drawFindsLCD`, `FIND_ORDER`) 중 골라 ◀ ▶로 넘긴다.
 - 예전 기록 찾기: 11-08 전 테스트 앱은 게임을 GitHub Pages(`app.html`)에서 불러와서 저장이 그 사이트 쪽에 있다. `docs/rescue.html`(원본 `src/rescue.html`)이 읽어 `capacitor://localhost/#restore=코드`로 돌려주고 앱이 물어본 뒤 `restoreBackup`하는 길은 남아 있지만, 1.0.2부터 설정 버튼은 뺐다(대표 결정 11-21, 테스트 앱을 쓴 사람이 대표뿐). `restoreBackup`(가져오기 포함)은 시계(`clockAt`)를 가져온 순간으로 맞춰서, 내보낸 뒤 흐른 날을 몰아서 진행하지 않는다.
+- 사본: 앱은 `Prefs`(기기 저장소, 10초마다)와 iCloud(`Cloud`, 앱 안 플러그인 `CloudBackupPlugin.swift`, 1분마다·나갈 때, `cloudSave`)에도 둔다. 새로 깐 앱은 iCloud 사본이 있으면 가져올지 묻고(`cloudOffer`), 그 전까지는 iCloud에 쓰지 않는다(`cloudReady`, 거절하면 10분 뒤부터).
 - 저장: `localStorage`. 키는 원본 `dotpet-proto-v1`, 베타 `mangopet-beta-v1`, 랩 `mangopet-lab-v1`. 이미 나간 키를 바꾸면 사용자 데이터가 사라지므로, 바꿀 때는 옛 키를 읽어 옮기는 코드를 같이 넣는다.
 
 ## 지켜온 원칙 (사용자가 정한 것)
